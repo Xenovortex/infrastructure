@@ -1,7 +1,7 @@
 !/bin/bash
 docker run -d --name kong \
     -e "KONG_LOG_LEVEL=info" \
-    -e "KONG_PG_HOST=PG_DB_SERVER" \
+    -e "KONG_PG_HOST=YOUR_POSTGRES_DB_SERVER" \
     -e "KONG_PG_DATABASE=kong" \
     -e "KONG_PG_USER=kong" \
     -e "KONG_PG_PASSWORD=YOUR_PASSWORD" \
