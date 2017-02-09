@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 docker run -d --name kong \
     -e "KONG_LOG_LEVEL=info" \
     -e "KONG_PG_HOST=YOUR_POSTGRES_DB_SERVER" \
