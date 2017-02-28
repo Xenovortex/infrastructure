@@ -1,0 +1,11 @@
+---
+execution:
+- concurrency: 10
+  ramp-up: 1m
+  hold-for: 2m
+  scenario: simple-test
+
+scenarios:
+  simple-test:
+    requests:
+    - https://api.openrouteservice.org/v1/test/routing?profile=cycling-regular&coordinates=8.690614,49.38365%7C8.7007,49.411699%7C8.7107,49.45169&instructions=false&geometry_format=polyline&api_key=f063f9a4600144b6b1c85356b24f4a63
