@@ -15,6 +15,7 @@ events {
 }
 
 http {
+    proxy_read_timeout  120s;
     ssl_session_cache   shared:SSL:10m;
     ssl_session_timeout 10m;
     # include default Kong Nginx config
