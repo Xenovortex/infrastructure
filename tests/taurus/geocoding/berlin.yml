@@ -1,14 +1,14 @@
 ---
 execution:
-- concurrency: 1000
-  ramp-up: 1m
-  hold-for: 5m
+- concurrency: 2000
+  ramp-up: 2m
+  hold-for: 10m
   scenario: berlin
 
 scenarios:
   berlin:
     requests:
-    - http://api.openrouteservice.org/v1/test/geocoding?format=json&query=Berlin&api_key=f063f9a4600144b6b1c85356b24f4a63
+    - https://api.openrouteservice.org/v1/test/geocoding?format=json&query=Berlin&api_key=f063f9a4600144b6b1c85356b24f4a63
 
 reporting:
     - module: blazemeter
