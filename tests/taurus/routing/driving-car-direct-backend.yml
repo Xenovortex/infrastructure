@@ -1,6 +1,6 @@
 ---
 execution:
-- concurrency: 1000
+- concurrency: 2000
   ramp-up: 3m
   hold-for: 15m
   scenario: routing
