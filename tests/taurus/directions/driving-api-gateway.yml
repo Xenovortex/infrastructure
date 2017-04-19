@@ -1,0 +1,17 @@
+---
+execution:
+- concurrency: 1000
+  ramp-up: 2m
+  hold-for: 10m
+  scenario: routing
+
+scenarios:
+  routing:
+    requests:
+    - https://api.openrouteservice.org/directions?api_key=%2058d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe&coordinates=8.048858642578127,47.39277144427804%7C7.743301391601563,47.53435623467226&elevation=false&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en&options=%7B%7D&preference=fastest&profile=driving-car&units=m
+    - https://api.openrouteservice.org/directions?api_key=%2058d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe&coordinates=8.048858642578127,47.39277144427804%7C7.743301391601563,47.53435623467226&elevation=false&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en&options=%7B%7D&preference=fastest&profile=foot-walking&units=m
+    - https://api.openrouteservice.org/directions?api_key=%2058d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe&coordinates=8.048858642578127,47.39277144427804%7C7.743301391601563,47.53435623467226&elevation=false&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en&options=%7B%7D&preference=fastest&profile=cycling-regular&units=m
+
+reporting:
+    - module: blazemeter
+      report-name: OpenRouteService Directions API Concurrency Test
