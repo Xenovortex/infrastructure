@@ -1,15 +1,15 @@
 ---
 execution:
-- concurrency: 800
+- concurrency: 100
   ramp-up: 1m
   hold-for: 5m
-  scenario: routing
+  scenario: cycling
 
 scenarios:
-  routing:
+  cycling:
     requests:
-    - https://api.openrouteservice.org/v1/test/routing?profile=cycling-regular&coordinates=8.690614,49.38365%7C8.7007,49.411699%7C8.7107,49.45169&instructions=false&geometry_format=polyline&api_key=f063f9a4600144b6b1c85356b24f4a63
+    - https://api.openrouteservice.org/directions?profile=cycling-regular&coordinates=8.690614,49.38365%7C8.7007,49.411699%7C8.7107,49.45169&instructions=false&geometry_format=polyline&api_key=58d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe
 
 reporting:
     - module: blazemeter
-      report-name: OpenRouteService Routing API Concurrency Performance
+      report-name: OpenRouteService Directions API Concurrency Test
