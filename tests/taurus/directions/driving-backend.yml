@@ -8,7 +8,7 @@ execution:
 scenarios:
   routing:
     requests:
-    - http://129.206.7.158/routing-test?profile=driving-car&coordinates=8.690614,49.38365%7C8.7007,49.411699%7C8.7107,49.45169&instructions=false&geometry_format=polyline&api_key=f063f9a4600144b6b1c85356b24f4a63
+    - http://192.168.2.11:8080/ors/routes?profile=driving-car&coordinates=8.690614,49.38365%7C8.7007,49.411699%7C8.7107,49.45169&instructions=false&geometry_format=polyline&api_key=f063f9a4600144b6b1c85356b24f4a63
 
 reporting:
     - module: blazemeter
