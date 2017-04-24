@@ -8,7 +8,7 @@ execution:
 scenarios:
   driving:
     requests:
-        - url: https://192.168.2.11:8080/ors/routes?coordinates=13.404954,52.52000659999999%7C11.5819806,48.1351253&elevation=false&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en&options=%7B%7D&preference=fastest&profile=driving-car&units=m&api_key=58d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe
+        - url: http://192.168.2.11:8080/ors/routes?coordinates=13.404954,52.52000659999999%7C11.5819806,48.1351253&elevation=false&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en&options=%7B%7D&preference=fastest&profile=driving-car&units=m&api_key=58d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe
           label: driving-500-Berlin-Munich
 
 reporting:
