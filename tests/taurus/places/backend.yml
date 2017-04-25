@@ -7,9 +7,9 @@ execution:
 
 scenarios:
   places:
-    default-address: http://192.168.2.11:8080/ors
+    default-address: http://192.168.2.11:8080
     requests:
-        - url: '/locations?'
+        - url: '/ors/locations?'
           label: places
           method: POST
           headers: 
