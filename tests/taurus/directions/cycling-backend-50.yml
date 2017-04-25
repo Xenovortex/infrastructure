@@ -1,0 +1,16 @@
+---
+execution:
+- concurrency: 200
+  ramp-up: 1m
+  hold-for: 10m
+  scenario: cycling
+
+scenarios:
+  cycling:
+    requests:
+        - url: http://192.168.2.11:8080/ors/routes?coordinates=8.4036527,49.0068901%7C8.6724335,49.3987524&elevation=false&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en&options=%7B%7D&preference=fastest&profile=cycling-regular&units=m&api_key=58d904a497c67e00015b45fc7e9cb57ec548435a7641bdf6dc3f4cbe
+          label: cycling-50-Karlsruhe-Heidelberg
+
+reporting:
+    - module: blazemeter
+      report-name: OpenRouteService Directions API Concurrency Test
