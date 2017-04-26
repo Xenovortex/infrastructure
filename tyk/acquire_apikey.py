@@ -42,14 +42,13 @@ resp = requests.post(
     headers=tyk_admin_headers)
 
 key_file_name = "ors_apikey.txt"
+json_response = resp.json()
 if resp.status_code == 200:
     print("Successfully got a new api key for openrouteservice.org")
-    json_response = resp.json()
-    print("raw response: " + json_response)
     with open(key_file_name, 'w') as key_file:
         key_file.write(json_response["key"])
     print("Wrote the new API key to ors_apikey.txt file")
     print("The key will be expired in 24 hours")
 else:
     print("Failed to fetch the new key.")
-    print("raw response: " + resp.json())
+print("Raw response from tyk gateway: " + json.dumps(json_response)
