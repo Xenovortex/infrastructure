@@ -23,24 +23,24 @@ tyk_token_session = {
     "expires": int(time.time()) + expire_span,
     "quota_max": -1,
     "access_rights": {
-        "34349e63a29a4c8d7faeea856548039a": {
-            "api_id": "34349e63a29a4c8d7faeea856548039a",
-            "api_name": "Places",
+        "e4acb8c31e3f4f7871b141032852d70f": {
+            "api_id": "e4acb8c31e3f4f7871b141032852d70f",
+            "api_name": "GeocodingForPublic",
             "versions": ["Default"]
         },
-        "60b3f4b7a26d45c76f87d96a4c0b2113": {
-            "api_id": "60b3f4b7a26d45c76f87d96a4c0b2113",
-            "api_name": "Geocoding",
+        "a2b83ebce63a457a5ab2d2b21515ac90": {
+            "api_id": "a2b83ebce63a457a5ab2d2b21515ac90",
+            "api_name": "PlacesForPublic",
             "versions": ["Default"]
         },
-        "490caaed0d7a4db272cbf1c569835fb1": {
-            "api_id": "490caaed0d7a4db272cbf1c569835fb1",
-            "api_name": "Isochrones",
+        "b53fd189c9a84dc346e6174fe0357fa5": {
+            "api_id": "b53fd189c9a84dc346e6174fe0357fa5",
+            "api_name": "IsochronesForPublic",
             "versions": ["Default"]
         },
-        "d5b961bdf73d46cd5d8e6dfd194365f4": {
-            "api_id": "d5b961bdf73d46cd5d8e6dfd194365f4",
-            "api_name": "Directions",
+        "c1ba6b919d8d49027ff77093ce7cfab7": {
+            "api_id": "c1ba6b919d8d49027ff77093ce7cfab7",
+            "api_name": "DirectionsForPublic",
             "versions": ["Default"]
         }
     },
