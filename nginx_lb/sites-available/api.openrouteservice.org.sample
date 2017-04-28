@@ -9,7 +9,22 @@ upstream api-gateway {
         server 192.168.2.18:8080;
 }
 
-limit_req_zone $binary_remote_addr zone=public:10m rate=30r/m;
+upstream backend-ors-gateway {
+        server 127.0.0.1:19999;
+        keepalive 64;
+}
+
+upstream backend-ors-gateway-worker {
+        server 192.168.2.18:19999;
+        keepalive 64;
+}
+
+upstream backend-ors-sesame {
+        server 192.168.2.11:19999;
+        keepalive 64;
+}
+
+limit_req_zone $binary_remote_addr zone=public:32m rate=120r/m;
 
 server {
 	listen 443 ssl http2;
@@ -43,6 +58,37 @@ server {
 		try_files $uri $uri/ =404;
 	}
 
+        # make sure there is a trailing slash at the browser
+        # or the URLs will be wrong
+        location ~ /netdata/(?<behost>.*)/(?<ndpath>.*) {
+                # allow anyone from the University
+                allow 129.206.0.0/16;
+                # drop rest of the world
+                deny all;
+		proxy_set_header X-Forwarded-Host $host;
+		proxy_set_header X-Forwarded-Server $host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_http_version 1.1;
+		proxy_pass_request_headers on;
+		proxy_set_header Connection "keep-alive";
+		proxy_store off;
+		proxy_pass http://backend-$behost/$ndpath$is_args$args;
+
+		gzip on;
+		gzip_proxied any;
+		gzip_types *;
+	}
+
+	# make sure there is a trailing slash at the browser
+	# or the URLs will be wrong
+	location ~ /netdata/(?<behost>.*) {
+                # allow anyone from the University
+                allow 129.206.0.0/16;
+                # drop rest of the world
+                deny all;
+	        return 301 /netdata/$behost/;
+	}
+
 	location /search {
 		return 444;
 	}
@@ -68,13 +114,13 @@ server {
 	}
 	
 	location /pdirections {
-                limit_req zone=public burst=10;
+                limit_req zone=public burst=5;
 		proxy_pass http://api-gateway/pdirections;
 		proxy_read_timeout 30s;
 	}
 
 	location /pgeocoding {
-                limit_req zone=public burst=10;
+                limit_req zone=public burst=5;
 		proxy_pass http://api-gateway/pgeocoding;
 		proxy_read_timeout 30s;
 	}
