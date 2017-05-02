@@ -44,7 +44,8 @@ tyk_token_session = {
             "versions": ["Default"]
         }
     },
-    "meta_data": {}
+    "meta_data": {},
+    "alias": "webclient@openrouteservice.org"
 }
 
 tyk_dashboard_apikey_url = "http://admin.cloud.tyk.io/api/keys"
