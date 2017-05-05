@@ -29,7 +29,8 @@ limit_req_status 429;
 
 server {
         # for rsyslog and piwik
-        access_log   syslog:server=unix:/var/cache/nginx/access.socket,facility=local0 piwik;
+        access_log syslog:server=unix:/var/cache/nginx/access.socket,facility=local0 piwik;
+        access_log /var/log/nginx/access.log;
 
         # SSL
 	listen 443 ssl http2;
