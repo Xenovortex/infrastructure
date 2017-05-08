@@ -1,6 +1,6 @@
 #!/bin/sh
 
 echo "${@}" | /home/ubuntu/projects/piwik-log-analytics/import_logs.py \
- --url=https://korona.geog.uni-heidelberg.de/stats/piwik.php --token-auth=85df4e72fb4c1b403b20e6a3d9a77604 \
+ --url=http://192.168.2.19:2322/piwik/ --token-auth=8b0a7c8dcc6049ece9c28ced34771b5b \
  --enable-http-errors --enable-http-redirects --enable-static --enable-bots \
- --idsite=1 --recorders=4 --log-format-name=nginx_json -
+ --idsite=2 --recorders=4 --log-format-name=nginx_json -
