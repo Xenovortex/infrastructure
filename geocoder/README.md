@@ -1,13 +1,13 @@
-#Setting up elastic search
+# Setting up elastic search
 
-##Initial Server Setup
-###Allowing Internet Connection
+## Initial Server Setup
+### Allowing Internet Connection
 
-On new server instances from HeiCloud, you need to enable external internet connection. For that add the following lines to the config file found at ´/etc/network/interfaces.d/50-cloud-init.cfg´
-´´´
+On new server instances from HeiCloud, you need to enable external internet connection. For that add the following lines to the config file found at /etc/network/interfaces.d/50-cloud-init.cfg
+
 	dns-nameservers 8.8.8.8 8.8.4.4
 	dns-search google.com
-´´´
+
 after checging you need to restart the network interface, either via a reboot or using the command
 
 	sudo ifdown ens3 && sudo ifup ens3
