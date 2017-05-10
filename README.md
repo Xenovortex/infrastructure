@@ -1,9 +1,11 @@
-# Configurations for OpenRouteService API Gateway
+# Configurations for OpenRouteService Infrastructure
 
-For the moment, we use [Kong](https://getkong.org) as the backend, and
-[Konga](https://github.com/pantsel/konga) as the admin dashboard. Kong is
-based on [Nginx](http://nginx.org/) and [OpenResty](https://openresty.org). And that's the reason why it is very flexible,
-extensible and customizible. 
+For the moment, we use [tyk](https://tyk.io) as the API gateway, and
+subscribe its [hybrid solution](https://tyk.io/hybrid-api-management/) solution. 
 
-We use this repo to keep track of the configs, scripts and documents for the ORS API
-Gateway.
+We use this repo to keep track of the configs, scripts and documents for all the ORS infrastructure including:
+
+- API gateway
+- Geocoding
+- Load/performance tests
+- Log analysis/filtering
