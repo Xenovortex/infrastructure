@@ -1,6 +1,13 @@
-# Setting up elastic search
+Setting up Pelias to run comprises of several stages. These are
+1. Seting up the servers
+2. Installing ElasticSearch onto a cluster
+3. Setting up the ElasticSearch server environments for Pelias optimisation
+4. Downloading and setting up the Pelias modules
+5. Downloading and importing data into the ElasticSearch database
 
 ## Initial Server Setup
+On any new servers from the HeiCloud, a few initial setup processes are needed.
+
 ### Allowing Internet Connection
 
 On new server instances from HeiCloud, you need to enable external internet connection. For that add the following lines to the config file found at /etc/network/interfaces.d/50-cloud-init.cfg
@@ -23,6 +30,8 @@ to see if it is installed. If not, then you need to install an appropriate versi
 	sudo apt-get install default-jdk
 
 ## Installing ElasticSearch
+
+ElasticSearch needs installing on each of the servers that will become nodes in the cluster.
 
 Though ElasticSearch is now at version 5.x, Pelias only supports version 2.4.x and so you need to make sure that that is the version that you install. You can either install from a tar file, or using apt-get. All installation instructions can be found at https://www.elastic.co/guide/en/elasticsearch/reference/2.4/_installation.html. 
 
@@ -65,7 +74,7 @@ which should give you a response similar to
 	}
 
 
-Setting Up ElasticSearch
+## Setting Up ElasticSearch
 
 ElasticSearch normally works straight out of the box, but there are several things that need changing on the server and within the ElasticSearch configurations for it to work properly with Pelias. The first thing to change is the number of open file descriptors available on the system. by default this is very low (around 1000) and should be increased. To check how many are available, enter
 	
@@ -199,8 +208,9 @@ Once these are installed, you need to get the config data. All of the pelias mod
                     "port": 9200
                 }, {
                     "host": "192.168.2.39",
-                "port": 9200
-            }]
+                    "port": 9200
+                }
+            ]
         }, 
         "elasticsearch": {
             "settings": {
@@ -247,7 +257,10 @@ Once these are installed, you need to get the config data. All of the pelias mod
 
 Obviously, the elasticsearch settings and datapaths/filenames should be modified to reflect actual values.
 
-WhosOnFirst
+## Downloading and Importing Data
+Once the modules are ready on the importer server, relevant data for each module needs downloading and then the module can import this into the ES database. Though technically multiple imports can be done at once, this can put a lot of strain on the ES cluster and so it may be better to stick to one at a time until it is fully tested.
+
+### WhosOnFirst
 
 The main reason for using WhosOnFirst is to obtain administration areas and postcodes, and also to associate this information to other features imported (i.e. OSM data).
 
@@ -261,4 +274,25 @@ When the process has completed, check to see if there were any errors with downl
 	tar -xjf wof-postalcode-nl-latest-bundle.tar.bz2 --strip-components=1 --exclude=README.txt -C /home/pelias/data/whosonfirst
 	mv /home/pelias/data/whosonfirst/wof-postalcode-nl-latest.csv /home/pelias/data/whosonfirst/meta
 	rm wof-postalcode-nl-latest-bundle.tar.bz2
+	
+Once all the data has been downloaded, it can be used by other importaers to add the administrative boundary information to features. We will here also import the data into the ES database so that it is avilable from searches. To do that, you simply need to run the command 
+    
+    npm start
+
+which will begin the import process. It is better to run this as a background process so that closing the connection does not stop the process. The best way of doing this is to create a .service file which can then be run using the systemctl command. For the whosonfirst import, the .service file should be along the lines of
+
+    [Service]
+    [Needs]
+
+and added to the /etc/system/systemd/ folder. Once added, reload the daemon using
+
+    sudo systemctl daemon-reload
+
+and then start the service via
+
+    sudo systemctl restart pelias-whosonfirst-importer.service
+    
+A similar import process should be created for each of the import modules used in Pelias.
+
+
 	
