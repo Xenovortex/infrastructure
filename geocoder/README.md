@@ -12,7 +12,7 @@ after checging you need to restart the network interface, either via a reboot or
 
 	sudo ifdown ens3 && sudo ifup ens3
 
-###Install Java
+### Install Java
 
 ElasticSearch requires at least Java 7 to run, so you need to make sure that this is installed on the system. run the command 
 	
@@ -22,7 +22,7 @@ to see if it is installed. If not, then you need to install an appropriate versi
 
 	sudo apt-get install default-jdk
 
-##Installing ElasticSearch
+## Installing ElasticSearch
 
 Though ElasticSearch is now at version 5.x, Pelias only supports version 2.4.x and so you need to make sure that that is the version that you install. You can either install from a tar file, or using apt-get. All installation instructions can be found at https://www.elastic.co/guide/en/elasticsearch/reference/2.4/_installation.html. 
 
@@ -148,25 +148,14 @@ The final item needed for pelias is a unicode plugin for elasticsearch. This is 
 
 	sudo bin/plugin install analysis-icu
 
-To make sure that you do not run into threading issues when indexing data, you should set the maximum number of indexing threadpools from the default 20. This is done by sending the following request to one of the ES nodes
-
-	curl -XPUT 192.168.2.36:9200/_cluster/settings -d '{
-	  "persistent": {
-	    "
-
-
-
-Installing Monitoring software (Marvel)
+### Installing Monitoring software (Marvel)
 
 Marvel is a plugin for elasticsearch that allows you to view the status of the cluster. To install it, navigate to the ES home directory (/usr/share/elasticsearch) and run the commands
 
 	sudo bin/plugin install license
 	sudo bin/plugin install marvel-agent
 
-
-
-
-Pelias
+## Installing Pelias
 
 Pelias is a modular geocoder running through node.js. All modules for pelias are downloaded from github and run via npm commands.
 
@@ -197,64 +186,63 @@ The first stage is to download the repositories for the components from github. 
 Once these are installed, you need to get the config data. All of the pelias modules get settings from a pelias.json file that is housed in the home directory of the user running the process. The pelias.json config file should contain
 
 {
-  "esclient": {
-    "hosts": [
-      {
-        "host":	"192.168.2.36",
-        "port":	9200
-      }, {
-        "host": "192.168.2.37",
-        "port": 9200
-      }, {
-        "host": "192.168.2.38",
-        "port": 9200
-      }, {
-        "host": "192.168.2.39",
-        "port": 9200
-      }
-    ]
-  }, 
-  "elasticsearch": {
-    "settings": {
-      "index": {
-        "number_of_replicas": "0",
-        "number_of_shards": "24",
-        "refresh_interval": "1m"
-      }
+    "esclient": {
+        "hosts": [
+            {
+                "host":	"192.168.2.36",
+                "port":	9200
+            }, {
+                "host": "192.168.2.37",
+                "port": 9200
+            }, {
+                "host": "192.168.2.38",
+                "port": 9200
+            }, {
+                "host": "192.168.2.39",
+            "port": 9200
+        }]
+    }, 
+    "elasticsearch": {
+        "settings": {
+        "index": {
+            "number_of_replicas": "0",
+            "number_of_shards": "24",
+            "refresh_interval": "1m"
+        }
+        }
+     },
+    "schema": {
+        "indexName": "pelias"
+    },
+    "api": {
+        "textAnalyzer": "libpostal",
+        "indexName": "pelias",
+        "version": "1.0",
+        "host": "129.206.7.154"
+    },
+    "imports": {
+        "adminLookup": {
+            "enabled": true,
+            "maxConcurrentRequests": 1000
+        },
+        "openstreetmap": {
+            "datapath": "/home/pelias/data/openstreetmap",
+            "leveldbpath": "/home/pelias/tmp/osm",
+            "import": [
+                { "filename": "planet.osm.pbf" }
+            ]
+        },
+        "whosonfirst": {
+            "datapath": "/home/pelias/data/whosonfirst",
+            "importVenues": false,
+            "importPostalcodes": true,
+            "missingFilesAreFatal: true
+        },
+        "polyline": {
+            "datapath": "/home/pelias/data/polylines",
+            "files": ["road_network.polylines"]
+        }
     }
-  },
-  "schema": {
-    "indexName": "pelias"
-  },
-  "api": {
-    "textAnalyzer": "libpostal",
-    "indexName": "pelias",
-    "version": "1.0",
-    "host": "129.206.7.154"
-  },
-  "imports": {
-    "adminLookup": {
-      "enabled": true,
-      "maxConcurrentRequests": 1000
-    },
-    "openstreetmap": {
-      "datapath": "/home/pelias/data/openstreetmap",
-      "leveldbpath": "/home/pelias/tmp/osm",
-      "import": [
-        { "filename": "planet.osm.pbf" }
-      ]
-    },
-    "whosonfirst": {
-      "datapath": "/home/pelias/data/whosonfirst",
-      "importVenues": false,
-      "importPostalcodes": true,
-      "missingFilesAreFatal: true
-    },
-    "polyline": {
-      "datapath": "/home/pelias/data/polylines",
-      "files": ["road_network.polylines"]
-    }
-  }
 }
 
 Obviously, the elasticsearch settings and datapaths/filenames should be modified to reflect actual values.
