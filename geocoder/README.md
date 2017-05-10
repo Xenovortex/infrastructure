@@ -185,65 +185,65 @@ The first stage is to download the repositories for the components from github. 
 
 Once these are installed, you need to get the config data. All of the pelias modules get settings from a pelias.json file that is housed in the home directory of the user running the process. The pelias.json config file should contain
 
-{
-    "esclient": {
-        "hosts": [
-            {
-                "host":	"192.168.2.36",
-                "port":	9200
-            }, {
-                "host": "192.168.2.37",
+    {
+        "esclient": {
+            "hosts": [
+                {
+                    "host":	"192.168.2.36",
+                    "port":	9200
+                }, {
+                    "host": "192.168.2.37",
+                    "port": 9200
+                }, {
+                    "host": "192.168.2.38",
+                    "port": 9200
+                }, {
+                    "host": "192.168.2.39",
                 "port": 9200
-            }, {
-                "host": "192.168.2.38",
-                "port": 9200
-            }, {
-                "host": "192.168.2.39",
-            "port": 9200
-        }]
-    }, 
-    "elasticsearch": {
-        "settings": {
-        "index": {
-            "number_of_replicas": "0",
-            "number_of_shards": "24",
-            "refresh_interval": "1m"
-        }
-        }
-     },
-    "schema": {
-        "indexName": "pelias"
-    },
-    "api": {
-        "textAnalyzer": "libpostal",
-        "indexName": "pelias",
-        "version": "1.0",
-        "host": "129.206.7.154"
-    },
-    "imports": {
-        "adminLookup": {
-            "enabled": true,
-            "maxConcurrentRequests": 1000
+            }]
+        }, 
+        "elasticsearch": {
+            "settings": {
+            "index": {
+                "number_of_replicas": "0",
+                "number_of_shards": "24",
+                "refresh_interval": "1m"
+            }
+            }
+         },
+        "schema": {
+            "indexName": "pelias"
         },
-        "openstreetmap": {
-            "datapath": "/home/pelias/data/openstreetmap",
-            "leveldbpath": "/home/pelias/tmp/osm",
-            "import": [
-                { "filename": "planet.osm.pbf" }
-            ]
+        "api": {
+            "textAnalyzer": "libpostal",
+            "indexName": "pelias",
+            "version": "1.0",
+            "host": "129.206.7.154"
         },
-        "whosonfirst": {
-            "datapath": "/home/pelias/data/whosonfirst",
-            "importVenues": false,
-            "importPostalcodes": true,
-            "missingFilesAreFatal: true
-        },
-        "polyline": {
-            "datapath": "/home/pelias/data/polylines",
-            "files": ["road_network.polylines"]
+        "imports": {
+            "adminLookup": {
+                "enabled": true,
+                "maxConcurrentRequests": 1000
+            },
+            "openstreetmap": {
+                "datapath": "/home/pelias/data/openstreetmap",
+                "leveldbpath": "/home/pelias/tmp/osm",
+                "import": [
+                    { "filename": "planet.osm.pbf" }
+                ]
+            },
+            "whosonfirst": {
+                "datapath": "/home/pelias/data/whosonfirst",
+                "importVenues": false,
+                "importPostalcodes": true,
+                "missingFilesAreFatal: true
+            },
+            "polyline": {
+                "datapath": "/home/pelias/data/polylines",
+                "files": ["road_network.polylines"]
+            }
         }
     }
-}
 
 Obviously, the elasticsearch settings and datapaths/filenames should be modified to reflect actual values.
 
