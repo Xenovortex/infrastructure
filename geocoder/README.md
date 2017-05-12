@@ -283,8 +283,18 @@ Once all the data has been downloaded, it can be used by other importaers to add
 
 which will begin the import process. It is better to run this as a background process so that closing the connection does not stop the process. The best way of doing this is to create a .service file which can then be run using the systemctl command. For the whosonfirst import, the .service file should be along the lines of
 
+    [Unit]
+    Description=Pelias WhosOnFirst Importer
+    
     [Service]
-    [Needs]
+    WorkingDirectory=/home/pelias/whosonfirst
+    ExecStart=/usr/bin/npm start
+    Environment=NODE_ENV=production
+    User=pelias
+    Restart=no
+    
+    [Install]
+    WantedBy=multi-user.target
 
 and added to the /etc/system/systemd/ folder. Once added, reload the daemon using
 
@@ -296,5 +306,20 @@ and then start the service via
     
 A similar import process should be created for each of the import modules used in Pelias.
 
+### Polylines
 
+Polylines data is used to import streets into the Pelias database. Further instructions for installation can be found at https://github.com/pelias/polylines.
+
+The first thing to do for importaing polylines is to download the data. A full planet database can be obtained from http://missinglink.files.s3.amazonaws.com/road_network.gz and measure around 1.5Gb. Once downloaded, extract it to the location defined by the `datapath` parameter under `polylines` within the pelias.json config file. The command used for extraction is
+
+    gunzip road_network.gz
+    mv road_network road_network.polylines
+
+Next, create a service file similar to the whosonfirst service, and follow the same steps to activate and run it.
+
+### OpenStreetMap
+
+To import the OSM data into Pelias you first need to download the planet file. See http://wiki.openstreetmap.org/wiki/Planet.osm#Downloading for a list of possible download locations, and then wget the file into the location defined by the `datapath` parameter under `openstreetmap` within the pelias.json config file.
+
+Again, create the service file as with other importers and start it to begin the import process
 	
