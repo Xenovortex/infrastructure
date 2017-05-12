@@ -87,7 +87,7 @@ If this is below 65536, it is likely not going to be enough for ES. To update th
 	root	soft	nofile	65536
 	root	hard	nofile	65536
 
-Now you need to tell Ubunut to use these values whenever a user logs in. in the files /etc/pam.d/common-session and /etc/pam.d/common-session-noninteractive you need to make sure that the following line exists
+Now you need to tell Ubuntu to use these values whenever a user logs in. in the files /etc/pam.d/common-session and /etc/pam.d/common-session-noninteractive you need to make sure that the following line exists
 
 	session	required	pam_limits.so
 
@@ -96,10 +96,6 @@ After changing, log out of the server and then log back in to apply changes. run
 ES also uses mmapped files, and so you need to edit the /etc/sysctl.conf file to add the following line
 
 	vm.max_map_count = 262144
-
-ES uses a lot of heap storage for handling indexes and searching, and by default it comes set to 1GB which is massively too low. This is increased using an environment variable on the system which ES calls when the service starts. As a rule of thumb, you need to assign no more than half of the available RAM to ES. To create the setting, edit the /etc/environment file and add the following line
-
-	ES_HEAP_SIZE=16g
 
 A final system setting that needs to be updated is to stop the system performing memory swapping as this massively slows down performance. This is doen permanently by adding the following line to the /etc/systctl.conf file
 
@@ -157,6 +153,12 @@ The final item needed for pelias is a unicode plugin for elasticsearch. This is 
 
 	sudo bin/plugin install analysis-icu
 
+ES uses a lot of heap storage for handling indexes and searching, and by default it comes set to 1GB which is massively too low. Though instructions for installation from ElasticSearch tell you to set an environment variable for altering the heap size, this does not work. Instead you need to edit the settings file at /etc/default/elasticsearch and add the line
+
+	ES_HEAP_SIZE=16g
+
+After that, restart the node and the new heap size should take effect.	
+	
 ### Installing Monitoring software (Marvel)
 
 Marvel is a plugin for elasticsearch that allows you to view the status of the cluster. To install it, navigate to the ES home directory (/usr/share/elasticsearch) and run the commands
