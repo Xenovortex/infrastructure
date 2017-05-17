@@ -1,0 +1,21 @@
+{
+  "file_list": [
+    "directions_guard.py"
+  ],
+  "custom_middleware": {
+    "pre": [
+      {
+        "name": "MyPreMiddleware",
+        "require_session": false
+      }
+    ],
+    "post": [
+    ],
+    "auth_check": {
+      "name": "MyAuthMiddleware"
+    },
+    "driver": "python"
+  },
+  "checksum": "the_checksum",
+  "signature": "the_signature"
+}
