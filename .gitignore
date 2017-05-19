@@ -5,3 +5,5 @@ ors_api_db_bak.sh
 __pycache__/
 venv/
 contacts.json
+*.pyc
+*.log
