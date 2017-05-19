@@ -1,0 +1,14 @@
+{
+    "sender": {
+        "smtp": "YOUR_SMTP_SERVER",
+        "port": 465,
+        "email": "SENDER_EMAIL_ADDR",
+        "password": "EMAIL_LOGIN_PASSWORD"
+    },
+    "receivers": [
+        {
+            "name": "Lu Liu",
+            "email": "lu.liu@uni-heidelberg.de"
+        }
+    ]
+}
