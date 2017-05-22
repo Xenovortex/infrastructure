@@ -34,6 +34,7 @@ if os.path.exists(ORS_GATEWAY_EVENT_HANDLER_DIR) \
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from string import Template
 from flask import request
 from socket import error as socket_err
 
@@ -52,16 +53,27 @@ def gateway_events_handler():
     logger.info(json.dumps(event_body))
     if request.headers['x-auth'] == 'ors-tyk-gateway':
         msg_subject = "ORS Gateway Event: " + str(event_body['event'])
+        msg_template = read_template('event_message_template.txt')
         with open('contacts.json') as cf:
             contacts = json.load(cf)
         for r in contacts['receivers']:
-            send_mail(contacts['sender']['smtp'], contacts['sender']['port'],
-                      contacts['sender']['email'],
-                      contacts['sender']['password'], r['email'], msg_subject,
-                      json.dumps(event_body))
+            send_mail(
+                contacts['sender']['smtp'],
+                contacts['sender']['port'],
+                contacts['sender']['email'],
+                contacts['sender']['password'],
+                r['email'],
+                msg_subject,
+                msg_template(
+                    NAME=r['name'], EVENT_CONTENT=format_event(event_body)))
         return "Alert e-mails have been sent"
     return ("Unauthorised request", 401, {})
 
+def format_event(body):
+    formatted_msg = ""
+    for k,v in body.items():
+        formatted_msg += (str(k) + ': ' + str(v) + '\n')
+    return formatted_msg
 
 def send_mail(smtp_host, smtp_port, from_addr, password, to_addr, msg_subject,
               msg_text):
@@ -83,13 +95,23 @@ def send_mail(smtp_host, smtp_port, from_addr, password, to_addr, msg_subject,
         logger.info("Message: " + msg_subject + " had recipient(s): " +
                     to_addr)
     except socket_err as e:
-        logger.error("Could not connect to " + smtp_host + ":" + str(smtp_port) +
-                     " - is it listening / up?")
+        logger.error("Could not connect to " + smtp_host + ":" + str(smtp_port)
+                     + " - is it listening / up?")
     except:
         logger.error("Unknown error:" + sys.exc_info()[0])
     finally:
         if s != None:
             s.quit()
+
+
+def read_template(filename):
+    """
+    Returns a Template object comprising the contents of the
+    file specified by filename.
+    """
+    with open(filename, 'r', encoding='utf-8') as template_file:
+        template_file_content = template_file.read()
+    return Template(template_file_content)
 
 
 if __name__ == '__main__':
