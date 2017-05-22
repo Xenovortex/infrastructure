@@ -1,11 +1,11 @@
 
-Dear $(NAME),
+Dear ${NAME},
 
 something happened on ORS API service infrastructure. See the details below.
 
 ---- Event details ----
 
-$(EVENT_CONTENT)
+${EVENT_CONTENT}
 
 ---- End of details ----
 
