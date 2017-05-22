@@ -43,7 +43,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def gateway_events_handler():
     logger.info("Get POST request from tyk gateway. Event body: ")
-    event_body = request.get_json()
+    event_body = request.get_json(force=True)
     logger.info(json.dumps(event_body))
     if request.headers['x-auth'] == 'ors-tyk-gateway':
         msg_subject = "ORS Gateway Event: " + str(event_body['event'])
