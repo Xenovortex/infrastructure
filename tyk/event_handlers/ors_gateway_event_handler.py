@@ -39,18 +39,18 @@ from flask import request
 from socket import error as socket_err
 
 app = Flask(__name__)
-with open('ors_api.conf') as cf:
+with open('ors_api_conf.json') as cf:
     ors_api_conf = json.load(cf)
 
 
 @app.route('/', methods=['POST'])
 def gateway_events_handler():
-    logger.info("Get POST request from tyk gateway. Event body: ")
+    logger.info("Get POST request from tyk gateway.")
     event_body = request.get_json(force=True)
     if event_body == None:
-        logger.error("Empty body in the request")
-        return ("Empty body in the request", 400, {})
-    logger.info(json.dumps(event_body))
+        logger.error("Request body in the request has problems")
+        return ("Bad request content", 400, {})
+    logger.info("Event body: " + json.dumps(event_body))
     if request.headers['x-auth'] == 'ors-tyk-gateway':
         msg_subject = "ORS Gateway Event: " + str(event_body['event'])
         msg_template = read_template('event_message_template.txt')
@@ -64,7 +64,7 @@ def gateway_events_handler():
                 contacts['sender']['password'],
                 r['email'],
                 msg_subject,
-                msg_template(
+                msg_template.substitute(
                     NAME=r['name'], EVENT_CONTENT=format_event(event_body)))
         return "Alert e-mails have been sent"
     return ("Unauthorised request", 401, {})
@@ -109,7 +109,7 @@ def read_template(filename):
     Returns a Template object comprising the contents of the
     file specified by filename.
     """
-    with open(filename, 'r', encoding='utf-8') as template_file:
+    with open(filename, 'r') as template_file:
         template_file_content = template_file.read()
     return Template(template_file_content)
 
