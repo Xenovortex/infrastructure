@@ -1,0 +1,16 @@
+
+Dear $(NAME),
+
+something happened on ORS API service infrastructure. See the details below.
+
+---- Event details ----
+
+$(EVENT_CONTENT)
+
+---- End of details ----
+
+This is automatically sent by ors-sentinel because it has received event POST request from ORS API gateway. 
+
+Regards,
+
+ORS team
