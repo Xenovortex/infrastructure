@@ -38,12 +38,17 @@ from flask import request
 from socket import error as socket_err
 
 app = Flask(__name__)
+with open('ors_api.conf') as cf:
+    ors_api_conf = json.load(cf)
 
 
 @app.route('/', methods=['POST'])
 def gateway_events_handler():
     logger.info("Get POST request from tyk gateway. Event body: ")
     event_body = request.get_json(force=True)
+    if event_body == None:
+        logger.error("Empty body in the request")
+        return ("Empty body in the request", 400, {})
     logger.info(json.dumps(event_body))
     if request.headers['x-auth'] == 'ors-tyk-gateway':
         msg_subject = "ORS Gateway Event: " + str(event_body['event'])
