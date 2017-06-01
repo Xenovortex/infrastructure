@@ -1,13 +1,16 @@
 {
     "file_list": [
-        "directions_guard.py"
+        "directions_guard.py",
+        "ors_api_conf.json",
+        "rules.json"
     ],
     "custom_middleware": {
         "pre": [],
-        "post": [],
-        "auth_check": {
-            "name": "query_params_validator"
-        },
+        "auth_check": {},
+        "post": [{
+            "name": "query_params_validator",
+            "require_session": true
+        }],
         "driver": "python"
     },
     "checksum": "",
