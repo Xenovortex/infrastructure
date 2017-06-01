@@ -3,7 +3,9 @@
         "58e24c3a5ba07a000154a104": {
             "name": "Internal test",
             "profiles": [],
-            "distance-limit": {}
+            "distance-limit": {
+                "foot-walking": 30
+            }
         },
         "58e24beb24e91400010dd19f": {
             "name": "Free",
