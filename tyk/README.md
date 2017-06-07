@@ -37,8 +37,8 @@ in round-robin mode.
 Tyk gateway will check their health status by
 accessing the `http://{ors-backend-internal-IP-address}:8080/ors/health`
 regularly, which is called [uptime tests](https://tyk.io/tyk-documentation/ensure-high-availability/uptime-tests/) 
-in tyk. If any response instead of http status `200 OK` is received, a `HOST
-DOWN` event will be triggered, then the event handling process will be launched
+in tyk. If any response instead of http status `200 OK` is received, a `HOST DOWN` 
+event will be triggered, then the event handling process will be launched
 as described in the "Event handlers" section below.
 
 ### Configuration and logging analytics
