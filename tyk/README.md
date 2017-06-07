@@ -28,6 +28,19 @@ rate limits are defined in tyk gateway.
 The incomming http requests will be balanced proxies to two tyk gateways
 running in docker containers on `ors-gateway` and `ors-gateway-worker`.
 
+### API level load-balancing
+
+For each API, two backend servers, i.e. `ors-sesame` and `ors-rice` are added in 
+the load-balancing pool. Incoming requests will be sent to these two backends
+in round-robin mode.
+
+Tyk gateway will check their health status by
+accessing the `http://{ors-backend-internal-IP-address}:8080/ors/health`
+regularly, which is called [uptime tests](https://tyk.io/tyk-documentation/ensure-high-availability/uptime-tests/) 
+in tyk. If any response instead of http status `200 OK` is received, a `HOST
+DOWN` event will be triggered, then the event handling process will be launched
+as described in the "Event handlers" section below.
+
 ### Configuration and logging analytics
 
 The config file is located at
@@ -86,7 +99,7 @@ effect. As the official document says, the tyk gateways running in our private c
 communicate with the dashboard every 30 seconds. In practice, however, we found
 that this syncing strategy has problems from time to time. When this occurs,
 the simplest way to solve it is to restart the container **ONE BY ONE (to
-ensure there is at least one tyk gateway node alive** on both nodes with the 
+ensure there is at least one tyk gateway node alive)** on both nodes with the 
 following command (no privilege needed).
 
     docker container restart tyk_hybrid
