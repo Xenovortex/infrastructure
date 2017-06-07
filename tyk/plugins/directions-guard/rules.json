@@ -1,0 +1,39 @@
+{
+    "policies": {
+        "58e24c3a5ba07a000154a104": {
+            "name": "Internal test",
+            "profiles": [],
+            "distance-limit": {
+                "foot-walking": 30
+            }
+        },
+        "58e24beb24e91400010dd19f": {
+            "name": "Free",
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
+            "distance-limit": {
+                "driving-car": 500,
+                "foot-walking": 100,
+                "foot-hiking": 100
+            },
+            "geoextent-limit": {
+                "minx": -180.0,
+                "miny": -90.0,
+                "maxx": 180.0,
+                "maxy": 90.0
+            }
+        },
+        "58eb8948d38b690001fdecae": {
+            "name": "Basic"
+        },
+        "58ec90ce1ae10f00016c6a56": {
+            "name": "Standard"
+        },
+        "58ec91351ae10f00016c6a57": {
+            "name": "Premium"
+        },
+        "58f7c68adfed920001508b0f": {
+            "name": "OnlyForPublicInstance"
+        }
+    },
+    "keys": {}
+}

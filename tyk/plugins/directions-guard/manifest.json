@@ -1,21 +1,18 @@
 {
-  "file_list": [
-    "directions_guard.py"
-  ],
-  "custom_middleware": {
-    "pre": [
-      {
-        "name": "MyPreMiddleware",
-        "require_session": false
-      }
+    "file_list": [
+        "directions_guard.py",
+        "ors_api_conf.json",
+        "rules.json"
     ],
-    "post": [
-    ],
-    "auth_check": {
-      "name": "MyAuthMiddleware"
+    "custom_middleware": {
+        "pre": [],
+        "auth_check": {},
+        "post": [{
+            "name": "query_params_validator",
+            "require_session": true
+        }],
+        "driver": "python"
     },
-    "driver": "python"
-  },
-  "checksum": "the_checksum",
-  "signature": "the_signature"
+    "checksum": "",
+    "signature": ""
 }
