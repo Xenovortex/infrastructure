@@ -25,13 +25,14 @@ volumes by docker on launch. The former contains tomcat logging and the latter l
 
 ```webfrastructure/
 |-- dockerfiles
-|   `-- tomcat
-`-- tomcat
+|   '-- tomcat
+'-- tomcat
     |-- conf
     |-- data (created by container)
-    |   `-- graphs
+    |   '-- graphs
     |-- logs (created by container)
-    `-- ors-logs (created by container)```
+    '-- ors-logs (created by container)
+```
 
 ## Steps to run
 
