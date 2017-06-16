@@ -8,3 +8,4 @@ contacts.json
 *.pyc
 *.log
 *.zip
+.DS_Store
