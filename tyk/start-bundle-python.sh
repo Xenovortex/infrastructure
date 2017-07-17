@@ -69,6 +69,7 @@ docker run --restart always -v $cwd/confs:/etc/nginx/sites-enabled \
         -v $cwd/templates/default_webhook.json:/opt/tyk/templates/default_webhook.json \
         -v $cwd/bundles:/opt/tyk/middleware/bundles \
         -v $cwd/tyk_conf/patched-tyk.conf:/opt/tyk/tyk.conf \
+        -v $cwd/logs:/opt/tyk/logs \
         -p $PORT:$PORT \
         -p 80:80 \
         -e PORT=$PORT \
@@ -81,6 +82,8 @@ docker run --restart always -v $cwd/confs:/etc/nginx/sites-enabled \
         -e BINDSLUG=1 \
         -e TYKVERSION='-python' \
         -e TYK_GW_BUNDLEBASEURL='http://192.168.2.17:8081/api-plugins/' \
+        -e TYK_GW_UPTIMETESTS_CONFIG_TIMEWAIT=3 \
+        -e TYK_GW_UPTIMETESTS_CONFIG_FAILURETRIGGERSAMPLESIZE=3 \
         $CONTAINER
 
 # Add the following environment variable to disable the nginx service
