@@ -1,4 +1,4 @@
-from tyk.decorators import *
+from tyk.decorators import Hook
 from gateway import TykGateway as tyk
 from math import radians, cos, sin, asin, sqrt
 from functools import reduce
@@ -33,16 +33,6 @@ stats_log_formatter = '{remote_addr} - {remote_user} [{time_local}] "{request}" 
 stats_log_file = plugin_conf['stats-log-file']
 
 
-def get_distance_class(dist):
-    if (dist < dist_classes[0]):
-        return 1
-    if (dist >= dist_classes[-1]):
-        return len(dist_classes) + 1
-    for i, c in enumerate(dist_classes):
-        if (dist >= dist_classes[i] and dist < dist_classes[i + 1]):
-            return (i + 1)
-
-
 @Hook
 def query_params_validator(request, session, spec):
     if is_request_valid(request.object.params, session) is not True:
@@ -61,6 +51,19 @@ def query_params_validator(request, session, spec):
     with open(stats_log_file, 'w') as slf:
         slf.write(stats_log_formatter.format(**stats_log))
     return request, session
+
+
+def get_distance_class(dist):
+    """ Get which slot/class the @dist parameter falls in.
+        The slot/class range is defined in plugin_conf.json
+    """
+    if (dist < dist_classes[0]):
+        return 1
+    if (dist >= dist_classes[-1]):
+        return len(dist_classes) + 1
+    for i, c in enumerate(dist_classes):
+        if (dist >= dist_classes[i] and dist < dist_classes[i + 1]):
+            return (i + 1)
 
 
 def is_request_valid(queryparams, session):

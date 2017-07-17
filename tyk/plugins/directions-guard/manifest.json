@@ -2,6 +2,7 @@
     "file_list": [
         "directions_guard.py",
         "ors_api_conf.json",
+        "plugin_conf.json",
         "rules.json"
     ],
     "custom_middleware": {
