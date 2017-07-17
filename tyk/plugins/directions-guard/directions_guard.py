@@ -2,10 +2,14 @@ from tyk.decorators import *
 from gateway import TykGateway as tyk
 from math import radians, cos, sin, asin, sqrt
 from functools import reduce
+from time import gmtime, strftime
 import json
 import os
 
 cwd = os.path.dirname(os.path.realpath(__file__))
+with open(os.path.join(cwd, 'plugin_conf.json')) as pf:
+    plugin_conf = json.load(pf)
+
 with open(os.path.join(cwd, 'ors_api_conf.json')) as cf:
     ors_api_conf = json.load(cf)
 
@@ -13,13 +17,49 @@ with open(os.path.join(cwd, 'rules.json')) as rf:
     rules = json.load(rf)
 
 response_msg = ""
+dist_classes = plugin_conf['distance-classes']
+stats_log = {
+    'remote_addr': '',
+    'remote_user': '',
+    'time_local': strftime("%d/%b/%Y:%H:%M:%S +0000", gmtime()),
+    'request': '',
+    'status': '',
+    'body_bytes_sent': '',
+    'http_referer': '',
+    'http_user_agent': ''
+}
+stats_info = {'profile': '', 'estimated_distance': '', 'distance_class': ''}
+stats_log_formatter = '{remote_addr} - {remote_user} [{time_local}] "{request}" {status} {body_bytes_sent} "{http_referer}" "{http_user_agent}"\n'
+stats_log_file = plugin_conf['stats-log-file']
+
+
+def get_distance_class(dist):
+    if (dist < dist_classes[0]):
+        return 1
+    if (dist >= dist_classes[-1]):
+        return len(dist_classes) + 1
+    for i, c in enumerate(dist_classes):
+        if (dist >= dist_classes[i] and dist < dist_classes[i + 1]):
+            return (i + 1)
 
 
 @Hook
 def query_params_validator(request, session, spec):
     if is_request_valid(request.object.params, session) is not True:
+        request.object.return_overrides.headers[
+            'content-type'] = 'application/json'
+        request.object.return_overrides.headers['x-sender'] = 'ORS gateway'
         request.object.return_overrides.response_code = 464
-        request.object.return_overrides.response_error = response_msg
+        request.object.return_overrides.response_error = json.dumps({
+            'ORS gateway error': response_msg
+        })
+
+    stats_info['profile'] = request.object.params['profile']
+    stats_log['request'] = 'GET /{0}?{1} HTTP/2.0'.format(
+        plugin_conf['api-endpoint'], '&'.join(
+            ['%s=%s' % (str(k), str(v)) for (k, v) in stats_info.items()]))
+    with open(stats_log_file, 'w') as slf:
+        slf.write(stats_log_formatter.format(**stats_log))
     return request, session
 
 
@@ -43,6 +83,9 @@ def is_request_valid(queryparams, session):
             str(total_dist), 'info')
     tyk.log("[PLUGIN] [Directions Guard::post] Policy: " +
             ors_api_conf['policies'][session.apply_policy_id]['name'], 'info')
+    stats_info['estimated_distance'] = str(round(total_dist / 1000))
+    stats_info['distance_class'] = str(
+        get_distance_class(round(total_dist / 1000, 2)))
     if rules['policies'][session.apply_policy_id]['distance-limit'] and (
             total_dist > rules['policies'][session.apply_policy_id][
                 'distance-limit'][profile]):
