@@ -48,7 +48,7 @@ def query_params_validator(request, session, spec):
     stats_log['request'] = 'GET /{0}?{1} HTTP/2.0'.format(
         plugin_conf['api-endpoint'], '&'.join(
             ['%s=%s' % (str(k), str(v)) for (k, v) in stats_info.items()]))
-    with open(stats_log_file, 'w') as slf:
+    with open(stats_log_file, 'a+') as slf:
         slf.write(stats_log_formatter.format(**stats_log))
     return request, session
 
