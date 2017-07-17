@@ -86,12 +86,11 @@ def is_request_valid(queryparams, session):
             str(total_dist), 'info')
     tyk.log("[PLUGIN] [Directions Guard::post] Policy: " +
             ors_api_conf['policies'][session.apply_policy_id]['name'], 'info')
-    stats_info['estimated_distance'] = str(round(total_dist / 1000))
-    stats_info['distance_class'] = str(
-        get_distance_class(round(total_dist / 1000, 2)))
-    if rules['policies'][session.apply_policy_id]['distance-limit'] and (
-            total_dist > rules['policies'][session.apply_policy_id][
-                'distance-limit'][profile]):
+    stats_info['estimated_distance'] = str(round(total_dist))
+    stats_info['distance_class'] = str(get_distance_class(round(total_dist)))
+    if (rules['policies'][session.apply_policy_id]['total-distance-limit']
+        ) and (total_dist > rules['policies'][session.apply_policy_id][
+            'total-distance-limit'][profile]):
         response_msg = "Requested distance is too long for your API subscription"
         return False
     return True

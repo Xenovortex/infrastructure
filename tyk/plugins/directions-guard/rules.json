@@ -2,9 +2,19 @@
     "policies": {
         "58e24c3a5ba07a000154a104": {
             "name": "Internal test",
-            "profiles": [],
-            "distance-limit": {
-                "foot-walking": 30
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
+            "total-distance-limit": {
+                "foot-walking": 30,
+                "driving-car": 40,
+                "driving-hgv": 40,
+                "cycling-regular": 20,
+                "cycling-mountain": 20,
+                "cycling-road": 20,
+                "cycling-safe": 20,
+                "cycling-tour": 20,
+                "cycling-electric": 20,
+                "foot-hiking": 30,
+                "wheelchair": 5
             }
         },
         "58e24beb24e91400010dd19f": {
