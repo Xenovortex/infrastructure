@@ -10,10 +10,44 @@
         "58e24beb24e91400010dd19f": {
             "name": "Free",
             "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
-            "distance-limit": {
-                "driving-car": 500,
-                "foot-walking": 100,
-                "foot-hiking": 100
+            "total-distance-limit": {
+                "driving-car": 6000,
+                "driving-hgv": 6000,
+                "cycling-regular": 1000,
+                "cycling-mountain": 1000,
+                "cycling-road": 1000,
+                "cycling-safe": 1000,
+                "cycling-tour": 1000,
+                "cycling-electric": 1000,
+                "foot-walking": 200,
+                "foot-hiking": 200,
+                "wheelchair": 50
+            },
+            "segment-distance-limit": {
+                "driving-car": 300,
+                "driving-hgv": 300,
+                "cycling-regular": 250,
+                "cycling-mountain": 250,
+                "cycling-road": 250,
+                "cycling-safe": 250,
+                "cycling-tour": 250,
+                "cycling-electric": 250,
+                "foot-walking": 50,
+                "foot-hiking": 50,
+                "wheelchair": 50
+            },
+            "waypoints-limit": {
+                "driving-car": 50,
+                "driving-hgv": 50,
+                "cycling-regular": 50,
+                "cycling-mountain": 50,
+                "cycling-road": 50,
+                "cycling-safe": 50,
+                "cycling-tour": 50,
+                "cycling-electric": 50,
+                "foot-walking": 50,
+                "foot-hiking": 50,
+                "wheelchair": 25
             },
             "geoextent-limit": {
                 "minx": -180.0,
