@@ -44,7 +44,8 @@ forbidden = {200: 'none', 464: 'gateway', 403: 'tyk', 500: 'ors'}
 
 
 @Hook
-def query_params_validator(request, session, spec):
+def check_directions_querystr(request, session, spec):
+    tyk.log("[PLUGIN] [{0}::post::init] Current working dir: {1}".format(plugin_conf['api-endpoint'], str(cwd)), 'info')
     resp_status = 200
     querystr = request.object.params
     headers = request.object.headers
@@ -95,6 +96,7 @@ def get_distance_class(dist):
 def is_request_valid(queryparams, session):
     profile = queryparams['profile']
     policy = session.apply_policy_id
+    tyk.log("[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".format(plugin_conf['api-endpoint'], str(profile), str(policy)), 'info')
     if (rules['policies'][policy]['profiles'] != "any") and (
             profile not in rules['policies'][policy]['profiles']):
         response_msg = "Routing profile " + profile + \

@@ -1,6 +1,6 @@
 {
     "file_list": [
-        "plugin.py",
+        "directions_plugin.py",
         "ors_api_conf.json",
         "plugin_conf.json",
         "rules.json"
@@ -9,7 +9,7 @@
         "pre": [],
         "auth_check": {},
         "post": [{
-            "name": "query_params_validator",
+            "name": "check_directions_querystr",
             "require_session": true
         }],
         "driver": "python"

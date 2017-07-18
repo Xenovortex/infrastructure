@@ -1,7 +1,7 @@
 {
     "policies": {
         "58e24c3a5ba07a000154a104": {
-            "name": "Internal test"
+            "name": "Internal"
         },
         "58e24beb24e91400010dd19f": {
             "name": "Free"
@@ -15,7 +15,7 @@
         "58ec91351ae10f00016c6a57": {
             "name": "Premium"
         },
-        "58f7c68adfed920001508b0f": {
+        "OnlyForPublicInstance": {
             "name": "OnlyForPublicInstance"
         }
     },
