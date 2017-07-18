@@ -1,0 +1,19 @@
+{
+    "file_list": [
+        "pdirections_plugin.py",
+        "ors_api_conf.json",
+        "plugin_conf.json",
+        "rules.json"
+    ],
+    "custom_middleware": {
+        "pre": [],
+        "auth_check": {},
+        "post": [{
+            "name": "check_pdirections_querystr",
+            "require_session": true
+        }],
+        "driver": "python"
+    },
+    "checksum": "",
+    "signature": ""
+}

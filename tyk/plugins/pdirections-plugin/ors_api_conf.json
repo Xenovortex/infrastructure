@@ -1,0 +1,51 @@
+{
+    "policies": {
+        "58e24c3a5ba07a000154a104": {
+            "name": "Internal"
+        },
+        "58e24beb24e91400010dd19f": {
+            "name": "Free"
+        },
+        "58eb8948d38b690001fdecae": {
+            "name": "Basic"
+        },
+        "58ec90ce1ae10f00016c6a56": {
+            "name": "Standard"
+        },
+        "58ec91351ae10f00016c6a57": {
+            "name": "Premium"
+        },
+        "OnlyForPublicInstance": {
+            "name": "OnlyForPublicInstance"
+        }
+    },
+    "APIs": {
+        "490caaed0d7a4db272cbf1c569835fb1": {
+            "name": "Isochrones"
+        },
+        "34349e63a29a4c8d7faeea856548039a": {
+            "name": "Places"
+        },
+        "b53fd189c9a84dc346e6174fe0357fa5": {
+            "name": "IsochronesForPublic"
+        },
+        "a2b83ebce63a457a5ab2d2b21515ac90": {
+            "name": "PlacesForPublic"
+        },
+        "e4acb8c31e3f4f7871b141032852d70f": {
+            "name": "GeocodingForPublic"
+        },
+        "60b3f4b7a26d45c76f87d96a4c0b2113": {
+            "name": "Geocoding"
+        },
+        "c1ba6b919d8d49027ff77093ce7cfab7": {
+            "name": "DirectionsForPublic"
+        },
+        "d5b961bdf73d46cd5d8e6dfd194365f4": {
+            "name": "Directions"
+        },
+        "7413d66c14fb4a6f444d822ab0c4941c": {
+            "name": "PluginTest"
+        }
+    }
+}
