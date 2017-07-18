@@ -28,13 +28,24 @@ stats_log = {
     'http_referer': '',
     'http_user_agent': ''
 }
-stats_info = {'profile': '', 'estimated_distance': '', 'distance_class': ''}
+stats_info = {
+    'api': plugin_conf['api-endpoint'],
+    'profile': '',
+    'estimated_distance': '',
+    'distance_class': '',
+    'policy': '',
+    'status': '',
+    'forbidden': ''
+}
 stats_log_formatter = '{remote_addr} - {remote_user} [{time_local}] "{request}" {status} {body_bytes_sent} "{http_referer}" "{http_user_agent}"\n'
+
 stats_log_file = plugin_conf['stats-log-file']
+forbidden = {200: 'none', 464: 'gateway', 403: 'tyk', 500: 'ors'}
 
 
 @Hook
 def query_params_validator(request, session, spec):
+    resp_status = 200
     if is_request_valid(request.object.params, session) is not True:
         request.object.return_overrides.headers[
             'content-type'] = 'application/json'
@@ -43,11 +54,16 @@ def query_params_validator(request, session, spec):
         request.object.return_overrides.response_error = json.dumps({
             'ORS gateway error': response_msg
         })
+        resp_status = 464
 
     stats_info['profile'] = request.object.params['profile']
+    stats_info['policy'] = rules['policies'][session.apply_policy_id]['name']
+    stats_info['status'] = str(resp_status)
+    stats_info['forbidden'] = forbidden[resp_status]
     stats_log['request'] = 'GET /{0}?{1} HTTP/2.0'.format(
         plugin_conf['api-endpoint'], '&'.join(
             ['%s=%s' % (str(k), str(v)) for (k, v) in stats_info.items()]))
+    stats_log['status'] = str(resp_status)
     with open(stats_log_file, 'a+') as slf:
         slf.write(stats_log_formatter.format(**stats_log))
     return request, session
@@ -68,16 +84,20 @@ def get_distance_class(dist):
 
 def is_request_valid(queryparams, session):
     profile = queryparams['profile']
-    if (len(rules['policies'][session.apply_policy_id]['profiles']) > 0) and (
-            profile not in
-            rules['policies'][session.apply_policy_id]['profiles']):
-        response_msg = "Routing profile " + profile + " is unavailale for your API subscription"
+    policy = session.apply_policy_id
+    if (rules['policies'][policy]['profiles'] != "any") and (
+            profile not in rules['policies'][policy]['profiles']):
+        response_msg = "Routing profile " + profile + \
+                " is unavailale for your API subscription"
         return False
     # split each coordinate param value into the list like
     # [{'lon': 110.12, 'lat': 36.36}, {'lon':111.32, 'lat': 19.19}]
     # with the map function. Then, reduce it to get the sum-up distance
     coords = queryparams['coordinates'].split('|')
-    cl = list(map(lambda c: {'lon': float(c.split(',')[0]), 'lat': float(c.split(',')[1])}, coords))
+    cl = list(map(lambda c: {
+        'lon': float(c.split(',')[0]),
+        'lat': float(c.split(',')[1])
+        }, coords))
     total_dist = reduce(
         lambda d, seg_d: d + seg_d,
         map(lambda cp: geo_distance(cp[0]['lon'], cp[0]['lat'], cp[1]['lon'], cp[1]['lat']),
@@ -85,13 +105,15 @@ def is_request_valid(queryparams, session):
     tyk.log("[PLUGIN] [Directions Guard::post] Geodistance of the request: " +
             str(total_dist), 'info')
     tyk.log("[PLUGIN] [Directions Guard::post] Policy: " +
-            ors_api_conf['policies'][session.apply_policy_id]['name'], 'info')
+            ors_api_conf['policies'][policy]['name'], 'info')
     stats_info['estimated_distance'] = str(round(total_dist))
     stats_info['distance_class'] = str(get_distance_class(round(total_dist)))
-    if (rules['policies'][session.apply_policy_id]['total-distance-limit']
-        ) and (total_dist > rules['policies'][session.apply_policy_id][
-            'total-distance-limit'][profile]):
-        response_msg = "Requested distance is too long for your API subscription"
+    if (rules['policies'][policy]['total-distance-limit']) and (
+            total_dist >
+            rules['policies'][policy]['total-distance-limit'][profile]):
+        response_msg = "Requested distance is too long for \
+                your API subscription"
+
         return False
     return True
 

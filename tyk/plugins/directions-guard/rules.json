@@ -1,8 +1,8 @@
 {
     "policies": {
         "58e24c3a5ba07a000154a104": {
-            "name": "Internal test",
-            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
+            "name": "internal",
+            "profiles": "any",
             "total-distance-limit": {
                 "foot-walking": 30,
                 "driving-car": 40,
@@ -18,7 +18,7 @@
             }
         },
         "58e24beb24e91400010dd19f": {
-            "name": "Free",
+            "name": "free",
             "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
@@ -67,16 +67,16 @@
             }
         },
         "58eb8948d38b690001fdecae": {
-            "name": "Basic"
+            "name": "basic"
         },
         "58ec90ce1ae10f00016c6a56": {
-            "name": "Standard"
+            "name": "standard"
         },
         "58ec91351ae10f00016c6a57": {
-            "name": "Premium"
+            "name": "premium"
         },
         "58f7c68adfed920001508b0f": {
-            "name": "OnlyForPublicInstance"
+            "name": "publicinstance"
         }
     },
     "keys": {}
