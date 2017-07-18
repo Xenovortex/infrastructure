@@ -67,16 +67,72 @@
             }
         },
         "58eb8948d38b690001fdecae": {
-            "name": "basic"
+            "name": "basic",
+            "profiles": "any",
+            "total-distance-limit": {
+                "driving-car": 6000,
+                "driving-hgv": 6000,
+                "cycling-regular": 1000,
+                "cycling-mountain": 1000,
+                "cycling-road": 1000,
+                "cycling-safe": 1000,
+                "cycling-tour": 1000,
+                "cycling-electric": 1000,
+                "foot-walking": 200,
+                "foot-hiking": 200,
+                "wheelchair": 50
+            }
         },
         "58ec90ce1ae10f00016c6a56": {
-            "name": "standard"
+            "name": "standard",
+            "profiles": "any",
+            "total-distance-limit": {
+                "driving-car": 6000,
+                "driving-hgv": 6000,
+                "cycling-regular": 1000,
+                "cycling-mountain": 1000,
+                "cycling-road": 1000,
+                "cycling-safe": 1000,
+                "cycling-tour": 1000,
+                "cycling-electric": 1000,
+                "foot-walking": 200,
+                "foot-hiking": 200,
+                "wheelchair": 50
+            }
         },
         "58ec91351ae10f00016c6a57": {
-            "name": "premium"
+            "name": "premium",
+            "profiles": "any",
+            "total-distance-limit": {
+                "driving-car": 6000,
+                "driving-hgv": 6000,
+                "cycling-regular": 1000,
+                "cycling-mountain": 1000,
+                "cycling-road": 1000,
+                "cycling-safe": 1000,
+                "cycling-tour": 1000,
+                "cycling-electric": 1000,
+                "foot-walking": 200,
+                "foot-hiking": 200,
+                "wheelchair": 50
+            }
         },
         "58f7c68adfed920001508b0f": {
-            "name": "publicinstance"
+            "name": "publicinstance",
+            "profiles": "any",
+            "total-distance-limit": {
+                "driving-car": 6000,
+                "driving-hgv": 6000,
+                "cycling-regular": 1000,
+                "cycling-mountain": 1000,
+                "cycling-road": 1000,
+                "cycling-safe": 1000,
+                "cycling-tour": 1000,
+                "cycling-electric": 1000,
+                "foot-walking": 200,
+                "foot-hiking": 200,
+                "wheelchair": 50
+            }
         }
     },
     "keys": {}

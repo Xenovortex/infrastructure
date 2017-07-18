@@ -1,6 +1,6 @@
 {
     "file_list": [
-        "directions_guard.py",
+        "plugin.py",
         "ors_api_conf.json",
         "plugin_conf.json",
         "rules.json"

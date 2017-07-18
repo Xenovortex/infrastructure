@@ -18,7 +18,7 @@ a new local plugin directory.
 Enter the plugin directory:
 
 ```
-$ cd directions-guard
+$ cd ors-gateway-plugin
 ```
 
 ## Building a bundle
