@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-VERSION=$1
-tyk-cli bundle build -y -o "directions-bundle-$VERSION.zip"
+BUNDLE_NAME=$1
+VERSION=${2-`cat ./VERSION`}
+tyk-cli bundle build -y -o "$BUNDLE_NAME-bundle-$VERSION.zip"
