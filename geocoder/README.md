@@ -82,8 +82,8 @@ ElasticSearch normally works straight out of the box, but there are several thin
 
 If this is below 65536, it is likely not going to be enough for ES. To update this, you need to make a couple of changes. Be warned though, check that you have entered information correctly as entering it wrong can result in a bricked server! In the file /etc/security/limits.conf you need to enter the following information
 
-	*	soft	nofile	65536
-	*	hard	nofile	65536
+	*	    soft	nofile	65536
+	*	    hard	nofile	65536
 	root	soft	nofile	65536
 	root	hard	nofile	65536
 
@@ -124,7 +124,7 @@ As mentioned in their configuration documentation, you should also change the pa
 	path.data: /srv/elasticsearch/data
 	path.logs: /srv/elasticsearch/log
 
-Note that if they don't exist, then you should create the folders (and remember to set permissions so that the folders can be read by the user/service running elasticsearch).
+Note that if they don't exist, then you should create the folders (and remember to set permissions so that the folders can be read by the user/service running elasticsearch using ´sudo chown -R elasticsearch /srv/elasticsearch´).
 
 Another setting that is important to the overall stability of the cluster is the minimum_master_nodes setting. Basically, a master node is the node that defines items such as creating new indices, moving shards etc. In some instances, it could be possible for ES to designate 2 master nodes, which would cause problems (if the original master node goes offline for some reason, then a new master is elected). When a new master is created, it is 'elected' by the other nodes, and so a quorum must be reached. To make sure that the correct quorum is reached, then the minimum_master_nodes should be set. The quorum is calculated using the formula
 	
