@@ -19,12 +19,12 @@ with open(os.path.join(cwd, 'rules.json')) as rf:
 response_msg = ""
 dist_classes = plugin_conf['distance-classes']
 stats_log = {
-    'remote_addr': '',
-    'remote_user': '',
+    'remote_addr': '-',
+    'remote_user': '-',
     'time_local': strftime("%d/%b/%Y:%H:%M:%S +0000", gmtime()),
     'request': '',
     'status': '',
-    'body_bytes_sent': '',
+    'body_bytes_sent': '0',
     'http_referer': '',
     'http_user_agent': ''
 }
@@ -46,7 +46,9 @@ forbidden = {200: 'none', 464: 'gateway', 403: 'tyk', 500: 'ors'}
 @Hook
 def query_params_validator(request, session, spec):
     resp_status = 200
-    if is_request_valid(request.object.params, session) is not True:
+    querystr = request.object.params
+    headers = request.object.headers
+    if is_request_valid(querystr, session) is not True:
         request.object.return_overrides.headers[
             'content-type'] = 'application/json'
         request.object.return_overrides.headers['x-sender'] = 'ORS gateway'
@@ -56,7 +58,7 @@ def query_params_validator(request, session, spec):
         })
         resp_status = 464
 
-    stats_info['profile'] = request.object.params['profile']
+    stats_info['profile'] = querystr['profile']
     stats_info['policy'] = rules['policies'][session.apply_policy_id]['name']
     stats_info['status'] = str(resp_status)
     stats_info['forbidden'] = forbidden[resp_status]
@@ -64,6 +66,14 @@ def query_params_validator(request, session, spec):
         plugin_conf['api-endpoint'], '&'.join(
             ['%s=%s' % (str(k), str(v)) for (k, v) in stats_info.items()]))
     stats_log['status'] = str(resp_status)
+    if ('X-Forwarded-For' in headers):
+        stats_log['remote_addr'] = headers['X-Forwarded-For'].split(',')[0]
+    if ('Content-Length' in headers):
+        stats_log['body_bytes_sent'] = headers['Content-Length']
+    if ('Referer' in headers):
+        stats_log['http_referer'] = headers['Referer']
+    if ('User-Agent' in headers):
+        stats_log['http_user_agent'] = headers['User-Agent']
     with open(stats_log_file, 'a+') as slf:
         slf.write(stats_log_formatter.format(**stats_log))
     return request, session
