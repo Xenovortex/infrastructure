@@ -112,10 +112,11 @@ def is_request_valid(queryparams, session):
         lambda d, seg_d: d + seg_d,
         map(lambda cp: geo_distance(cp[0]['lon'], cp[0]['lat'], cp[1]['lon'], cp[1]['lat']),
             zip(cl[0:-1], cl[1:])))
-    tyk.log("[PLUGIN] [Directions Guard::post] Geodistance of the request: " +
-            str(total_dist), 'info')
-    tyk.log("[PLUGIN] [Directions Guard::post] Policy: " +
-            ors_api_conf['policies'][policy]['name'], 'info')
+    tyk.log("[PLUGIN] [{0}::post] Geodistance of the request: {1}".format(
+        plugin_conf['api-endpoint'], str(total_dist)), 'info')
+    tyk.log("[PLUGIN] [{0}::post] Policy: {1}".format(
+        plugin_conf['api-endpoint'], ors_api_conf['policies'][policy]['name']),
+            'info')
     stats_info['estimated_distance'] = str(round(total_dist))
     stats_info['distance_class'] = str(get_distance_class(round(total_dist)))
     if (rules['policies'][policy]['total-distance-limit']) and (
