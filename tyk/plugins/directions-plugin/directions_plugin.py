@@ -106,10 +106,15 @@ def is_request_valid(queryparams, session):
     # [{'lon': 110.12, 'lat': 36.36}, {'lon':111.32, 'lat': 19.19}]
     # with the map function. Then, reduce it to get the sum-up distance
     coords = queryparams['coordinates'].split('|')
-    cl = list(map(lambda c: {
-        'lon': float(c.split(',')[0]),
-        'lat': float(c.split(',')[1])
-        }, coords))
+    try:
+        cl = list(map(lambda c: {
+            'lon': float(c.split(',')[0]),
+            'lat': float(c.split(',')[1])
+            }, coords))
+    except ValueError:
+        tyk.log("[PLUGIN] [{0}::post] [plugin error] Conversion of coordinates {1} failed".format(
+            plugin_conf['api-endpoint'], str(queryparams['coordinates'])), 'info')
+        return False
     total_dist = reduce(
         lambda d, seg_d: d + seg_d,
         map(lambda cp: geo_distance(cp[0]['lon'], cp[0]['lat'], cp[1]['lon'], cp[1]['lat']),
