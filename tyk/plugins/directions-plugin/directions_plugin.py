@@ -45,7 +45,8 @@ forbidden = {200: 'none', 464: 'gateway', 403: 'tyk', 500: 'ors'}
 
 @Hook
 def check_directions_querystr(request, session, spec):
-    tyk.log("[PLUGIN] [{0}::post::init] Current working dir: {1}".format(plugin_conf['api-endpoint'], str(cwd)), 'info')
+    tyk.log("[PLUGIN] [{0}::post::init] Current working dir: {1}".format(
+        plugin_conf['api-endpoint'], str(cwd)), 'info')
     resp_status = 200
     querystr = request.object.params
     headers = request.object.headers
@@ -88,15 +89,17 @@ def get_distance_class(dist):
         return 1
     if (dist >= dist_classes[-1]):
         return len(dist_classes) + 1
-    for i, c in enumerate(dist_classes):
+    for i, c in enumerate(dist_classes[:-1]):
         if (dist >= dist_classes[i] and dist < dist_classes[i + 1]):
-            return (i + 1)
+            return (i + 2)
 
 
 def is_request_valid(queryparams, session):
     profile = queryparams['profile']
     policy = session.apply_policy_id
-    tyk.log("[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".format(plugin_conf['api-endpoint'], str(profile), str(policy)), 'info')
+    tyk.log(
+        "[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".
+        format(plugin_conf['api-endpoint'], str(profile), str(policy)), 'info')
     if (rules['policies'][policy]['profiles'] != "any") and (
             profile not in rules['policies'][policy]['profiles']):
         response_msg = "Routing profile " + profile + \
@@ -112,8 +115,10 @@ def is_request_valid(queryparams, session):
             'lat': float(c.split(',')[1])
             }, coords))
     except ValueError:
-        tyk.log("[PLUGIN] [{0}::post] [plugin error] Conversion of coordinates {1} failed".format(
-            plugin_conf['api-endpoint'], str(queryparams['coordinates'])), 'info')
+        tyk.log(
+            "[PLUGIN] [{0}::post] [plugin error] Conversion of coordinates {1} failed".
+            format(plugin_conf['api-endpoint'],
+                   str(queryparams['coordinates'])), 'info')
         return False
     total_dist = reduce(
         lambda d, seg_d: d + seg_d,
