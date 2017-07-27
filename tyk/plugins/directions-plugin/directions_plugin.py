@@ -5,6 +5,7 @@ from functools import reduce
 from time import gmtime, strftime
 import json
 import os
+import traceback
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(cwd, 'plugin_conf.json')) as pf:
@@ -95,48 +96,65 @@ def get_distance_class(dist):
 
 
 def is_request_valid(queryparams, session):
-    profile = queryparams['profile']
-    policy = session.apply_policy_id
-    tyk.log(
-        "[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".
-        format(plugin_conf['api-endpoint'], str(profile), str(policy)), 'info')
-    if (rules['policies'][policy]['profiles'] != "any") and (
-            profile not in rules['policies'][policy]['profiles']):
-        response_msg = "Routing profile " + profile + \
-                " is unavailale for your API subscription"
-        return False
-    # split each coordinate param value into the list like
-    # [{'lon': 110.12, 'lat': 36.36}, {'lon':111.32, 'lat': 19.19}]
-    # with the map function. Then, reduce it to get the sum-up distance
-    coords = queryparams['coordinates'].split('|')
     try:
+        profile = queryparams['profile']
+        policy = session.apply_policy_id
+        tyk.log(
+            "[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".
+            format(plugin_conf['api-endpoint'], str(profile), str(policy)),
+            'info')
+        if (rules['policies'][policy]['profiles'] != "any") and (
+                profile not in rules['policies'][policy]['profiles']):
+            response_msg = "Routing profile " + profile + \
+                    " is unavailale for your API subscription"
+            return False
+        # split each coordinate param value into the list like
+        # [{'lon': 110.12, 'lat': 36.36}, {'lon':111.32, 'lat': 19.19}]
+        # with the map function. Then, reduce it to get the sum-up distance
+        coords = queryparams['coordinates'].split('|')
         cl = list(map(lambda c: {
             'lon': float(c.split(',')[0]),
             'lat': float(c.split(',')[1])
             }, coords))
-    except ValueError:
+        total_dist = reduce(
+            lambda d, seg_d: d + seg_d,
+            map(lambda cp: geo_distance(cp[0]['lon'], cp[0]['lat'], cp[1]['lon'], cp[1]['lat']),
+                zip(cl[0:-1], cl[1:])))
+        tyk.log("[PLUGIN] [{0}::post] Geodistance of the request: {1}".format(
+            plugin_conf['api-endpoint'], str(total_dist)), 'info')
+        tyk.log("[PLUGIN] [{0}::post] Policy: {1}".format(
+            plugin_conf['api-endpoint'],
+            ors_api_conf['policies'][policy]['name']), 'info')
+        stats_info['estimated_distance'] = str(round(total_dist))
+        stats_info['distance_class'] = str(
+            get_distance_class(round(total_dist)))
+        if (rules['policies'][policy]['total-distance-limit'] and
+                total_dist >
+                rules['policies'][policy]['total-distance-limit'][profile]):
+            response_msg = "Requested distance is too long for your API subscription"
+            return False
+    except ValueError as val_err:
         tyk.log(
-            "[PLUGIN] [{0}::post] [plugin error] Conversion of coordinates {1} failed".
+            "[PLUGIN] [{0}::post] [plugin ValueError] coordinates: {1}".format(
+                plugin_conf['api-endpoint'], str(queryparams['coordinates'])),
+            'info')
+        tyk.log("[PLUGIN] [{0}::post] [plugin ValueError] {1}".format(
+            plugin_conf['api-endpoint'], str(val_err)), 'info')
+        return False
+    except IndexError as idx_err:
+        tyk.log(
+            "[PLUGIN] [{0}::post] [plugin IndexError] Conversion of coordinates {1} failed".
             format(plugin_conf['api-endpoint'],
                    str(queryparams['coordinates'])), 'info')
+        tyk.log("[PLUGIN] [{0}::post] [plugin ValueError] {1}".format(
+            plugin_conf['api-endpoint'], str(idx_err)), 'info')
         return False
-    total_dist = reduce(
-        lambda d, seg_d: d + seg_d,
-        map(lambda cp: geo_distance(cp[0]['lon'], cp[0]['lat'], cp[1]['lon'], cp[1]['lat']),
-            zip(cl[0:-1], cl[1:])))
-    tyk.log("[PLUGIN] [{0}::post] Geodistance of the request: {1}".format(
-        plugin_conf['api-endpoint'], str(total_dist)), 'info')
-    tyk.log("[PLUGIN] [{0}::post] Policy: {1}".format(
-        plugin_conf['api-endpoint'], ors_api_conf['policies'][policy]['name']),
-            'info')
-    stats_info['estimated_distance'] = str(round(total_dist))
-    stats_info['distance_class'] = str(get_distance_class(round(total_dist)))
-    if (rules['policies'][policy]['total-distance-limit']) and (
-            total_dist >
-            rules['policies'][policy]['total-distance-limit'][profile]):
-        response_msg = "Requested distance is too long for \
-                your API subscription"
-
+    except Exception as err:
+        tyk.log("[PLUGIN] [{0}::post] [plugin unexpected error] {1}".format(
+            plugin_conf['api-endpoint'], str(err)), 'info')
+        tyk.log(
+            "[PLUGIN] [{0}::post] [plugin unexpected error] trackback info: {1}".
+            format(plugin_conf['api-endpoint'], traceback.format_exc()))
         return False
     return True
 
