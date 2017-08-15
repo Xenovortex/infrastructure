@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# usage:
+# ./fetch_ors_developers.sh (START_PAGE) (END_PAGE) 
 START_PAGE=${1-0}
 END_PAGE=${2-1}
 for i in $(seq $START_PAGE $END_PAGE)
