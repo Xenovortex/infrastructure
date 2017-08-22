@@ -37,7 +37,7 @@ with zipfile.ZipFile(dataPath + 'geonames/' + country + '.zip', 'r') as gnz:
 
 csvpath = 'whosonfirst/meta/wof-postalcode-' + country.lower() + '-latest.csv'
 if not os.path.isfile(dataPath + csvpath):
-    print('No country csv, dropping back non-country file...'
+    print('No country csv, dropping back non-country file...')
     csvpath = 'whosonfirst/meta/wof-postalcode-latest.csv'
     if not os.path.isfile(dataPath + csvpath):
         print('Cannot open file {path}'.format(path=dataPath + csvpath))
