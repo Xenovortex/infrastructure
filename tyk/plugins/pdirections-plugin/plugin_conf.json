@@ -1,5 +1,13 @@
 {
     "distance-classes": [10, 20, 50, 100, 200, 500, 1000, 2000, 5000],
     "stats-log-file": "/opt/tyk/logs/stats.log",
-    "api-endpoint": "pdirections"
+    "api-endpoint": "pdirections",
+    "error-codes": {
+        "INVALID_JSON_FORMAT": 200,
+        "MISSING_PARAMETER": 201,
+        "INVALID_PARAMETER_FORMAT": 202,
+        "INVALID_PARAMETER_VALUE": 203,
+        "REQUEST_EXCEEDS_SERVER_LIMIT": 204,
+        "UNKNOWN": 299
+    }
 }

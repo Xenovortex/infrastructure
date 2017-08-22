@@ -2,7 +2,7 @@
     "policies": {
         "58e24c3a5ba07a000154a104": {
             "name": "Internal",
-            "profiles": "any",
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "foot-walking": 30,
                 "driving-car": 40,
@@ -68,7 +68,7 @@
         },
         "58eb8948d38b690001fdecae": {
             "name": "Basic",
-            "profiles": "any",
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
                 "driving-hgv": 6000,
@@ -85,7 +85,7 @@
         },
         "58ec90ce1ae10f00016c6a56": {
             "name": "Standard",
-            "profiles": "any",
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
                 "driving-hgv": 6000,
@@ -102,7 +102,7 @@
         },
         "58ec91351ae10f00016c6a57": {
             "name": "Premium",
-            "profiles": "any",
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
                 "driving-hgv": 6000,
@@ -119,7 +119,7 @@
         },
         "OnlyForPublicInstance": {
             "name": "OnlyForPublicInstance",
-            "profiles": "any",
+            "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
                 "driving-hgv": 6000,
