@@ -5,6 +5,7 @@
 import zipfile
 import csv
 import json
+import os.path
 
 import sys
 import argparse
@@ -34,7 +35,15 @@ with zipfile.ZipFile(dataPath + 'geonames/' + country + '.zip', 'r') as gnz:
         gn_data = list(reader)
         f.close()
 
-with open(dataPath + 'whosonfirst/meta/wof-postalcode-' + country.lower() + '-latest.csv') as f:
+csvpath = 'whosonfirst/meta/wof-postalcode-' + country.lower() + '-latest.csv'
+if not os.path.isfile(dataPath + csvpath):
+    print('No country csv, dropping back non-country file...'
+    csvpath = 'whosonfirst/meta/wof-postalcode-latest.csv'
+    if not os.path.isfile(dataPath + csvpath):
+        print('Cannot open file {path}'.format(path=dataPath + csvpath))
+        sys.exit()
+
+with open(dataPath + csvpath) as f:
     reader = csv.reader(f, delimiter=',')
     wof_data = list(reader)
     f.close()
@@ -70,6 +79,7 @@ for col in wof_data[0]:
 recCount = len(gn_data)
 processed = 0
 lastPerc = -1
+changed = 0
 for rec in gn_data:
     pc = rec[1]
     lat = rec[9]
@@ -77,13 +87,14 @@ for rec in gn_data:
     path = None
     # Find that postalcode in the wof csv
     for wofrec in wof_data:
-        if wofrec[namePos] == pc:
+        if wofrec[namePos] == pc and float(wofrec[latPos]) == 0.0 and float(wofrec[lonPos]) == 0.0:
             path = wofrec[pathPos]
             wofrec[latPos] = lat
             wofrec[lonPos] = lon
             wofrec[latLabPos] = lat
             wofrec[lonLabPos] = lon
             wofrec[bboxPos] = lon+','+lat+','+lon+','+lat
+            changed += 1
             break
     
     #print path
@@ -115,9 +126,11 @@ for rec in gn_data:
             print('{perc}% complete...'.format(perc=int(perc)))
 
 # Finally overwrite the wof csv file to reflect the updated coordinates
-with open(dataPath + 'whosonfirst/meta/wof-postalcode-' + country.lower() + '-latest.csv', 'r+') as f:
+with open(dataPath + csvpath, 'r+') as f:
     f.seek(0)
     f.truncate()
-    wr = csv.writer(f, quoting=csv.QUOTE_ALL)
+    wr = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
     wr.writerows(wof_data)
     f.close()
+
+print('{recs} records modified'.format(recs=changed))
