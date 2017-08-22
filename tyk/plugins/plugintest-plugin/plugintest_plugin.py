@@ -71,29 +71,27 @@ error_response_body = {
 
 
 @Hook
-def check_directions_querystr(request, session, spec):
+def check_plugintest_querystr(request, session, spec):
     tyk.log('[PLUGIN] [{0}::post::init] Current working dir: {1}'.format(
         plugin_conf['api-endpoint'], str(cwd)), 'debug')
     resp_status = 200
     querystr = request.object.params
     headers = request.object.headers
+
     is_valid, err_code, resp_msg = validate_request(querystr, session)
     if not is_valid:
         construct_error_response(
             request.object.return_overrides, err_code, resp_msg)
         resp_status = 400
-    write_piwik_log(querystr, session, headers, resp_status)
-    return request, session
 
-def write_piwik_log(querystr, session, headers, status):
     stats_info['profile'] = querystr['profile']
     stats_info['policy'] = rules['policies'][session.apply_policy_id]['name']
-    stats_info['status'] = str(status)
-    stats_info['forbidden'] = forbidden[status]
+    stats_info['status'] = str(resp_status)
+    stats_info['forbidden'] = forbidden[resp_status]
     stats_log['request'] = 'GET /{0}?{1} HTTP/2.0'.format(
         plugin_conf['api-endpoint'], '&'.join(
             ['%s=%s' % (str(k), str(v)) for (k, v) in stats_info.items()]))
-    stats_log['status'] = str(status)
+    stats_log['status'] = str(resp_status)
     if 'X-Forwarded-For' in headers:
         stats_log['remote_addr'] = headers['X-Forwarded-For'].split(',')[0]
     if 'Content-Length' in headers:
@@ -102,8 +100,10 @@ def write_piwik_log(querystr, session, headers, status):
         stats_log['http_referer'] = headers['Referer']
     if 'User-Agent' in headers:
         stats_log['http_user_agent'] = headers['User-Agent']
-    with open(stats_log_file, 'a+') as slf:
-        slf.write(stats_log_formatter.format(**stats_log))
+    # with open(stats_log_file, 'a+') as slf:
+        # slf.write(stats_log_formatter.format(**stats_log))
+    return request, session
+
 
 def construct_error_response(override, err_code, err_msg):
     override.response_code = 400
@@ -142,7 +142,8 @@ def validate_request(queryparams, session):
             "[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".
             format(plugin_conf['api-endpoint'], str(profile), str(policy)),
             'info')
-        if profile not in rules['policies'][policy]['profiles']:
+        if (rules['policies'][policy]['profiles'] != "any") and (
+                profile not in rules['policies'][policy]['profiles']):
             response_msg = "Routing profile {0} is unavailale for your API subscription".format(
                 profile)
             return False, plugin_conf['error-codes']['INVALID_PARAMETER_VALUE'], response_msg
