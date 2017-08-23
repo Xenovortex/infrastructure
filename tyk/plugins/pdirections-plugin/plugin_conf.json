@@ -9,5 +9,10 @@
         "INVALID_PARAMETER_VALUE": 203,
         "REQUEST_EXCEEDS_SERVER_LIMIT": 204,
         "UNKNOWN": 299
+    },
+    "ors-backends": {
+        "sesame": "192.168.2.11",
+        "rice": "192.168.2.35",
+        "chia": "192.168.2.29"
     }
 }

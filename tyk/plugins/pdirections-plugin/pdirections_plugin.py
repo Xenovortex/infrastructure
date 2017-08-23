@@ -40,22 +40,12 @@ stats_info = {
     'forbidden': ''
 }
 stats_log_formatter = '{remote_addr} - {remote_user} [{time_local}] "{request}" {status} {body_bytes_sent} "{http_referer}" "{http_user_agent}"\n'
-
 stats_log_file = plugin_conf['stats-log-file']
 forbidden = {200: 'none', 400: 'gateway', 403: 'tyk', 500: 'ors'}
-
-ors_backends = {
-    'sesame': '192.168.2.11',
-    'rice': '192.168.2.35',
-    'chia': '192.168.2.29'
-}
-ors_status_url = 'http://{0}:8080/ors/status'.format(ors_backends['sesame'])
+ors_status_url = 'http://{0}:8080/ors/status'.format(
+    plugin_conf['ors_backends']['sesame'])
 with urllib.request.urlopen(ors_status_url) as osreq:
     ors_status = json.loads(osreq.read().decode('utf8'))
-tyk.log('[PLUGIN] [{0}::preparation] Current working dir: {1}'.format(
-    plugin_conf['api-endpoint'], str(cwd)), 'info')
-tyk.log('[PLUGIN] [{0}::preparation] ORS backend engine version: {1}'.format(
-    plugin_conf['api-endpoint'], str(ors_status['app_info']['version'])), 'info')
 error_response_body = {
     'error': {
         'code': 0,
@@ -85,6 +75,7 @@ def check_pdirections_querystr(request, session, spec):
     write_piwik_log(querystr, session, headers, resp_status)
     return request, session
 
+
 def write_piwik_log(querystr, session, headers, status):
     stats_info['profile'] = querystr['profile']
     stats_info['policy'] = rules['policies'][session.apply_policy_id]['name']
@@ -104,6 +95,7 @@ def write_piwik_log(querystr, session, headers, status):
         stats_log['http_user_agent'] = headers['User-Agent']
     with open(stats_log_file, 'a+') as slf:
         slf.write(stats_log_formatter.format(**stats_log))
+
 
 def construct_error_response(override, err_code, err_msg):
     override.response_code = 400
@@ -141,7 +133,7 @@ def validate_request(queryparams, session):
         tyk.log(
             "[PLUGIN] [{0}::post] Processing request with profile={1} and policy_id={2}".
             format(plugin_conf['api-endpoint'], str(profile), str(policy)),
-            'info')
+            'debug')
         if profile not in rules['policies'][policy]['profiles']:
             response_msg = "Routing profile {0} is unavailale for your API subscription".format(
                 profile)
@@ -159,10 +151,10 @@ def validate_request(queryparams, session):
             map(lambda cp: geo_distance(cp[0]['lon'], cp[0]['lat'], cp[1]['lon'], cp[1]['lat']),
                 zip(cl[0:-1], cl[1:])))
         tyk.log("[PLUGIN] [{0}::post] Geodistance of the request: {1}".format(
-            plugin_conf['api-endpoint'], str(total_dist)), 'info')
+            plugin_conf['api-endpoint'], str(total_dist)), 'debug')
         tyk.log("[PLUGIN] [{0}::post] Policy: {1}".format(
             plugin_conf['api-endpoint'],
-            ors_api_conf['policies'][policy]['name']), 'info')
+            ors_api_conf['policies'][policy]['name']), 'debug')
         stats_info['estimated_distance'] = str(round(total_dist))
         stats_info['distance_class'] = str(
             get_distance_class(round(total_dist)))
