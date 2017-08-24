@@ -43,7 +43,7 @@ stats_log_formatter = '{remote_addr} - {remote_user} [{time_local}] "{request}" 
 stats_log_file = plugin_conf['stats-log-file']
 forbidden = {200: 'none', 400: 'gateway', 403: 'tyk', 500: 'ors'}
 ors_status_url = 'http://{0}:8080/ors/status'.format(
-    plugin_conf['ors_backends']['sesame'])
+    plugin_conf['ors-backends']['sesame'])
 with urllib.request.urlopen(ors_status_url) as osreq:
     ors_status = json.loads(osreq.read().decode('utf8'))
 error_response_body = {
