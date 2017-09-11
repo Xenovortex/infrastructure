@@ -20,6 +20,7 @@ services:
          - ./tomcat/ors-logs/:/var/log/ors/
          - ./tomcat/logs:/usr/local/tomcat/logs
          - ./tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
+         - ./tomcat/conf/catalina.properties:/usr/local/tomcat/conf/catalina.properties
         environment:
          - CATALINA_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${JMXPORT} -Dcom.sun.management.jmxremote.rmi.port=${JMXPORT} -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=129.206.7.158
          - JAVA_OPTS=-Djava.awt.headless=true -server -Xconcurrentio -XX:NewSize=6g -XX:MaxNewSize=8g -XX:TargetSurvivorRatio=75 -XX:SurvivorRatio=8 -XX:MaxTenuringThreshold=2 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xmx188g -XX:MaxMetaspaceSize=50m -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768 -XX:+AlwaysPreTouch -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:OnOutOfMemoryError='./restart %p' -XX:ErrorFile=/var/log/ors/fatal.log
