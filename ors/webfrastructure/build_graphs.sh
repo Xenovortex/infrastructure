@@ -12,7 +12,7 @@ ORS_ROOT=/opt/openrouteservice/webfrastructure
 Compute_graphs () {
     echo "==> Graphs are built, starting to update graphs"
     cp -R $ORS_ROOT/tomcat/data/graphs $ORS_ROOT/tomcat/data/graphs_latest/
-    wget -P $ORS_ROOT/tomcat/data/osm/ https://planet.osm.org/pbf/planet-latest.osm.pbf
+    wget -P $ORS_ROOT/tomcat/data/osm/ -q https://planet.osm.org/pbf/planet-latest.osm.pbf -O planet-latest.osm.pbf
     rm -rf $ORS_ROOT/tomcat/data/graphs/*
     docker restart ors-app
 }
