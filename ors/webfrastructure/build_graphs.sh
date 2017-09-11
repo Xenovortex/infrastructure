@@ -7,11 +7,13 @@ echo "/ \_//| |_) |  __/ | | / _  \ (_) | |_| | ||  __/\ \  __/ |   \ V /| | (_|
 echo "\___/ | .__/ \___|_| |_\/ \_/\___/ \__,_|\__\___\__/\___|_|    \_/ |_|\___\___| "
 echo "      |_|                                                                       "
 
+ORS_ROOT=/opt/openrouteservice/webfrastructure
+
 Compute_graphs () {
     echo "==> Graphs are built, starting to update graphs"
-    cp -R /tomcat/data/graphs /tomcat/data/graphs_latest/
-    wget -P /tomcat/data/osm/ https://planet.osm.org/pbf/planet-latest.osm.pbf
-    rm -rf /tomcat/data/graphs/*
+    cp -R $ORS_ROOT/tomcat/data/graphs $ORS_ROOT/tomcat/data/graphs_latest/
+    wget -P $ORS_ROOT/tomcat/data/osm/ https://planet.osm.org/pbf/planet-latest.osm.pbf
+    rm -rf $ORS_ROOT/tomcat/data/graphs/*
     docker restart ors-app
 }
 
