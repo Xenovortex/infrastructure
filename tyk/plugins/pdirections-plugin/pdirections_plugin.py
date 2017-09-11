@@ -53,8 +53,8 @@ error_response_body = {
     },
     'info': {
         'reporter': 'ORS API gateway',
-        'version': ors_status['app_info']['version'],
-        'build_date': ors_status['app_info']['build_date'],
+        'version': ors_status['engine']['version'],
+        'build_date': ors_status['engine']['build_date'],
         'timestamp': 0
     }
 }
