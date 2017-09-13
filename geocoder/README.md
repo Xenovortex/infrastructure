@@ -184,6 +184,12 @@ Then you need to install the C library itself (note you will likely need to crea
 	sudo make install
 	sudo ldconfig
 
+To run and install Pelias, you need to have NodeJS installed. To do that, you need to run:
+    
+    sudo apt-get update
+    sudo apt-get install nodejs
+    sudo apt-get install npm
+
 When using pelias, it is important to decide which data will be used in the geocoder. In our case we use openstreetmap, polylines and whosonfirst.
 
 The first stage is to download the repositories for the components from github. For this, you need to run the following commands, changing [module] for values of schema, api, whosonfirst, openstreetmap, and polylines.
