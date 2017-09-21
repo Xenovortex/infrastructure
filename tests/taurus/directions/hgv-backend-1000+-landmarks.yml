@@ -1,0 +1,16 @@
+---
+execution:
+- concurrency: 20
+  ramp-up: 1m
+  hold-for: 10m
+  scenario: driving
+
+scenarios:
+  driving:
+    requests:
+        - url: http://129.206.7.158:8080/ors/routes?attributes=detourfactor%7Cpercentage&coordinates=2.39502,48.69096%7C13.469238,52.402419&elevation=true&extra_info=steepness%7Cwaytype%7Csurface&geometry=true&geometry_format=geojson&instructions=true&instructions_format=html&language=en-US&options=%7Bavoid_features:ferries%7Chighways,profile_params:%7Brestrictions:%7Bwidth:4,weight:15,length:6%7D%7D,vehicle_type:hgv%7D&preference=fastest&profile=driving-hgv&units=m 
+          label: hgv-1000-Berlin-Paris-Landmarks
+
+reporting:
+    - module: blazemeter
+      report-name: OpenRouteService Directions API Concurrency Test
