@@ -1,0 +1,10 @@
+execution:
+- executor: siege  
+  concurrency: 10
+  hold-for: 5M
+  scenario: external_urls
+  
+scenarios:
+  external_urls:
+    think-time: 15s
+    script: gateway-logs/access_urls.txt
