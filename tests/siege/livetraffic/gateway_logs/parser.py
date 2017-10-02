@@ -22,7 +22,8 @@ class StatCounter(object):
         self.file = open("access_urls.txt","w") 
         self.file.seek(0)
         self.file.truncate()
-        self.slug = "http://129.206.228.124:8080/ors"
+        self.URL = "URL=http://129.206.7.206"
+        self.file.write(self.URL + "\n")
         self.endpoints_mapping = {
             "directions": "routes",
             "/directions": "routes",
@@ -97,7 +98,7 @@ class StatCounter(object):
             match = match.groupdict()
             url = match["url"].replace(match["method"], self.endpoints_mapping[match["method"]])
             match["url"] = url
-            self.file.write(self.slug + match["url"] + "\n") 
+            self.file.write("$(URL)" + match["url"] + "\n") 
 
             self.process_entry(match)
 
