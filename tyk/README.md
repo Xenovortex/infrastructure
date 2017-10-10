@@ -163,3 +163,8 @@ To stop the service:
 If there is problem to stop the service, just kill the uwsgi root process
 (whose parent process id is 1, the other two are worker processes), and start 
 it again with the above command.
+
+### Redis database
+
+Tyk uses a redis database which synchonizes with the tyk cloud (we are using the hybrid solution). Because we are using two tyk gateways we have to install a shared redis database which is used by both
+workers. Be careful to set the redis connection information accordingly in each tyk worker.
