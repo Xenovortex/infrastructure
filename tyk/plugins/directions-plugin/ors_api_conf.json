@@ -6,6 +6,9 @@
         "58e24beb24e91400010dd19f": {
             "name": "Free"
         },
+        "59db8ee0af295d0001a052f8": {
+            "name": "Free plan"
+        },
         "58eb8948d38b690001fdecae": {
             "name": "Basic"
         },
@@ -43,6 +46,12 @@
         },
         "d5b961bdf73d46cd5d8e6dfd194365f4": {
             "name": "Directions"
+        },
+        "c84e6e92dbcd49b467baa11e051365e6": {
+            "name": "Matrix"
+        },
+        "740f021a1a5e4ef0717676b14b51bd2d": {
+            "name": "MatrixForPublic"
         },
         "7413d66c14fb4a6f444d822ab0c4941c": {
             "name": "PluginTest"
