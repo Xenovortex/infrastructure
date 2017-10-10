@@ -18,7 +18,7 @@
             }
         },
         "58e24beb24e91400010dd19f": {
-            "name": "Free",
+            "name": "Free (deprecated)",
             "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
@@ -67,7 +67,7 @@
             }
         },
         "59db8ee0af295d0001a052f8": {
-            "name": "Free plan",
+            "name": "Free",
             "profiles": ["driving-car", "driving-hgv", "cycling-regular", "cycling-road", "cycling-safe", "cycling-mountain", "cycling-tour", "cycling-electric", "foot-walking", "foot-hiking", "wheelchair"],
             "total-distance-limit": {
                 "driving-car": 6000,
