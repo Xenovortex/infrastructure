@@ -1,0 +1,18 @@
+/usr/local/apache2/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 640 root root
+    sharedscripts
+    postrotate
+        httpd -k restart > /dev/null
+    endscript
+    prerotate
+        if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+            run-parts /etc/logrotate.d/httpd-prerotate; \
+        fi; \
+    endscript
+}
