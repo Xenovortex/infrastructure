@@ -1,11 +1,12 @@
 /usr/local/apache2/logs/*.log {
+    su root adm
     daily
     missingok
     rotate 14
     compress
     delaycompress
     notifempty
-    create 640 root root
+    create 640 root adm
     sharedscripts
     postrotate
         httpd -k restart > /dev/null
