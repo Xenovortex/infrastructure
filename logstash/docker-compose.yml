@@ -1,0 +1,10 @@
+version: '3'
+services:
+  logstash_tyk:
+    build: .
+    image: logstash:ors-gateway
+    container_name: logstash_gateway
+    volumes:
+    - /var/log/nginx:/var/log/nginx
+    ports:
+    - 5045:5045
