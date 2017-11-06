@@ -19,14 +19,14 @@ if [ $CNT = 10 ]; then
     if cmp -s md5sums.$GRAPH_TYPE md5sums.$GRAPH_TYPE.remote
     then
 
-       echo 'The files match'
-       mv md5sums.$GRAPH_TYPE.remote md5sums.$GRAPH_TYPE
-       rm -rf graphs/$GRAPH_TYPE
-       wget -r -nH -np -R "index.html*" -q http://129.206.228.124/graphs/$GRAPH_TYPE
+        echo 'The files match'
 
     else
 
-      echo 'The files are different'
+        echo 'The files match'
+        mv md5sums.$GRAPH_TYPE.remote md5sums.$GRAPH_TYPE
+        rm -rf graphs/$GRAPH_TYPE
+        wget -r -nH -np -R "index.html*" -q http://129.206.228.124/graphs/$GRAPH_TYPE
 
     fi
 
