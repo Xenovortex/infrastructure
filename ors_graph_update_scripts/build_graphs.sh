@@ -11,9 +11,28 @@ ORS_ROOT="/opt/docker-files/webfrastructure"
 ORS_TOMCAT_DATA_DIR="/tomcat/data"
 ORS_OSM_DATA_DIR="/hayloft/osm"
 
-#declare -A ORS_WORKERS
-#ORS_WORKERS[129.206.7.158]=vehicles
-#ORS_WORKERS[129.206.7.36]=vehicles
+Compare_planetfiles () {
+
+    MD5SUM_CLOUD=$(curl https://planet.osm.org/pbf/planet-latest.osm.pbf.md5 | head -n 1 $
+    wget -q -O ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf https://planet.osm.or$
+    MD5SUM_LOCAL=$(md5sum ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf | head -n $
+
+    echo "==> Comparing planet file hashes, cloud $MD5SUM_CLOUD vs local $MD5SUM_LOCAL ..$
+    if [ "$MD5SUM_CLOUD" = "$MD5SUM_LOCAL" ]; then
+
+        echo "==> Planet file hashes match ... restarting docker container"
+        docker restart ors-app
+        exit 1
+
+    else
+
+        echo "==> Planet file hashes do not match, restarting download ..."
+        Compute_graphs
+
+    fi
+
+
+}
 
 Compute_graphs () {
 
@@ -30,45 +49,8 @@ Compute_graphs () {
     done
     mv graphs $LATEST_DIR
 
-    MD5SUM_CLOUD=$(curl https://planet.osm.org/pbf/planet-latest.osm.pbf.md5 | head -n 1 | cut -c -32)
-    wget -q -O ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf https://planet.osm.org/pbf/planet-latest.osm.pbf
-    MD5SUM_LOCAL=$(md5sum ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf | head -n 1 | cut -c -32)
+    Compare_planetfiles
 
-    echo "==> Comparing planet file hashes, cloud $MD5SUM_CLOUD vs local $MD5SUM_LOCAL ..."
-    if [ "$MD5SUM_CLOUD" = "$MD5SUM_LOCAL" ]; then
-
-        echo "==> Planet file hashes match ... restarting docker container"
-        # keep latest directory if many exist
-        #cd ${ORS_ROOT}${ORS_TOMCAT_DATA_DIR}/latest
-        #rm -r `ls -t ${ORS_ROOT}${ORS_TOMCAT_DATA_DIR}/latest | tail -n +2`
-
-        #echo "==> Sending graphs to ors workers ..."
-        #cd */
-	#for worker in "${!ORS_WORKERS[@]}"
-	#do
-
-            #echo "IP  : $worker"
-            #echo "TYPE: ${ORS_WORKERS[$worker]}"
-            #rsync -Pavq -e "ssh -oStrictHostKeyChecking=no -i ssh_access_workers.pem" ${ORS_WORKERS[$worker]} ubuntu@$worker:/opt/ors/data/graphs/
-            # ssh to ors worker and call restart
-            #ssh -o StrictHostKeyChecking=no -p22 ubuntu@$worker "sudo docker restart ors-app"
-            # wait for worker to load new graphs
-            #sleep 20
-            #until [ $(curl -s -o /dev/null -I -w "%{http_code}" http://$worker:8080/ors/health) -eq 200 ]; do
-            #    printf '.'
-            #    sleep 1s
-            #done
-
-        #done
-
-        docker restart ors-app
-
-    else
-
-	echo "==> Planet file hashes do not match, restarting download ..."
-        Compute_graphs
-
-    fi
 }
 
 echo "==> Checking if graphs can be updated ..."
