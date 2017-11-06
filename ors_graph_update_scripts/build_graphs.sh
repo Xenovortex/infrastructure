@@ -13,11 +13,11 @@ ORS_OSM_DATA_DIR="/hayloft/osm"
 
 Compare_planetfiles () {
 
-    MD5SUM_CLOUD=$(curl https://planet.osm.org/pbf/planet-latest.osm.pbf.md5 | head -n 1 $
-    wget -q -O ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf https://planet.osm.or$
-    MD5SUM_LOCAL=$(md5sum ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf | head -n $
+    MD5SUM_CLOUD=$(curl https://planet.osm.org/pbf/planet-latest.osm.pbf.md5 | head -n 1 | cut -c -32)
+    wget -q -O ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf https://planet.osm.org/pbf/planet-latest.osm.pbf
+    MD5SUM_LOCAL=$(md5sum ${ORS_ROOT}${ORS_OSM_DATA_DIR}/planet-latest.osm.pbf | head -n 1 | cut -c -32)
 
-    echo "==> Comparing planet file hashes, cloud $MD5SUM_CLOUD vs local $MD5SUM_LOCAL ..$
+    echo "==> Comparing planet file hashes, cloud $MD5SUM_CLOUD vs local $MD5SUM_LOCAL ..."
     if [ "$MD5SUM_CLOUD" = "$MD5SUM_LOCAL" ]; then
 
         echo "==> Planet file hashes match ... restarting docker container"
@@ -27,7 +27,7 @@ Compare_planetfiles () {
     else
 
         echo "==> Planet file hashes do not match, restarting download ..."
-        Compute_graphs
+        Compare_planetfiles
 
     fi
 
