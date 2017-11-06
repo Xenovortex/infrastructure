@@ -42,12 +42,13 @@ if [ $CNT = 10 ]; then
 
     else
 
+       docker stop $ORS_APP
        #echo 'The files are different'
        mv md5sums.$GRAPH_TYPE.remote md5sums.$GRAPH_TYPE
        rm -rf graphs/$GRAPH_TYPE
        #echo http://$GRAPH_SERVER/graphs/$GRAPH_TYPE
        wget -r -nH -np -l1 -R 'index.html*' -q http://$GRAPH_SERVER/graphs/$GRAPH_TYPE/
-       docker restart $ORS_APP
+       docker start $ORS_APP
 
     fi
 
