@@ -20,13 +20,13 @@ Compare_planetfiles () {
     echo "==> Comparing planet file hashes, cloud $MD5SUM_CLOUD vs local $MD5SUM_LOCAL ..."
     if [ "$MD5SUM_CLOUD" = "$MD5SUM_LOCAL" ]; then
 
-        echo "==> Planet file hashes match ... restarting docker container"
+        echo "==> Planet file hashes match, we are safe ... restarting docker container"
         docker restart ors-app
-        exit 1
+        exit 0
 
     else
 
-        echo "==> Planet file hashes do not match, restarting download ..."
+        echo "==> Planet file hashes do not match, restarting planet file download ..."
         Compare_planetfiles
 
     fi
@@ -41,24 +41,28 @@ Compute_graphs () {
     mkdir -p $LATEST_DIR
     cd ${ORS_ROOT}${ORS_TOMCAT_DATA_DIR}
     chmod -R 755 graphs
+
     for i in graphs/* ; do
   	if [ -d "$i" ]; then
 	   hashdeep -rs graphs/$(basename "$i") > md5sums.$(basename "$i")
            echo $(basename "$i")
     	fi
     done
-    mv graphs $LATEST_DIR
+
+    mv graphs md5sums.* $LATEST_DIR/
+    mkdir graphs
 
     Compare_planetfiles
 
 }
 
-echo "==> Checking if graphs can be updated ..."
+echo "==> Is ORS ready? Checking if graphs can be updated ..."
 STATUS="$(curl -s "localhost:8080/ors/health" | jq -r '.status')"
 
 if [ "$STATUS" = "not ready" ]; then
 
     echo "==> Not ready yet, still building graphs ..."
+    exit 0
 
 elif [ "$STATUS" = "ready" ]; then
 
@@ -67,6 +71,6 @@ elif [ "$STATUS" = "ready" ]; then
 
 else
 
-    exit 1
+    exit 0
 
 fi
