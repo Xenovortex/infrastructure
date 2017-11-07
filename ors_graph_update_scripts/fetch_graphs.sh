@@ -32,24 +32,28 @@ done
 # IF HEALTHY COMPARE MD5SUMS
 if [ $CNT = 10 ]; then
 
+    echo "==> Worker sibling $SIBLING_WORKER healthy ..."
     wget -q -O md5sums.$GRAPH_TYPE.remote http://$GRAPH_SERVER/md5sums.$GRAPH_TYPE
 
     if cmp -s md5sums.$GRAPH_TYPE md5sums.$GRAPH_TYPE.remote; then
 
-       #echo 'The files match'
+       echo "==> md5sums match, exiting ..."
        rm md5sums.$GRAPH_TYPE.remote
        exit 1
 
     else
 
+       echo "==> md5sums do not match, fetching new files and restarting ors-app ..."
        docker stop $ORS_APP
-       #echo 'The files are different'
        mv md5sums.$GRAPH_TYPE.remote md5sums.$GRAPH_TYPE
        rm -rf graphs/$GRAPH_TYPE
-       #echo http://$GRAPH_SERVER/graphs/$GRAPH_TYPE
        wget -r -nH -np -l1 -R 'index.html*' -q http://$GRAPH_SERVER/graphs/$GRAPH_TYPE/
        docker start $ORS_APP
 
     fi
+
+else
+
+    echo "==> Worker sibling $SIBLING_WORKER not healthy, exiting ..."
 
 fi
