@@ -1,4 +1,2 @@
-# For creating a specific network interface 'tyk-network'
-docker network create tyk-network
-# Start shared redis with 'tyk-network'
-docker run --name redis-tyk --network tyk-network -p 6379:6379 -d redis
+# Start shared redis on a standalone instance e.g. ors-placesdb-tykredisdb
+docker run --name redis-tyk -p 6379:6379 -d redis
