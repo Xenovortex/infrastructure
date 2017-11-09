@@ -19,7 +19,8 @@ cd $WDIR
 
 # CHECK IF OTHER WORKER IS HEALTHY
 CNT=0
-for i in `seq 1 10`; do
+
+until [ $CNT -eq 100 ]; do
 
     if [ $(curl -s -o /dev/null -I -w "%{http_code}" http://$SIBLING_WORKER:8080/ors/health) = 200 ]; then
 
@@ -27,30 +28,19 @@ for i in `seq 1 10`; do
 
     fi
 
+    sleep 1
+
 done
 
-# IF HEALTHY COMPARE MD5SUMS
-if [ $CNT = 10 ]; then
+if [ $CNT -eq 100 ]; then
 
     echo "==> Worker sibling $SIBLING_WORKER healthy ..."
 
-    #if cmp -s md5sums.$GRAPH_TYPE md5sums.$GRAPH_TYPE.remote; then
-
-    #   echo "==> md5sums match, exiting ..."
-    #   rm md5sums.$GRAPH_TYPE.remote
-    #   exit 1
-
-    #else
-
-       echo "==> md5sums do not match, fetching new files and restarting ors-app ..."
-       docker stop $ORS_APP
-       #mv md5sums.$GRAPH_TYPE.remote md5sums.$GRAPH_TYPE
-       rm -rf graphs/$GRAPH_TYPE
-       wget -q -O md5sums.$GRAPH_TYPE http://$GRAPH_SERVER/md5sums.$GRAPH_TYPE
-       wget -r -nH -np -l1 -R 'index.html*' -q http://$GRAPH_SERVER/graphs/$GRAPH_TYPE/
-       docker start $ORS_APP
-
-    #fi
+    docker stop $ORS_APP
+    rm -rf graphs/$GRAPH_TYPE
+    wget -q -O md5sums.$GRAPH_TYPE http://$GRAPH_SERVER/md5sums.$GRAPH_TYPE
+    wget -r -nH -np -l1 -R 'index.html*' -q http://$GRAPH_SERVER/graphs/$GRAPH_TYPE/
+    docker start $ORS_APP
 
 else
 
