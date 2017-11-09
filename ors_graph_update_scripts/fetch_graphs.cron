@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/opt/ors/data/fetch_graphs.sh $GRAPH_TYPE $SIBLING_WORKER $DOCKER_CONTAINER_NAME > "/opt/ors/data/fetch_graphs.out.$(date +%Y%m%d_%H%M%S)"
