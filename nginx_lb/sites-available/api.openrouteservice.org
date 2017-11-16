@@ -1,0 +1,171 @@
+# OpenRouteService API server configuration
+#
+
+# The upstream API gateways, NOT the real ORS instances
+upstream api-gateway {
+	least_conn;
+
+        server 192.168.2.17:8080;
+        server 192.168.2.18:8080;
+}
+
+# limit 120 requests per minute per ip
+limit_req_zone $binary_remote_addr zone=public:32m rate=120r/m;
+limit_req_status 429;
+
+server {
+        # For serving Tyk gateway plugin bundles
+        listen 8081;
+        location /api-plugins {
+	        root /var/www/api.openrouteservice.org/html;
+        }
+}
+
+server {
+        # for rsyslog and piwik
+        #access_log syslog:server=unix:/var/cache/nginx/access.socket,facility=local0 piwik;
+        access_log /var/log/nginx/access.log;
+
+        # SSL
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
+
+	add_header   Strict-Transport-Security "max-age=31536000; includeSubdomains";
+	add_header   X-Content-Type-Options nosniff;
+	add_header   X-Frame-Options DENY;
+        add_header   'Access-Control-Expose-Headers' 'x-ratelimit-limit, x-ratelimit-remaining';
+
+	server_name api.openrouteservice.org dev.openrouteservice.org;
+
+	ssl_certificate /etc/letsencrypt/live/api.openrouteservice.org/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/api.openrouteservice.org/privkey.pem;
+
+	ssl_session_cache shared:SSL:10m;
+	ssl_session_timeout  5m;
+
+	ssl_ciphers  "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH !RC4";
+	ssl_prefer_server_ciphers   on;
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+
+	ssl_dhparam /etc/letsencrypt/live/api.openrouteservice.org/dhparam2048.pem;
+
+	# Append the remote users IP to any existing X-Forwarded-For value
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+
+	location / {
+		root /var/www/api.openrouteservice.org/html;
+		index index.html;
+		try_files $uri $uri/ =404;
+	}
+
+	location /search {
+		return 444;
+	}
+
+        location /nginx_status {
+                # Turn on stats
+                stub_status on;
+                access_log off;
+                # only allow access from uni hd ip range #
+                allow 129.206.0.0/16;
+                deny all;
+        }
+
+        location /gateway {
+                proxy_pass http://api-gateway/tyk;
+        }
+
+	location /plugintest {
+		proxy_pass http://api-gateway/plugintest;
+		proxy_read_timeout 30s;
+	}
+
+	location /corsdirections {
+		proxy_pass http://api-gateway/corsdirections;
+		proxy_read_timeout 30s;
+	}
+
+	location /directions {
+                proxy_pass http://api-gateway/directions;
+		proxy_read_timeout 30s;
+#                add_header 'Access-Control-Expose-Headers' 'x-ratelimit-limit, x-ratelimit-remaining';
+	}
+
+	location /geocoding {
+		proxy_pass http://api-gateway/geocoding;
+		proxy_read_timeout 30s;
+	}
+
+	location /isochrones {
+		proxy_pass http://api-gateway/isochrones;
+		proxy_read_timeout 120s;
+	}
+
+	location /places {
+		proxy_pass http://api-gateway/places;
+		proxy_read_timeout 120s;
+	}
+
+	location /matrix {
+		proxy_pass http://api-gateway/matrix;
+		proxy_read_timeout 120s;
+	}
+	# https://serverfault.com/questions/649151/nginx-location-regex-doesnt-work-with-proxy-pass
+
+	location /pdirections {
+		limit_req zone=public burst=20 nodelay;
+
+		if ($http_referer ~* (www.openrouteservice.org|openrouteservice.org) ) {
+                        rewrite ^/pdirections/(.*)$ /pdirections/$1 break;
+			proxy_pass http://api-gateway;
+			#proxy_read_timeout 30s;
+		}
+	}
+
+	location /pgeocoding {
+		limit_req zone=public burst=20 nodelay;
+
+		if ($http_referer ~* (www.openrouteservice.org|openrouteservice.org) ) {
+			rewrite ^/pgeocoding/(.*)$ /pgeocoding/$1 break;
+			proxy_pass http://api-gateway;
+			#proxy_pass http://api-gateway/pgeocoding;
+			#proxy_read_timeout 30s;
+		}
+	}
+
+	location /pisochrones {
+
+		limit_req zone=public burst=20 nodelay;
+
+	        #if ($http_referer ~* (www.openrouteservice.org|openrouteservice.org) ) {
+		if ($http_origin ~* (www.openrouteservice.org|openrouteservice.org) ) {
+                        rewrite ^/pisochrones/(.*)$ /pisochrones/$1 break;
+                        proxy_pass http://api-gateway;
+                        #proxy_read_timeout 120s;
+                }
+
+	}
+
+	location /pplaces {
+                limit_req zone=public burst=20 nodelay;
+
+		if ($http_referer ~* (www.openrouteservice.org|openrouteservice.org) ) {
+			rewrite ^/pplaces/(.*)$ /pplaces/$1 break;
+			proxy_pass http://api-gateway;
+			#proxy_read_timeout 120s;
+		}
+	}
+
+	location /pmatrix {
+                limit_req zone=public burst=20 nodelay;
+
+		if ($http_referer ~* (www.openrouteservice.org|openrouteservice.org) ) {
+			rewrite ^/pmatrix/(.*)$ /pmatrix/$1 break;
+			proxy_pass http://api-gateway;
+			#proxy_read_timeout 120s;
+		}
+	}
+}
