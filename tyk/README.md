@@ -168,3 +168,9 @@ it again with the above command.
 
 Tyk uses a redis database which synchonizes with the tyk cloud (we are using the hybrid solution). Because we are using two tyk gateways we have to install a shared redis database which is used by both
 workers. Be careful to set the redis connection information accordingly in each tyk worker.
+
+### Notes
+
+`docker stop tyk_hybrid && docker rm tyk_hybrid`
+`./start-bundle-python.sh 8080 36010471e7c6aa3e0d91104ceb09119f 58d904a497c67e00015b45fc fb537f41eef94b4c615a1b6414ae0920 192.168.2.27 6379`
+`docker logs --tail=200 --follow tyk_hybrid`
