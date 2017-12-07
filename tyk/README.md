@@ -178,3 +178,5 @@ workers. Be careful to set the redis connection information accordingly in each 
 
 
 `docker logs --tail=200 --follow tyk_hybrid`
+
+`curl --header "authorization: fb537f41eef94b4c615a1b6414ae0920" https://admin.cloud.tyk.io/api/apis/`
