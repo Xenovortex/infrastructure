@@ -16,8 +16,7 @@ tyk_auth_token = "fb537f41eef94b4c615a1b6414ae0920"
 # key expiration period: 24 hours
 expire_span = 24 * 60 * 60
 tyk_token_session = {
-    #"apply_policy_id": "OnlyForPublicInstance",
-    "apply_policy_id": "",
+    "apply_policy_id": "OnlyForPublicInstance",
     "allowance": 30,
     "rate": 30,
     "per": 1,
