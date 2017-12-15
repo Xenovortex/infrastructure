@@ -4,17 +4,14 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import numpy as np
+import webbrowser
 
 """Download all developer data, determine if domain is already registered in 
 domains.json and if necessary, user registers new domains manually with raw_input.
 """
-
-cwd = os.path.dirname(os.path.realpath(__file__))
-json_domain_path = os.path.join(cwd, 'data', 'domains.json')
-json_users_path = os.path.join(cwd, 'data', 'users.json')
     
 def userInput(user_domain):
-    choice = int(raw_input('Domain {} is not registered yet.\nPlease specify type:\n'
+    choice = int(raw_input('Domain {} is not registered yet.\n-1 to open webbrowser or specify type:\n'
                            '0 [Commercial], 1 [Private], 2 [Edu], 3 [Junk]\n> '.format(user_domain)))
     
     if choice == 0:
@@ -25,11 +22,14 @@ def userInput(user_domain):
         return 'edu'
     elif choice == 3:
         return 'junk'
+    elif choice == -1:
+        webbrowser.open_new_tab(user_domain)
+        return None
     else:
-        print "\nWrong input! Choose from (0, 1, 2, 3)."
-        userInput(user_domain)
+        print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
+        return None
         
-def main():
+def parsing():
     base_url = r"https://admin.cloud.tyk.io/api/portal/developers?p=-1"
     auth = r"fb537f41eef94b4c615a1b6414ae0920"
     
@@ -71,8 +71,9 @@ def main():
         elif user_domain in domains['junk']:
             users[user_id]['type'] = "junk"
         else:
-            domain_type = userInput(user_domain)
-            print domain_type
+            domain_type = None
+            while domain_type == None:
+                domain_type = userInput(user_domain)
             users[user_id]['type'] = domain_type
             if user_domain not in domains[domain_type]:
                 domains[domain_type].append(user_domain)
@@ -85,6 +86,8 @@ def main():
         json.dump(domains, jd)
     with open(json_users_path, 'wb') as ju:
         json.dump(users, ju)
+    
+    print "Little DB´s are updated @ {}.".format(os.path.join(cwd, 'data'))
 
 def plotStats(users):
     df_users = pd.DataFrame.from_dict(users, orient='index')
@@ -94,6 +97,7 @@ def plotStats(users):
     
     
     plt.figure(figsize=(20,16))
+    
     ax1 = plt.subplot(221, aspect='equal')
     ax1.set_title('Customer segmentation', fontsize=16, fontweight='bold')
     sbplt1 = gb.plot.pie(y = 'count', ax=ax1, autopct='%1.1f%%', 
@@ -111,8 +115,10 @@ def plotStats(users):
     
 
 if __name__ == "__main__":
-#    main()
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    json_domain_path = os.path.join(cwd, 'data', 'domains.json')
+    json_users_path = os.path.join(cwd, 'data', 'users.json')
+    
+    parsing()
     with open(json_users_path) as json_users:
         plotStats(json.load(json_users))
-    
-#TODO: Count 'keys' to proxy usage per channel and plot.
