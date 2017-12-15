@@ -18,6 +18,7 @@ It manages all the API endpoints including:
 -   `/pgeocoding`
 -   `/pisochrones`
 -   `/pplaces`
+-   ...
 
 For each API endpoint dedicated for ORS public client (only with the `p`
 prefix), an IP-based rate limit rule is defined. All other policy or key-level
@@ -25,19 +26,21 @@ rate limits are defined in tyk gateway.
 
 ### Tyk gateway load-balancing
 
-The incomming http requests will be balanced proxies to two tyk gateways
-running in docker containers on `ors-gateway` and `ors-gateway-worker`.
+The incoming http requests will be balanced proxies to two tyk gateways
+running in docker containers on `ors-tyk-worker-1` and `ors-tyk-worker-2`.
 
 ### API level load-balancing
 
-For each API, two backend servers, i.e. `ors-sesame` and `ors-rice` are added in 
-the load-balancing pool. Incoming requests will be sent to these two backends
-in round-robin mode.
-
-Tyk gateway will check their health status by
+For each API, two backend servers, i.e. `apache-healthchecker-1` and 
+`apache-healthchecker-2` are added in the load-balancing pool. Incoming requests 
+will be sent to these two backends in round-robin mode. These two nodes perform active load balancing by 
 accessing the `http://{ors-backend-internal-IP-address}:8080/ors/health`
-regularly, which is called [uptime tests](https://tyk.io/tyk-documentation/ensure-high-availability/uptime-tests/) 
-in tyk. If any response instead of http status `200 OK` is received, a `HOST DOWN` 
+regularly
+
+### ORS Workers Uptime Tests
+We use [uptime tests](https://tyk.io/tyk-documentation/ensure-high-availability/uptime-tests/) 
+in tyk to check if the workers are alive. To do this we use the same address as above. 
+If any response instead of http status `200 OK` is received, a `HOST DOWN` 
 event will be triggered, then the event handling process will be launched
 as described in the "Event handlers" section below.
 
@@ -47,19 +50,8 @@ The config file is located at
 `/etc/nginx/site-available/api.openrouteservice.org` . When modified this file,
 use `sudo service nginx reload` or `sudo service nginx restart` with root privilege to
 enable it. The access and error log of nginx is located in `/var/log/nginx/`
-directory. **Note** that the access log should NOT be disabled because it is
-the data source of piwik log analyzer on `ors-sentinel`.
+directory. 
 
-All the access log record will be sent to the piwik service on `ors-sentinel`
-as mentioned above via this pipeline:
-
-`nginx access.log -> rsyslog -> piwik`
-
-It should be noted that sometimes this will get stuck. It's usually the problem
-of rsyslog. So just restart the rsyslog service on `ors-gateway` with the following 
-command will let it back on duty.
-
-`sudo service rsyslog restart`
 
 ## Tyk gateway
 
@@ -166,16 +158,15 @@ it again with the above command.
 
 ### Redis database
 
-Tyk uses a redis database which synchonizes with the tyk cloud (we are using the hybrid solution). Because we are using two tyk gateways we have to install a shared redis database which is used by both
+Tyk uses a redis database which synchonizes with the tyk cloud (we are using the hybrid solution). 
+Because we are using two tyk gateways we have to install a shared redis database which is used by both
 workers. Be careful to set the redis connection information accordingly in each tyk worker.
 
 ### Notes
 
 `docker stop tyk_hybrid && docker rm tyk_hybrid`
 
-
 `./start-bundle-python.sh 8080 36010471e7c6aa3e0d91104ceb09119f 58d904a497c67e00015b45fc fb537f41eef94b4c615a1b6414ae0920 192.168.2.27 6379`
-
 
 `docker logs --tail=200 --follow tyk_hybrid`
 
