@@ -33,7 +33,7 @@ def userInput(user_domain):
 
 
 def parseDB():
-    conn = mysql.connect(host='127.0.0.1',
+    conn = mysql.connect(host='172.18.0.2',
                      user='root',
                      passwd='admin',
                      db='wordpress')
@@ -68,7 +68,7 @@ def parseDB():
     cur.execute(sql_inject, (tuple(indexs), ))
     
     for user_id, domain in zip(indexs, new_domains):
-        sql_update = "UPDATE wp_usermeta SET meta_key = %s WHERE user_id = %s AND meta_key = 'priority'"
+        sql_update = "UPDATE wp_usermeta SET meta_key = %s WHERE user_id = %s AND meta_value = 'priority'"
         if domain in old_domains['commercial']:
             domain_type = "commercial"
         elif domain in old_domains['private']:
