@@ -13,7 +13,7 @@ import MySQLdb as mysql
 import matplotlib.pyplot as plt
 import requests
 import numpy as np
-
+from sshtunnel import SSHTunnelForwarder
 
 # In[2]:
 
@@ -53,9 +53,26 @@ print result.head()
 
 # In[23]:
 
+""" SSH variables """
+#ssh_host = '129.206.7.180'
+#ssh_localhost = '172.19.0.3' # WP: 172.18.0.2, WP test: 172.19.0.3
+#ssh_username = 'ubuntu'
+#ssh_private_key = '/home/nils/.ssh/ors_cloudfront.perm'
+#
+#""" DB variables """
+#db_user='root'
+#db_password='admin'
+#database='wordpress'
 
-conn = mysql.connect(host='172.18.0.2', user='root', passwd='admin', db='wordpress')
+
+conn = mysql.connect(host='127.0.0.1',
+                     user='root',
+                     passwd='admin',
+                     db='wordpress')
 cur = conn.cursor()
+#cur.execute("SELECT * from wp_usermeta where user_id = '2531'")
+#
+#print cur.fetchall()
 sql_insert_row = "INSERT INTO wp_usermeta (user_id, meta_key) SELECT * FROM (SELECT %s, 'priority') AS tmp WHERE NOT EXISTS (SELECT * from wp_usermeta where user_id = %s and meta_key = 'priority' ) LIMIT 1;"
 sql_update_row = "UPDATE wp_usermeta SET meta_value = %s WHERE meta_key = 'priority' AND user_id = %s"
 for idx, typ in zip(result_ids, result_types):
