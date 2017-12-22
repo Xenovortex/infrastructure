@@ -30,6 +30,9 @@ chmod -R 777 /usr/local/bin
 curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
+# Install misc
+apt-get install -y tree
+
 # Install pip
 apt-add-repository ppa:ansible/ansible
 apt-get update
