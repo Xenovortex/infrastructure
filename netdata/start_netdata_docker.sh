@@ -11,6 +11,7 @@ docker run -d --cap-add SYS_PTRACE \
            -e SSMTP_PASS=hettner1875 \
            -p 19999:19999 \
            --hostname=$(hostname) \
+           --restart=always \
            --name="netdata" \
            titpetric/netdata
 
@@ -28,5 +29,6 @@ docker run -d --cap-add SYS_PTRACE \
            -e SSMTP_PASS=hettner1875 \
            -p 19999:19999 \
            --hostname=$(hostname) \
+           --restart=always \
            --name="netdata" \
            titpetric/netdata
