@@ -1,1 +1,1 @@
-sudo docker run -v /opt/docker-files/webfrastructure/tomcat/data/latest:/var/www/html/ors/ -p 80:80 -d --name ors-apache birgerk/apache-letsencrypt
+sudo docker run -v /opt/ors/data/latest:/var/www/html/ors/ -p 80:80 -d --name ors-apache birgerk/apache-letsencrypt
