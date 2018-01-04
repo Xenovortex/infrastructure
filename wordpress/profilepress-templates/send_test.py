@@ -13,7 +13,7 @@ recipients = ['nilsnolde@gmail.com',
 #
 #with open(r'mailchimp_permission_mail_test.html','r') as text:
 #    body = text.read()
-with open(r'registration.html','r') as text:
+with open(r'welcome_mail.html','r') as text:
     body = text.read()
     
 msg_from = 'openrouteservice.org <survey@openrouteservice.org>'
