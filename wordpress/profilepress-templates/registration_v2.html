@@ -106,11 +106,11 @@
         a {
             text-decoration: none;
             font-weight: bold;
-            color: #DB8691;
+            color: #b5152b;
         }
 
         a:visited { 
-            color: #DB8691;
+            color: #b5152b;
         }
 
         /* What it does: Removes right gutter in Gmail iOS app: https://github.com/TedGoas/Cerberus/issues/89  */
@@ -122,12 +122,12 @@
             }
         }
 
-	    @media screen and (max-width: 480px) {
-	        /* What it does: Forces Gmail app to display email full width */
-	        div > u ~ div .gmail {
-		        min-width: 100vw;
-	        }
-		}
+        @media screen and (max-width: 480px) {
+            /* What it does: Forces Gmail app to display email full width */
+            div > u ~ div .gmail {
+                min-width: 100vw;
+            }
+        }
 
     </style>
     <!-- CSS Reset : END -->
@@ -207,13 +207,13 @@
     <![endif]-->
 
 </head> 
-<body width="100%" bgcolor="#DB8691" link="#DB8691" vlink="#DB8691" alink="#DB8691" style="margin: 0; mso-line-height-rule: exactly;">
-    <center style="width: 100%; background: #DB8691; text-align: left;">
+<body width="100%" bgcolor="#EAEAEA" link="#EAEAEA" vlink="#EAEAEA" alink="#EAEAEA" style="margin: 0; mso-line-height-rule: exactly;">
+    <center style="width: 100%; background: #EAEAEA; text-align: left;">
 
         <!-- Visually Hidden Preheader Text : BEGIN -->
         <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
-			Happy to have you with us!        
-		</div>
+            Happy to have you with us!        
+        </div>
         <!-- Visually Hidden Preheader Text : END -->
 
         <!-- Email Header : BEGIN -->
@@ -221,8 +221,8 @@
             <tr>
                 <td style="padding: 20px 0; text-align: center">
                     <a href="https://go.openrouteservice.org">
-						<img src="https://go.openrouteservice.org/wp-content/themes/pursuit/assets/images/logo_white@2x.png" width="200" alt="ORS logo" border="0" style="height: auto;">
-					</a>
+                        <img src="https://go.openrouteservice.org/wp-content/themes/pursuit/assets/images/logo@2x.png" width="200" alt="ORS logo" border="0" style="height: auto;">
+                    </a>
                 </td>
             </tr>
         </table>
@@ -232,139 +232,149 @@
         <table bgcolor="#ffffff" role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="600" style="margin: auto;" class="email-container">
             <!-- 1 Column Text + Button : BEGIN -->
             <tr>
-				<td style="padding: 20px 40px; text-align: center;">
-					<h1 style="margin: 0;  font-size: 24px; line-height: 125%; font-family: sans-serif; font-weight: bold;">Welcome {{first_name}},</h1>
-				</td>
-			</tr>
-			<tr>
-				<td style="padding: 0 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555; text-align: left;">
-						We're very happy that you decided to join <a href="https://go.openrouteservice.org/"><b>openrouteservice</b></a>. 
-						<br>
-						<br>
-						To make your journey as pleasant as humanly possible, we'd like to give a little help along the way.
-						<br>
-						<br>
-						After you set up your <a href="https://go.openrouteservice.org/dev-dashboard/"><b>API key</b></a>, you can use the following services:
-				</td>
-			</tr>
-			<tr>
-				<td bgcolor="#ffffff" align="center" width="100%" style="padding: 20px 40px; font-family: sans-serif;">
-					<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: auto;">
-						<tr valign="top">
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="text-align: center; font-family: sans-serif; ">
-											<p style="font-weight: bold">Directions</p>
-											<img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/routing_icon_40.png" alt="routing icon" border="0"  class="fluid">
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="text-align: center; font-family: sans-serif; ">
-											<p style="font-weight: bold">Isochrones</p>
-											<img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/isochrones_icon_40.png" alt="routing icon" border="0" class="fluid">
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="text-align: center; font-family: sans-serif; ">
-											<p style="font-weight: bold">Geocoding</p>
-											<img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/geocoding_icon_40.png" alt="routing icon" border="0" class="fluid">
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="text-align: center; font-family: sans-serif; ">
-											<p style="font-weight: bold">Locations</p>
-											<img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/locations_icon_40.png" alt="routing icon" border="0" class="fluid">
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="text-align: center; font-family: sans-serif; ">
-											<p style="font-weight: bold">Matrix</p>
-											<img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/matrix_icon_40.png" alt="routing icon" border="0" class="fluid">
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr> 
-				<td bgcolor="#ffffff" style="text-align: center; font-family: sans-serif; color: #333333; border-top: 2px solid #7d7d7d;">
-					<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: auto;">
-						<tr valign="top">
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="padding: 10px 40px; font-family: sans-serif; text-align: left">
-											<h4>Support</h4>
-												<ul style="padding-left: 15px; font-family: sans-serif; font-size: 13px; line-height: 150%"> 
-													<li><a href="mailto:support@openrouteservice.org">Email support</a></li>
-													<li><a target="_blank" href="https://groups.google.com/forum/#!forum/openrouteservice">Google Groups</a></li>
-												</ul>
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="padding: 10px 40px; font-family: sans-serif; text-align: left">
-											<h4>Developers</h4>
-											<ul style="padding-left: 15px; font-size: 13px; line-height: 150%"> 
-												<li><a href="https://go.openrouteservice.org/dev-dashboard/">Dashboard</a></li>
-												<li><a target="_blank" href="https://go.openrouteservice.org/plans/">Rate limits</a></li>
-												<li><a target="_blank" href="https://go.openrouteservice.org/documentation/">Documentation</a></li>
-											</ul>
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td class="stack-column-center">
-								<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-									<tr>
-										<td style="padding: 10px 40px; font-family: sans-serif; text-align: left">
-											<h4>General</h4>
-											<ul style=" padding-left: 15px;font-family: sans-serif; font-size: 13px; line-height: 150%"> 
-												<li><a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSc2d-0AjBY9FfhGZD0jyspgkSg5OBdPQHv7X7urKz2O1R7FoQ/viewform">User Survey</a></li>
-												<li><a target="_blank" href="http://eepurl.com/df_JdT">Newsletter</a></li>
-											</ul>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			</tr>
-				<td style="padding: 0 40px 20px; text-align: center; font-family: sans-serif; color: #333333; font-size: 15px"> 
-					<p style="text-align: left; font-family: sans-serif; color: #333333; font-size: 15px">
-						We're looking forward to hearing about your experiences and improvement suggestions - <b>
+                <td style="padding: 20px 40px; text-align: center;">
+                    <h1 style="margin: 0;  font-size: 24px; line-height: 125%; font-family: sans-serif; font-weight: bold;">Welcome {{first_name}},</h1>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555; text-align: left;">
+                        We're very happy that you decided to join <a href="https://go.openrouteservice.org/"><b>openrouteservice</b></a>. 
+                        <br>
+                        <br>
+                        To make your journey as pleasant as humanly possible, we'd like to give a little help along the way.
+                        <br>
+                        <br>
+                        After you set up your <a href="https://go.openrouteservice.org/dev-dashboard/"><b>API key</b></a>, you can use the following services:
+                </td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffffff" align="center" width="100%" style="padding: 20px 40px; font-family: sans-serif;">
+                    <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: auto;">
+                        <tr valign="top">
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="text-align: center; font-family: sans-serif; ">
+                                            <p style="font-weight: bold">Directions</p>
+                                            <a href="https://go.openrouteservice.org/documentation/#/reference/directions/directions/directions-service" target="_blank">
+                                                <img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/routing_icon_40.png" alt="routing icon" border="0"  class="fluid">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="text-align: center; font-family: sans-serif; ">
+                                            <p style="font-weight: bold">Isochrones</p>
+                                            <a href="https://go.openrouteservice.org/documentation/#/reference/isochrones/isochrones/isochrones-service" target="_blank">
+                                                <img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/isochrones_icon_40.png" alt="routing icon" border="0" class="fluid">
+                                            <a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="text-align: center; font-family: sans-serif; ">
+                                            <p style="font-weight: bold">Geocoding</p>
+                                            <a href="https://go.openrouteservice.org/documentation/#/reference/geocoding/geocoding/geocoding-service" target="_blank">
+                                                <img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/geocoding_icon_40.png" alt="routing icon" border="0" class="fluid">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="text-align: center; font-family: sans-serif; ">
+                                            <p style="font-weight: bold">Locations</p>
+                                            <a href="https://go.openrouteservice.org/documentation/#/reference/places/places/location-service-(get)" target="_blank">
+                                                <img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/locations_icon_40.png" alt="routing icon" border="0" class="fluid">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="text-align: center; font-family: sans-serif; ">
+                                            <p style="font-weight: bold">Matrix</p>
+                                            <a href="https://go.openrouteservice.org/documentation/#/reference/matrix/matrix/matrix-service-(get)" target="_blank">
+                                                <img src="https://go.openrouteservice.org/wp-content/uploads/2017/07/matrix_icon_40.png" alt="routing icon" border="0" class="fluid">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr> 
+                <td bgcolor="#ffffff" style="text-align: center; font-family: sans-serif; color: #333333; border-top: 2px solid #7d7d7d;">
+                    <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: auto;">
+                        <tr valign="top">
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 10px 40px; font-family: sans-serif; text-align: left">
+                                            <h4>Support</h4>
+                                                <ul style="padding-left: 15px; font-family: sans-serif; font-size: 13px; line-height: 150%"> 
+                                                    <li><a href="mailto:support@openrouteservice.org">Email support</a></li>
+                                                    <li><a target="_blank" href="https://groups.google.com/forum/#!forum/openrouteservice">Google Groups</a></li>
+                                                </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 10px 40px; font-family: sans-serif; text-align: left">
+                                            <h4>Developers</h4>
+                                            <ul style="padding-left: 15px; font-size: 13px; line-height: 150%"> 
+                                                <li><a href="https://go.openrouteservice.org/dev-dashboard/">Dashboard</a></li>
+                                                <li><a target="_blank" href="https://go.openrouteservice.org/plans/">Rate limits</a></li>
+                                                <li><a target="_blank" href="https://go.openrouteservice.org/documentation/">Documentation</a></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="stack-column-center">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="padding: 10px 40px; font-family: sans-serif; text-align: left">
+                                            <h4>General</h4>
+                                            <ul style=" padding-left: 15px;font-family: sans-serif; font-size: 13px; line-height: 150%"> 
+                                                <li><a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSc2d-0AjBY9FfhGZD0jyspgkSg5OBdPQHv7X7urKz2O1R7FoQ/viewform">User Survey</a></li>
+                                                <li><a target="_blank" href="http://eepurl.com/df_JdT">Newsletter</a></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            </tr>
+                <td style="padding: 0 40px 20px; text-align: center; font-family: sans-serif; color: #333333; font-size: 15px"> 
+                    <p style="text-align: left; font-family: sans-serif; color: #333333; font-size: 15px">
+                        We're looking forward to hearing about your experiences and improvement suggestions - <b>
                     happy routing!</b>
-					</p>
+                    </p>
                      <br>
                     <a href="https://github.com/GIScience/openrouteservice">We truly ♥ Open Source</a>
-					</b>
-				</td>
-			</tr>
-		</table>
+                    </b>
+                </td>
+            </tr>
+        </table>
             <!-- 1 Column Text + Button : END -->
 
 
@@ -380,13 +390,16 @@
     <!-- Email Body : END -->
 
     <!-- Email Footer : BEGIN -->
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="email-container" style="font-family: sans-serif; color: #FFF; font-size: 12px;">
-		<tr>
-            <td style="padding: 10px 10px 40px; width: 100%; font-family: sans-serif; font-size: 12px; text-align: center;" class="x-gmail-data-detectors">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="email-container" style="font-family: sans-serif; color: #888; font-size: 12px;">
+        <tr>
+            <td style="padding: 10px 10px 40px; width: 100%; font-family: sans-serif; font-size: 12px; text-align: center; font-weight: bold !important" class="x-gmail-data-detectors">
                 openrouteservice @ <a target="_blank" href="http://www.geog.uni-heidelberg.de/gis/heigit_en.html"> HeiGIT</a>
-                <br>Berliner Str. 45
-                <br>69120 Heidelberg
-                <br>Germany
+                <p style="font-weight: normal !important">
+                    Berliner Str. 45
+                    <br>69120 Heidelberg
+                    <br>Germany
+                </p>
+               
             </td> 
         </tr>
     </table>
