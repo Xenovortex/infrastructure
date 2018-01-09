@@ -39,10 +39,13 @@ data_df = pd.DataFrame(data)
 
 data_dups = pd.concat(g for _, g in data_df.groupby('email') if len(g) > 1)
 
-data_dups.to_csv("duplicate_users_tyk.csv", sep=',')
+#data_dups.to_csv("duplicate_users_tyk.csv", sep=',')
+
+remove = ['nils.nolde@zalando.de', 'nilsnolde@geophox.com']
+
+print data_dups[data_dups.email.isin(remove)]
 
 
-users = {} # key is the 'id' field
 
 
 
