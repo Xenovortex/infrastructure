@@ -15,6 +15,7 @@ KNOW WHAT YOU'RE DOING!
 
 now = datetime.now()
 today = '_'.join([str(x) for x in [now.year, now.month, now.day]])
+
 """Set up Tyk access"""
 tyk_base_url = r"http://admin.cloud.tyk.io/api/portal/developers"
 tyk_auth_token = r"fb537f41eef94b4c615a1b6414ae0920"
@@ -25,19 +26,10 @@ tyk_admin_headers = {
 }
 
 """Set up WP DB access"""
-conn = mysql.connect(host='127.0.0.1',
+conn = mysql.connect(host='172.18.0.2',
                      user='root',
                      passwd='admin',
                      db='wordpress')
-#
-#resp = requests.delete(
-#    tyk_dashboard_apikey_url,
-#    headers=tyk_admin_headers)
-#
-#json_response = resp.json()
-#
-#print("Raw response from tyk dashboard: " + json.dumps(json_response))
-
 
 """Parse Tyk DB"""
 tyk_parse_url= tyk_base_url + "?p=-1"
