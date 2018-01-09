@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import json
 import requests
 import pandas as pd
+import MySQLdb as mysql
 
 #tyk_auth_token = "fb537f41eef94b4c615a1b6414ae0920"
 #
@@ -24,7 +26,6 @@ import pandas as pd
 
 
 
-
 base_url = r"https://admin.cloud.tyk.io/api/portal/developers?p=-1"
 auth = r"fb537f41eef94b4c615a1b6414ae0920"
 
@@ -35,21 +36,39 @@ print "JSON downloaded."
 print "Start parsing..."
 
 data_df = pd.DataFrame(data)
-#data_dup = data_df.duplicated(subset='email', keep=False)
 
 data_dups = pd.concat(g for _, g in data_df.groupby('email') if len(g) > 1)
 
-#data_dups.to_csv("duplicate_users_tyk.csv", sep=',')
+data_dups = data_dups[data_dups['email'].isin(['nils.nolde@zalando.de',
+                                                  'nilsnolde@geophox.com'])]
 
-remove = ['nils.nolde@zalando.de', 'nilsnolde@geophox.com']
+conn = mysql.connect(host='127.0.0.1',
+                     user='root',
+                     passwd='admin',
+                     db='wordpress')
+    
+cur = conn.cursor()
 
-print data_dups[data_dups.email.isin(remove)]
+for _, row in data_dups[['_id', 'email']].iterrows():
+    tyk_key, tyk_email = row
+    print tyk_email, tyk_key
+    sql = """SELECT user_id FROM wp_usermeta WHERE 
+            meta_key = 'tyk_user_id' AND
+            meta_value = %s
+          """
+    data = cur.execute(sql, (tyk_key, ))
+    print str(data) + '\n'
+    
 
 
+conn = mysql.connect(host='127.0.0.1',
+                     user='root',
+                     passwd='admin',
+                     db='wordpress')
+    
+cur = conn.cursor()
 
-
-
-#"""Parse users and add new domains if necessary, then write JSON´s to disk.""" 
+#"""Parse users and add new domains if necessary, then write JSONs to disk.""" 
 #for entry in data:
 #    user_id = entry['_id']
 #    user_name = entry['fields'].get('Name', 'NA')
