@@ -2,19 +2,33 @@
 import json
 import requests
 import pandas as pd
+from datetime import datetime
 import MySQLdb as mysql
 
-#tyk_auth_token = "fb537f41eef94b4c615a1b6414ae0920"
-#
-#api_id = "60b3f4b7a26d45c76f87d96a4c0b2113"
-#key_id = "58d904a497c67e00015b45fc72754973a3e84c02a0d3cd73135fbba5"
-#
-#tyk_dashboard_apikey_url = "http://admin.cloud.tyk.io/api/apis/" + api_id + "/keys/" + key_id
-#tyk_admin_headers = {
-#    "authorization": tyk_auth_token,
-#    "Content-Type": "application/json",
-#    "Cache-Control": "no-cache"
-#}
+"""CAUTION: Will delete users from WordPress and Tyk.
+
+Will parse Tyk DB, look for duplicate emails and delete
+the ones that don't have API keys set up from Tyk and WP DBs.
+
+KNOW WHAT YOU'RE DOING!
+"""
+
+now = datetime.now()
+today = '_'.join([str(x) for x in [now.year, now.month, now.day]])
+"""Set up Tyk access"""
+tyk_base_url = r"http://admin.cloud.tyk.io/api/portal/developers"
+tyk_auth_token = r"fb537f41eef94b4c615a1b6414ae0920"
+tyk_admin_headers = {
+    "authorization": tyk_auth_token,
+    "Content-Type": "application/json",
+    "Cache-Control": "no-cache"
+}
+
+"""Set up WP DB access"""
+conn = mysql.connect(host='127.0.0.1',
+                     user='root',
+                     passwd='admin',
+                     db='wordpress')
 #
 #resp = requests.delete(
 #    tyk_dashboard_apikey_url,
@@ -25,89 +39,68 @@ import MySQLdb as mysql
 #print("Raw response from tyk dashboard: " + json.dumps(json_response))
 
 
+"""Parse Tyk DB"""
+tyk_parse_url= tyk_base_url + "?p=-1"
 
-base_url = r"https://admin.cloud.tyk.io/api/portal/developers?p=-1"
-auth = r"fb537f41eef94b4c615a1b6414ae0920"
+response = requests.get(tyk_parse_url,
+                        headers=tyk_admin_headers)
 
-response = requests.get(base_url, headers={"authorization": auth})
-data = json.loads(response.text)['Data']   
+tyk_data = json.loads(response.text)['Data']   
 
-print "JSON downloaded."
+print "Tyk data downloaded."
 print "Start parsing..."
 
-data_df = pd.DataFrame(data)
-
+data_df = pd.DataFrame(tyk_data)
 data_dups = pd.concat(g for _, g in data_df.groupby('email') if len(g) > 1)
+#data_dups = data_dups[data_dups['email'].isin([
+#                                                'nils.nolde@zalando.de',
+#                                                #'nilsnolde@geophox.com'
+#                                                  ])]
+print "Parsing finished."
+print "Deletion in progress..." 
 
-data_dups = data_dups[data_dups['email'].isin(['nils.nolde@zalando.de',
-                                                  'nilsnolde@geophox.com'])]
+"""Cache user details which should be deleted"""
+deleted_emails = []
+deleted_tyk_ids = []
 
-conn = mysql.connect(host='127.0.0.1',
-                     user='root',
-                     passwd='admin',
-                     db='wordpress')
-    
+"""Delete duplicate users"""
 cur = conn.cursor()
 
-for _, row in data_dups[['_id', 'email']].iterrows():
-    tyk_key, tyk_email = row
-    print tyk_email, tyk_key
+for _, row in data_dups[['_id', 'api_keys', 'email']].iterrows():
+    """Find out if user_id exists in WP"""
+    
+    tyk_key, tyk_api_keys, tyk_email = row
     sql = """SELECT user_id FROM wp_usermeta WHERE 
             meta_key = 'tyk_user_id' AND
             meta_value = %s
           """
-    data = cur.execute(sql, (tyk_key, ))
-    print str(data) + '\n'
+    user_exists = cur.execute(sql, (tyk_key, ))
     
+    if user_exists == 0:
+        """Delete from Tyk if it doesn't"""
+        tyk_delete_url = tyk_base_url + '/' + tyk_key
+        resp = requests.delete(
+            tyk_delete_url,
+            headers=tyk_admin_headers)
+        
+    elif user_exists == 1:
+        if tyk_api_keys:
+            """Keep record in WP if API keys exist"""
+            pass
+        elif not tyk_api_keys:
+            """Else cache email for notification"""
+            deleted_tyk_ids.append(tyk_key)
+            deleted_emails.append(tyk_email)
 
+#TODO: Decide what to do with tyk_id's which don't have api_keys, 
+#but are in the WP DB. Maybe implement 4 weeks latency
+#sql = """SELECT user_id FROM wp_usermeta WHERE meta_value IN %s"""
+#cur.execute(sql, (tuple(deleted_tyk_ids), ))
+#deleted_wp_ids = cur.fetchall()
 
-conn = mysql.connect(host='127.0.0.1',
-                     user='root',
-                     passwd='admin',
-                     db='wordpress')
-    
-cur = conn.cursor()
+deleted_dict = {key: email for key, email in zip(deleted_tyk_ids, deleted_emails)}
+print len(deleted_dict)
 
-#"""Parse users and add new domains if necessary, then write JSONs to disk.""" 
-#for entry in data:
-#    user_id = entry['_id']
-#    user_name = entry['fields'].get('Name', 'NA')
-#    user_keys = entry['api_keys'].keys()
-#    user_email = entry['email']
-#    user_date = entry['date_created']
-#    
-#    users[user_id] = dict()
-#    users[user_id]['name'] = user_name
-#    users[user_id]['keys'] = user_keys
-#    users[user_id]['email'] = user_email
-#    users[user_id]['subscription_date'] = user_date
-#    
-#    try:
-#        user_domain = user_email.split("@")[1].lower()
-#    except:
-#        user_domain = 'NA'
-#    
-#    if user_domain in old_domains['commercial']:
-#        users[user_id]['type'] = "commercial"
-#    elif user_domain in old_domains['private']:
-#        users[user_id]['type'] = "private"
-#    elif user_domain in old_domains['edu']:
-#        users[user_id]['type'] = "edu"
-#    elif user_domain in old_domains['junk']:
-#        users[user_id]['type'] = "junk"
-#    else:
-#        domain_type = None
-#        while domain_type == None:                
-#            try:
-#                domain_type = userInput(user_domain)
-#            except ValueError, e:
-#                print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
-#                domain_type = userInput(user_domain)
-#        users[user_id]['type'] = domain_type
-#        if user_domain not in domains[domain_type]:
-#            domains[domain_type].append(user_domain)
-#            print "Domain {} was added to {}.".format(user_domain, domain_type)
-#        else:
-#            print "Domain {} already existed in {}".format(user_domain, domain_type)
-#    users[user_id]['domain'] = user_domain
-#        
+with open('WP_users_without_api_keys_{}.json'.format(today), 'wb') as f:
+    json.dump(deleted_dict, f)
+#data_dups.to_csv(r'duplicate_users_tyk.csv')       
