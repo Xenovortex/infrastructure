@@ -5,6 +5,8 @@ import sys
 import re
 import time
 
+# 
+
 line_nginx_full = re.compile(r"""(?P<ipaddress>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) - - \[(?P<dateandtime>\d{2}\/[a-z]{3}\/\d{4}:\d{2}:\d{2}:\d{2} (\+|\-)\d{4})\] ((\"(GET|POST) )(?P<url>.+)(http\/1\.1")) (?P<statuscode>\d{3}) (?P<bytessent>\d+) (["](?P<refferer>(\-)|(.+))["]) (["](?P<useragent>.+)["])""", 
     re.IGNORECASE)
 
@@ -19,17 +21,16 @@ class StatCounter(object):
         self.skipped_lines = 0
         self.codes = {}
         self.line_re = line_nginx_codeByMethod
-        self.file = open("access_urls.txt","w") 
+        self.file = open("tyk_api_urls.txt","w") 
         self.file.seek(0)
         self.file.truncate()
-        self.URL = "URL=http://129.206.7.206"
+        self.URL = "URL=https://api.openrouteservice.org"
         self.file.write(self.URL + "\n")
         self.endpoints_mapping = {
-            "directions": "routes",
-            "/directions": "routes",
-            "pdirections": "routes",
-            "geocoding": "geocode",
-            "pgeocoding": "geocode",
+            "routes": "directions",
+            "/routes": "directions",
+            "geocode": "geocoding",
+            "pgeocoding": "geocoding",
             "isochrones": "isochrones",
             "pisochrones": "isochrones",
             "locations": "locations",
@@ -38,6 +39,8 @@ class StatCounter(object):
             "pmatrix": "matrix",
             "corsdirections": "routes"
         }
+        self.match_api_key = "api_key"
+        self.api_key_unlimited = "58d904a497c67e00015b45fcacecf32dfe6248f4bd208bc3dc37e113"
 
     def _record_code(self, entry):
         code = entry['statuscode']
@@ -98,6 +101,13 @@ class StatCounter(object):
             match = match.groupdict()
             url = match["url"].replace(match["method"], self.endpoints_mapping[match["method"]])
             match["url"] = url
+            
+            api_key_idx_start = match["url"].find(self.match_api_key)+8
+            api_key = url[api_key_idx_start:api_key_idx_start+56]
+
+            url = match["url"].replace(api_key, self.api_key_unlimited)
+            match["url"] = url
+
             self.file.write("$(URL)" + match["url"] + "\n") 
 
             self.process_entry(match)
