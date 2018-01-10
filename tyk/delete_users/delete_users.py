@@ -2,112 +2,165 @@
 import json
 import requests
 import pandas as pd
+from datetime import datetime
+import time
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import MySQLdb as mysql
 
-#tyk_auth_token = "fb537f41eef94b4c615a1b6414ae0920"
-#
-#api_id = "60b3f4b7a26d45c76f87d96a4c0b2113"
-#key_id = "58d904a497c67e00015b45fc72754973a3e84c02a0d3cd73135fbba5"
-#
-#tyk_dashboard_apikey_url = "http://admin.cloud.tyk.io/api/apis/" + api_id + "/keys/" + key_id
-#tyk_admin_headers = {
-#    "authorization": tyk_auth_token,
-#    "Content-Type": "application/json",
-#    "Cache-Control": "no-cache"
-#}
-#
-#resp = requests.delete(
-#    tyk_dashboard_apikey_url,
-#    headers=tyk_admin_headers)
-#
-#json_response = resp.json()
-#
-#print("Raw response from tyk dashboard: " + json.dumps(json_response))
+"""CAUTION: Will delete users from WordPress and Tyk.
 
+Will parse Tyk DB, look for duplicate emails and delete
+the ones that don't have API keys set up from Tyk and WP DBs.
 
+Also will notify users without api_keys since > 2 weeks to create
+one, otherwise their accounts will be deleted, too.
 
-base_url = r"https://admin.cloud.tyk.io/api/portal/developers?p=-1"
-auth = r"fb537f41eef94b4c615a1b6414ae0920"
+KNOW WHAT YOU'RE DOING!
+"""
 
-response = requests.get(base_url, headers={"authorization": auth})
-data = json.loads(response.text)['Data']   
-
-print "JSON downloaded."
-print "Start parsing..."
-
-data_df = pd.DataFrame(data)
-
-data_dups = pd.concat(g for _, g in data_df.groupby('email') if len(g) > 1)
-
-data_dups = data_dups[data_dups['email'].isin(['nils.nolde@zalando.de',
-                                                  'nilsnolde@geophox.com'])]
-
-conn = mysql.connect(host='127.0.0.1',
-                     user='root',
-                     passwd='admin',
-                     db='wordpress')
+def parseData():    
+    """Parse Tyk DB"""
+    tyk_parse_url= tyk_base_url + "?p=-1"
     
-cur = conn.cursor()
-
-for _, row in data_dups[['_id', 'email']].iterrows():
-    tyk_key, tyk_email = row
-    print tyk_email, tyk_key
-    sql = """SELECT user_id FROM wp_usermeta WHERE 
-            meta_key = 'tyk_user_id' AND
-            meta_value = %s
-          """
-    data = cur.execute(sql, (tyk_key, ))
-    print str(data) + '\n'
+    response = requests.get(tyk_parse_url,
+                            headers=tyk_admin_headers)
     
-
-
-conn = mysql.connect(host='127.0.0.1',
-                     user='root',
-                     passwd='admin',
-                     db='wordpress')
+    tyk_data = json.loads(response.text)['Data']   
     
-cur = conn.cursor()
+    print "Tyk data downloaded."
+    print "Start parsing..."
+    
+    data_df = pd.DataFrame(tyk_data)
+    data_dups = data_df
+#    data_dups = pd.concat(g for _, g in data_df.groupby('email') if len(g) > 1)
+#    data_dups = data_dups[data_dups['email'].isin([
+#                                                    'nils.nolde@zalando.de',
+#                                                    #'nilsnolde@geophox.com'
+#                                                      ])]
+    print "Parsing finished."
+    
+    return data_dups
 
-#"""Parse users and add new domains if necessary, then write JSONs to disk.""" 
-#for entry in data:
-#    user_id = entry['_id']
-#    user_name = entry['fields'].get('Name', 'NA')
-#    user_keys = entry['api_keys'].keys()
-#    user_email = entry['email']
-#    user_date = entry['date_created']
-#    
-#    users[user_id] = dict()
-#    users[user_id]['name'] = user_name
-#    users[user_id]['keys'] = user_keys
-#    users[user_id]['email'] = user_email
-#    users[user_id]['subscription_date'] = user_date
-#    
-#    try:
-#        user_domain = user_email.split("@")[1].lower()
-#    except:
-#        user_domain = 'NA'
-#    
-#    if user_domain in old_domains['commercial']:
-#        users[user_id]['type'] = "commercial"
-#    elif user_domain in old_domains['private']:
-#        users[user_id]['type'] = "private"
-#    elif user_domain in old_domains['edu']:
-#        users[user_id]['type'] = "edu"
-#    elif user_domain in old_domains['junk']:
-#        users[user_id]['type'] = "junk"
-#    else:
-#        domain_type = None
-#        while domain_type == None:                
-#            try:
-#                domain_type = userInput(user_domain)
-#            except ValueError, e:
-#                print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
-#                domain_type = userInput(user_domain)
-#        users[user_id]['type'] = domain_type
-#        if user_domain not in domains[domain_type]:
-#            domains[domain_type].append(user_domain)
-#            print "Domain {} was added to {}.".format(user_domain, domain_type)
-#        else:
-#            print "Domain {} already existed in {}".format(user_domain, domain_type)
-#    users[user_id]['domain'] = user_domain
-#        
+
+def updateDB(data_dups):
+    """Set up WP DB access"""
+    conn = mysql.connect(host='172.18.0.2',
+                         user='root',
+                         passwd='admin',
+                         db='wordpress')
+    
+    """Cache user details which should be deleted"""
+    cached_emails = []
+    cached_tyk_ids = []
+    deleted_tyk_ids = []
+    
+    """Delete duplicate users"""
+    cur = conn.cursor()
+    
+    for _, row in data_dups[['_id', 'date_created', 'api_keys', 'email']].iterrows():
+        """Find out if user_id exists in WP"""
+        
+        tyk_key, tyk_raw_date, tyk_api_keys, tyk_email = row
+        sql = """SELECT user_id FROM wp_usermeta WHERE 
+                meta_key = 'tyk_user_id' AND
+                meta_value = %s
+              """
+        user_exists = cur.execute(sql, (tyk_key, ))
+        
+        if user_exists == 0:
+            """Delete from Tyk if it doesn't"""
+#            tyk_delete_url = tyk_base_url + '/' + tyk_key
+#            resp = requests.delete(
+#                tyk_delete_url,
+#                headers=tyk_admin_headers)
+#            deleted_tyk_ids.append(tyk_key)
+            
+        elif user_exists == 1:
+            if tyk_api_keys:
+                """Keep record in WP if API keys exist"""
+                pass
+            elif not tyk_api_keys:
+                try:
+                    py_date = datetime.strptime(tyk_raw_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+                except ValueError:
+                    py_date = datetime.strptime(tyk_raw_date, "%Y-%m-%dT%H:%M:%SZ")
+                delta = now - py_date
+                if delta.days >= 28:
+                    """Else cache email for notification"""
+                    cached_tyk_ids.append(tyk_key)
+                    cached_emails.append(tyk_email)
+    
+    cached_dict = {key: email for key, email in zip(cached_tyk_ids, cached_emails)}
+    
+    with open('WP_users_without_api_keys_{}.json'.format(today), 'wb') as f:
+        json.dump(cached_dict, f)
+    #data_dups.to_csv(r'duplicate_users_tyk.csv')
+    
+    print "DB updated, {} devs deleted from Tyk.".format(len(deleted_tyk_ids))
+    print "{} devs have no api_keys since > 28 days.".format(len(cached_dict))
+    
+    return cached_dict
+    
+    
+def sendMail(cached_dict):
+    emails_users = ['support@openrouteservice.org'] + cached_dict.values() + ['support@openrouteservice.org']
+
+    with open(r'user_notification.html', 'r') as f:
+        html_doc = f.read()
+        
+    msg_from = 'openrouteservice.org <notification@openrouteservice.org>'
+    msg_reply = 'ORS Support <support@openrouteservice.org>'
+    
+    for idx, user in enumerate(emails_users):
+        try:
+        #    msg_to += cc_users        
+            msg = MIMEMultipart('alternative')
+            
+            msg['To'] = user
+            msg['Subject'] = "Please register an API key"
+            msg['From'] = msg_from
+        #    msg['Cc'] = ','.join(cc_users)
+            msg.add_header('reply-to', msg_reply)
+            
+            msg_body = MIMEText(html_doc, 'html', "utf-8")
+            msg.attach(msg_body)
+            
+            s = smtplib.SMTP('smtp.strato.de', port=587)
+            s.login('support@openrouteservice.org', 'h4KABE2cgxF0')
+            s.sendmail(msg_from, user, msg.as_string())
+            s.quit()
+            
+            print "{}, {}: success".format(idx, user)
+        except:
+            print "{}, {}: failure".format(idx, user)
+            pass
+        
+        finally:
+            time.sleep(1)
+    
+    return
+    
+    
+if __name__== '__main__':   
+    """Set up Tyk access"""
+    tyk_auth_token = r"fb537f41eef94b4c615a1b6414ae0920"
+    tyk_admin_headers = {
+        "authorization": tyk_auth_token,
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache"
+    }
+    tyk_base_url = r"http://admin.cloud.tyk.io/api/portal/developers"
+    
+    now = datetime.now()
+    today = '_'.join([str(x) for x in [now.year, now.month, now.day]])
+    
+    data_dups = parseData()
+    
+    print "Deletion in progress..." 
+    
+    cached_dict = updateDB(data_dups)
+    
+    sendMail(cached_dict)
