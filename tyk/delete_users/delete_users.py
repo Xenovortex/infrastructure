@@ -47,7 +47,7 @@ def parseData():
 
 def updateDB(data_dups):
     """Set up WP DB access"""
-    conn = mysql.connect(host='127.0.0.1',
+    conn = mysql.connect(host='172.18.0.2',
                          user='root',
                          passwd='admin',
                          db='wordpress')
