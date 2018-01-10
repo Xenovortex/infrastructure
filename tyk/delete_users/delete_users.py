@@ -7,21 +7,22 @@ from datetime import datetime
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-#import MySQLdb as mysql
+import MySQLdb as mysql
 
 """CAUTION: Will delete users from WordPress and Tyk.
 
 Will parse Tyk DB, look for duplicate emails and delete
 the ones that don't have API keys set up from Tyk and WP DBs.
 
-Also will notify users without api_keys 
+Also will notify users without api_keys since > 2 weeks to create
+one, otherwise their accounts will be deleted, too.
 
 KNOW WHAT YOU'RE DOING!
 """
 
 def parseData():    
     """Parse Tyk DB"""
-    tyk_parse_url= tyk_base_url + "?p=1"
+    tyk_parse_url= tyk_base_url + "?p=-1"
     
     response = requests.get(tyk_parse_url,
                             headers=tyk_admin_headers)
@@ -45,7 +46,7 @@ def parseData():
 
 def updateDB(data_dups):
     """Set up WP DB access"""
-    conn = mysql.connect(host='127.0.0.1',
+    conn = mysql.connect(host='172.18.0.2',
                          user='root',
                          passwd='admin',
                          db='wordpress')
@@ -81,24 +82,21 @@ def updateDB(data_dups):
                 """Keep record in WP if API keys exist"""
                 pass
             elif not tyk_api_keys:
-                py_date = datetime.strptime(tyk_raw_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+                try:
+                    py_date = datetime.strptime(tyk_raw_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+                except ValueError:
+                    py_date = datetime.strptime(tyk_raw_date, "%Y-%m-%dT%H:%M:%SZ")
                 delta = now - py_date
                 if delta.days >= 28:
                     """Else cache email for notification"""
                     cached_tyk_ids.append(tyk_key)
                     cached_emails.append(tyk_email)
     
-    #TODO: Decide what to do with tyk_id's which don't have api_keys, 
-    #but are in the WP DB. Maybe implement 4 weeks latency
-    #sql = """SELECT user_id FROM wp_usermeta WHERE meta_value IN %s"""
-    #cur.execute(sql, (tuple(deleted_tyk_ids), ))
-    #deleted_wp_ids = cur.fetchall()
-    
     cached_dict = {key: email for key, email in zip(cached_tyk_ids, cached_emails)}
     
     with open('WP_users_without_api_keys_{}.json'.format(today), 'wb') as f:
         json.dump(cached_dict, f)
-    #data_dups.to_csv(r'duplicate_users_tyk.csv')       
+    #data_dups.to_csv(r'duplicate_users_tyk.csv')
     
     print "DB updated, {} devs deleted from Tyk.".format(len(deleted_tyk_ids))
     print "{} devs have no api_keys since > 28 days.".format(len(cached_dict))
@@ -107,15 +105,12 @@ def updateDB(data_dups):
     
     
 def sendMail(cached_dict):
-    cc_users = ['nilsnolde@gmail.com']
-    bcc_users = [
-                'nilsnolde@geophox.com'
-                ]
+    bcc_users = cached_dict.values() + ['nils.nolde@gmail.com']
     
     with open(r'user_notification.html', 'r') as f:
         html_doc = f.read()
         
-    msg_to = 'nils@openrouteservice.org'
+    msg_to = 'support@openrouteservice.org'
     msg_from = 'openrouteservice.org <notification@openrouteservice.org>'
     msg_reply = 'ORS Support <support@openrouteservice.org>'
     
@@ -124,11 +119,11 @@ def sendMail(cached_dict):
     msg['Subject'] = "Please register an API key"
     msg['From'] = msg_from
     msg['To'] = msg_to
-    msg['Cc'] = ','.join(cc_users)
+#    msg['Cc'] = ','.join(cc_users)
     msg.add_header('reply-to', msg_reply)
     
     msg_to = [msg_to]
-    msg_to += cc_users
+#    msg_to += cc_users
     msg_to += bcc_users
     
     msg_body = MIMEText(html_doc, 'html', "utf-8")
