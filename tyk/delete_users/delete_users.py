@@ -3,6 +3,7 @@ import json
 import requests
 import pandas as pd
 from datetime import datetime
+import time
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -105,35 +106,33 @@ def updateDB(data_dups):
     
     
 def sendMail(cached_dict):
-    bcc_users = cached_dict.values() + ['nils@openrouteservice.org',
-                                          'timothy@openrouteservice.org']
+    emails_users = ['support@openrouteservice.org'] + cached_dict.values() + ['support@openrouteservice.org']
     
     with open(r'user_notification.html', 'r') as f:
         html_doc = f.read()
         
-    msg_to = 'support@openrouteservice.org'
     msg_from = 'openrouteservice.org <notification@openrouteservice.org>'
     msg_reply = 'ORS Support <support@openrouteservice.org>'
     
-    msg = MIMEMultipart('alternative')
-    
-    msg['Subject'] = "Please register an API key"
-    msg['From'] = msg_from
-    msg['To'] = msg_to
-#    msg['Cc'] = ','.join(cc_users)
-    msg.add_header('reply-to', msg_reply)
-    
-    msg_to = [msg_to]
-#    msg_to += cc_users
-    msg_to += bcc_users
-    
-    msg_body = MIMEText(html_doc, 'html', "utf-8")
-    msg.attach(msg_body)
-    
-    s = smtplib.SMTP('smtp.strato.de', port=587)
-    s.login('support@openrouteservice.org', 'h4KABE2cgxF0')
-    s.sendmail(msg_from, msg_to, msg.as_string())
-    s.quit()
+    for user in emails_users:
+    #    msg_to += cc_users        
+        msg = MIMEMultipart('alternative')
+        
+        msg['To'] = user
+        msg['Subject'] = "Please register an API key"
+        msg['From'] = msg_from
+    #    msg['Cc'] = ','.join(cc_users)
+        msg.add_header('reply-to', msg_reply)
+        
+        msg_body = MIMEText(html_doc, 'html', "utf-8")
+        msg.attach(msg_body)
+        
+        s = smtplib.SMTP('smtp.strato.de', port=587)
+        s.login('support@openrouteservice.org', 'h4KABE2cgxF0')
+        s.sendmail(msg_from, user, msg.as_string())
+        s.quit()
+        
+        time.sleep(1)
     
     return
     
