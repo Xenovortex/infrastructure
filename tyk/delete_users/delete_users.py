@@ -47,7 +47,7 @@ def parseData():
 
 def updateDB(data_dups):
     """Set up WP DB access"""
-    conn = mysql.connect(host='172.18.0.2',
+    conn = mysql.connect(host='127.0.0.1',
                          user='root',
                          passwd='admin',
                          db='wordpress')
@@ -107,32 +107,39 @@ def updateDB(data_dups):
     
 def sendMail(cached_dict):
     emails_users = ['support@openrouteservice.org'] + cached_dict.values() + ['support@openrouteservice.org']
-    
+
     with open(r'user_notification.html', 'r') as f:
         html_doc = f.read()
         
     msg_from = 'openrouteservice.org <notification@openrouteservice.org>'
     msg_reply = 'ORS Support <support@openrouteservice.org>'
     
-    for user in emails_users:
-    #    msg_to += cc_users        
-        msg = MIMEMultipart('alternative')
+    for idx, user in enumerate(emails_users):
+        try:
+        #    msg_to += cc_users        
+            msg = MIMEMultipart('alternative')
+            
+            msg['To'] = user
+            msg['Subject'] = "Please register an API key"
+            msg['From'] = msg_from
+        #    msg['Cc'] = ','.join(cc_users)
+            msg.add_header('reply-to', msg_reply)
+            
+            msg_body = MIMEText(html_doc, 'html', "utf-8")
+            msg.attach(msg_body)
+            
+            s = smtplib.SMTP('smtp.strato.de', port=587)
+            s.login('support@openrouteservice.org', 'h4KABE2cgxF0')
+            s.sendmail(msg_from, user, msg.as_string())
+            s.quit()
+            
+            print "{}, {}: success".format(idx, user)
+        except:
+            print "{}, {}: failure".format(idx, user)
+            pass
         
-        msg['To'] = user
-        msg['Subject'] = "Please register an API key"
-        msg['From'] = msg_from
-    #    msg['Cc'] = ','.join(cc_users)
-        msg.add_header('reply-to', msg_reply)
-        
-        msg_body = MIMEText(html_doc, 'html', "utf-8")
-        msg.attach(msg_body)
-        
-        s = smtplib.SMTP('smtp.strato.de', port=587)
-        s.login('support@openrouteservice.org', 'h4KABE2cgxF0')
-        s.sendmail(msg_from, user, msg.as_string())
-        s.quit()
-        
-        time.sleep(1)
+        finally:
+            time.sleep(1)
     
     return
     
