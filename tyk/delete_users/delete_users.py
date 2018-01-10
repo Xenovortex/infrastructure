@@ -105,7 +105,8 @@ def updateDB(data_dups):
     
     
 def sendMail(cached_dict):
-    bcc_users = cached_dict.values() + ['nils.nolde@gmail.com']
+    bcc_users = cached_dict.values() + ['nils@openrouteservice.org',
+                                          'timothy@openrouteservice.org']
     
     with open(r'user_notification.html', 'r') as f:
         html_doc = f.read()
