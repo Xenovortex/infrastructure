@@ -21,16 +21,30 @@ class StatCounter(object):
         self.skipped_lines = 0
         self.codes = {}
         self.line_re = line_nginx_codeByMethod
-        self.file = open("tyk_api_urls.txt","w") 
+        self.file = open("tomcat_api_urls_routes_driving_only.txt","w") 
         self.file.seek(0)
         self.file.truncate()
-        self.URL = "URL=https://api.openrouteservice.org"
+        #self.URL = "URL=https://api.openrouteservice.org"
+        self.URL ="URL=http://129.206.7.36:8080/ors"
         self.file.write(self.URL + "\n")
+        # self.endpoints_mapping = {
+        #     "routes": "directions",
+        #     "/routes": "directions",
+        #     "geocode": "geocoding",
+        #     "pgeocoding": "geocoding",
+        #     "isochrones": "isochrones",
+        #     "pisochrones": "isochrones",
+        #     "locations": "locations",
+        #     "plocations": "locations",
+        #     "matrix": "matrix",
+        #     "pmatrix": "matrix",
+        #     "corsdirections": "routes"
+        # }
         self.endpoints_mapping = {
-            "routes": "directions",
-            "/routes": "directions",
-            "geocode": "geocoding",
-            "pgeocoding": "geocoding",
+            "routes": "routes",
+            "/routes": "routes",
+            "geocode": "geocode",
+            "pgeocoding": "geocode",
             "isochrones": "isochrones",
             "pisochrones": "isochrones",
             "locations": "locations",
@@ -99,6 +113,13 @@ class StatCounter(object):
                 continue
             #print True, line
             match = match.groupdict()
+
+            if (match["method"] == 'isochrones') or (match["method"] == 'matrix') or (match["method"] == 'locations') or (match["method"] == 'geocode'):
+                continue
+
+            if "driving" not in match["url"]:
+                continue
+
             url = match["url"].replace(match["method"], self.endpoints_mapping[match["method"]])
             match["url"] = url
             
