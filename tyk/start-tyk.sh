@@ -66,7 +66,7 @@ docker pull tykio/tyk-hybrid-docker:latest
 CONTAINER=tykio/tyk-hybrid-docker
 docker run --restart always \
         -d --name tyk_hybrid \
-        -v $cwd/templates/default_webhook.json:/opt/tyk/templates/default_webhook.json \
+        -v $cwd/templates/default_webhook.json:/opt/tyk-gateway/templates/default_webhook.json \
         -v $cwd/logs:/opt/tyk-gateway/logs \
         -p $PORT:$PORT \
         -p 80:80 \
