@@ -81,12 +81,7 @@ docker run --restart always \
         -e TYKVERSION='-python' \
         -e TYK_GW_UPTIMETESTS_CONFIG_TIMEWAIT=3 \
         -e TYK_GW_UPTIMETESTS_CONFIG_FAILURETRIGGERSAMPLESIZE=3 \
-        -e TYK_GW_SECRET=$SECRET \
-        -e TYK_GW_LISTENPORT=$PORT \
         -e TYK_GW_APPPATH="./test_apps/" \
-        -e TYK_GW_ANALYTICSCONFIG_GEOIPDBLOCATION="/opt/tyk-gateway/GeoLite2-City.mmdb" \
-        -e TYK_GW_SLAVEOPTIONS_APIKEY=$APIKEY \
-        -e TYK_GW_SLAVEOPTIONS_RPCKEY=$ORGID \
         -e TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS="true" \
         -e TYK_GW_ENABLENONTRANSACTIONALRATELIMITER="false" \
         -e TYK_GW_ENABLESENTINELRATELIMITER="false" \
@@ -94,7 +89,6 @@ docker run --restart always \
         -e TYK_GW_USELOGSTASH="true" \
         -e TYK_GW_LOGSTASHTRANSPORT="tcp" \
         -e TYK_GW_LOGSTASHNETWORKADDR="192.168.2.17:5045" \
-        -e TYK_GW_STORAGE_HOSTS="$REDISHOST:$RPORT" \
         -e TYK_GW_MANAGEMENTNODE="true" \
         $CONTAINER
 
