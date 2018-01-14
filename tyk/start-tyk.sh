@@ -96,8 +96,6 @@ docker run --restart always \
         -e TYK_GW_LOGSTASHNETWORKADDR="192.168.2.17:5045" \
         -e TYK_GW_STORAGE_HOSTS="$REDISHOST:$RPORT" \
         -e TYK_GW_MANAGEMENTNODE="true" \
-        -e MANAGEMENT_NODE="true" \
-        -e MANAGEMENTNODE="true" \
         $CONTAINER
 
 # -v $cwd/confs:/etc/nginx/sites-enabled \
