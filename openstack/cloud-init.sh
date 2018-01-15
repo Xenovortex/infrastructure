@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# set MTU according to URZ
+echo "post-up /sbin/ip link set dev ens3 mtu 1500" >> /etc/network/interfaces.d/50-cloud-init.cfg
 # Add google nameservers
 echo "dns-nameservers 8.8.8.8 8.8.4.4" >> /etc/network/interfaces.d/50-cloud-init.cfg
 ifdown ens3 && ifup ens3
