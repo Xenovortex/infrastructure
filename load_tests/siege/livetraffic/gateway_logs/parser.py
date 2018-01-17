@@ -4,6 +4,7 @@ import argparse
 import sys
 import re
 import time
+import requests
 
 # 
 
@@ -21,26 +22,30 @@ class StatCounter(object):
         self.skipped_lines = 0
         self.codes = {}
         self.line_re = line_nginx_codeByMethod
-        self.file = open("tomcat_api_urls_routes_driving_only.txt","w") 
-        self.file.seek(0)
-        self.file.truncate()
-        #self.URL = "URL=https://api.openrouteservice.org"
-        self.URL ="URL=http://129.206.7.36:8080/ors"
-        self.file.write(self.URL + "\n")
-        # self.endpoints_mapping = {
-        #     "routes": "directions",
-        #     "/routes": "directions",
-        #     "geocode": "geocoding",
-        #     "pgeocoding": "geocoding",
-        #     "isochrones": "isochrones",
-        #     "pisochrones": "isochrones",
-        #     "locations": "locations",
-        #     "plocations": "locations",
-        #     "matrix": "matrix",
-        #     "pmatrix": "matrix",
-        #     "corsdirections": "routes"
-        # }
-        self.endpoints_mapping = {
+        self.file1 = open("api_urls_response_200.txt","w") 
+        self.file2 = open("local_urls_response_200.txt","w") 
+        self.file1.seek(0)
+        self.file1.truncate()
+        self.file2.seek(0)
+        self.file2.truncate()
+        self.URL1 = "URL=https://api.openrouteservice.org"
+        self.URL2 ="URL=http://129.206.7.217:8082"
+        self.file1.write(self.URL1 + "\n")
+        self.file2.write(self.URL2 + "\n")
+        self.endpoints_mapping_api = {
+            "routes": "directions",
+            "/routes": "directions",
+            "geocode": "geocoding",
+            "pgeocoding": "geocoding",
+            "isochrones": "isochrones",
+            "pisochrones": "isochrones",
+            "locations": "locations",
+            "plocations": "locations",
+            "matrix": "matrix",
+            "pmatrix": "matrix",
+            "corsdirections": "routes"
+        }
+        self.endpoints_mapping_local = {
             "routes": "routes",
             "/routes": "routes",
             "geocode": "geocode",
@@ -114,24 +119,31 @@ class StatCounter(object):
             #print True, line
             match = match.groupdict()
 
-            if (match["method"] == 'isochrones') or (match["method"] == 'matrix') or (match["method"] == 'locations') or (match["method"] == 'geocode'):
-                continue
+            # if (match["method"] == 'isochrones') or (match["method"] == 'matrix') or (match["method"] == 'locations') or (match["method"] == 'geocode'):
+            #     continue
 
-            if "driving" not in match["url"]:
-                continue
+            # if "driving" not in match["url"]:
+            #     continue
 
-            url = match["url"].replace(match["method"], self.endpoints_mapping[match["method"]])
-            match["url"] = url
-            
-            api_key_idx_start = match["url"].find(self.match_api_key)+8
-            api_key = url[api_key_idx_start:api_key_idx_start+56]
+        
+            if match['statuscode'] == '200':
+                if self.line_count % 100 == 0:
+                    print self.line_count
 
-            url = match["url"].replace(api_key, self.api_key_unlimited)
-            match["url"] = url
+                api_key_idx_start = match["url"].find(self.match_api_key)+8
+                api_key = match["url"][api_key_idx_start:api_key_idx_start+56]
 
-            self.file.write("$(URL)" + match["url"] + "\n") 
+                url = match["url"].replace(api_key, self.api_key_unlimited)
+                match["url"] = url
 
-            self.process_entry(match)
+                url_api = match["url"].replace(match["method"], self.endpoints_mapping_api[match["method"]])
+                self.file1.write("$(URL)" + url_api + "\n") 
+
+                url_local = match["url"].replace(match["method"], self.endpoints_mapping_local[match["method"]])
+                self.file2.write("$(URL)" + url_local + "\n") 
+
+                #self.process_entry(match)
+
 
 if __name__ == '__main__':
 

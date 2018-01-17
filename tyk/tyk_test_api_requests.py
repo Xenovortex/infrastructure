@@ -18,7 +18,7 @@ while(True):
     if(response == 200):
         print(response)
         counter += 1
-        time.sleep(1.3)
+        #time.sleep(1.3)
     else:
         rate_limit_lst.append(counter)
         response_error_lst.append(response)
