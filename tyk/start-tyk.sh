@@ -48,7 +48,7 @@ if [ -z "$7" ]
 then
         echo "Using Redis without password"
         REDISPW=""
-fi 
+fi
 
 cwd=$(pwd)
 if [ ! -d "confs" ]; then
@@ -64,12 +64,10 @@ docker stop tyk_hybrid && docker rm tyk_hybrid
 docker pull tykio/tyk-hybrid-docker:latest
 
 CONTAINER=tykio/tyk-hybrid-docker
-docker run --restart always -v $cwd/confs:/etc/nginx/sites-enabled \
+docker run --restart always \
         -d --name tyk_hybrid \
-        -v $cwd/templates/default_webhook.json:/opt/tyk/templates/default_webhook.json \
-        -v $cwd/bundles:/opt/tyk/middleware/bundles \
-        -v $cwd/tyk_conf/patched-tyk.conf:/opt/tyk/tyk.conf \
-        -v $cwd/logs:/opt/tyk/logs \
+        -v $cwd/templates/default_webhook.json:/opt/tyk-gateway/templates/default_webhook.json \
+        -v $cwd/logs:/opt/tyk-gateway/logs \
         -p $PORT:$PORT \
         -p 80:80 \
         -e PORT=$PORT \
@@ -81,16 +79,26 @@ docker run --restart always -v $cwd/confs:/etc/nginx/sites-enabled \
         -e RPORT=$RPORT \
         -e BINDSLUG=1 \
         -e TYKVERSION='-python' \
-        -e TYK_GW_BUNDLEBASEURL='http://192.168.2.17:8081/api-plugins/' \
         -e TYK_GW_UPTIMETESTS_CONFIG_TIMEWAIT=3 \
         -e TYK_GW_UPTIMETESTS_CONFIG_FAILURETRIGGERSAMPLESIZE=3 \
+        -e TYK_GW_APPPATH="./test_apps/" \
+        -e TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS="true" \
+        -e TYK_GW_ENABLENONTRANSACTIONALRATELIMITER="false" \
+        -e TYK_GW_ENABLESENTINELRATELIMITER="false" \
+        -e TYK_GW_ENABLEREDISROLLINGLIMITER="true" \
+        -e TYK_GW_USELOGSTASH="true" \
+        -e TYK_GW_LOGSTASHTRANSPORT="tcp" \
+        -e TYK_GW_LOGSTASHNETWORKADDR="192.168.2.17:5045" \
+        -e TYK_GW_MANAGEMENTNODE="true" \
         $CONTAINER
+
+# -v $cwd/confs:/etc/nginx/sites-enabled \
 
 # Add the following environment variable to disable the nginx service
 # -e DISABLENGINX=1 \
 
 # Add the following environment variable to have the node bind URLs to API IDs instead of Slugs
 # -e BINDSLUG=0 \
-        
+
 echo "Tyk Hybrid Node Running"
 echo "- To test the node, use port $PORT"

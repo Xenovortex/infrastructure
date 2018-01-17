@@ -108,7 +108,7 @@ def updateDB(data_dups):
 def sendMail(cached_dict):
     emails_users = ['support@openrouteservice.org'] + cached_dict.values() + ['support@openrouteservice.org']
 
-    with open(r'user_notification.html', 'r') as f:
+    with open(r'user_notification_apology.html', 'r') as f:
         html_doc = f.read()
         
     msg_from = 'openrouteservice.org <notification@openrouteservice.org>'
