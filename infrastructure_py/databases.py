@@ -27,3 +27,23 @@ class Tyk():
                 "Content-Type": "application/json",
                 "Cache-Control": "no-cache"
                 }
+        
+
+class WP():
+    def __init__(self,
+                 inst = 'local'):
+        
+        import MySQLdb as mysql
+        
+        if inst == 'local':
+            self.host = '127.0.0.1'
+        elif inst == 'live':
+            self.host = '172.18.0.2'
+        elif inst == 'test':
+            self.host = '172.19.0.3'
+        
+        self.conn = self.mysql.connect(host=self.host,
+                             user='root',
+                             passwd='admin',
+                             db='wordpress')
+        
