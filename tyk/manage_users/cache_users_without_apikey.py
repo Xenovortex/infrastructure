@@ -51,7 +51,7 @@ def updateDB(users_data):
     
     cached_dict = {key: email for key, email in zip(cached_tyk_ids, cached_emails)}
     
-    with open('WP_users_without_api_keys_{}.json'.format(today), 'wb') as f:
+    with open('users_without_api_keys.json', 'wb') as f:
         json.dump(cached_dict, f)
     
     print "DB updated, {} devs deleted from Tyk.".format(len(deleted_tyk_ids))
