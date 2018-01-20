@@ -41,7 +41,7 @@ class Mailer:
         s.login(self.user, self.password)
         s.sendmail(msg['From'], kwargs['to'], msg.as_string())
         s.quit()
-
+        
     def sendHTML(self,**kwargs):
         """Send HTML emails.
         
@@ -62,7 +62,7 @@ class Mailer:
         :param cc: Cc addresses(es)
         :type cc: list or tuple
         
-        :param reply_to: If 'source' is not a valid email account.
+        :param reply_to: If 'source' is not a valid email account, e.g. survey@ors.org
         :type reply_to: str
         """
         
