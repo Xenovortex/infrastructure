@@ -3,6 +3,9 @@ import json
 import pandas as pd
 import os.path
 
+import sys
+sys.path.insert(0,"../../infrastructure_py")
+
 import infrastructure_py.databases as db
 import infrastructure_py.mail as mail
 #import MySQLdb as mysql
@@ -39,7 +42,7 @@ def deleteFromTyk(delete_devs):
     
 
 def deleteFromWP(delete_devs):
-    wp = db.WP(inst='live')
+    wp = db.WP(inst='local')
     """delete leftover records from WP"""
     ids = wp.getWPidsByEmail(delete_devs['email'].tolist())
     try:
@@ -73,14 +76,14 @@ if __name__== '__main__':
         
         delete_devs = validate(cached_users)
         
-        deleteFromTyk(delete_devs)
+#        deleteFromTyk(delete_devs)
         
         deleteFromWP(delete_devs)
         
         sendMailToORS(len(delete_devs))
-    except:
+    except Exception, e:
         mailer = mail.Mailer()
-        cont = "Smth went wrong with {}, please check.".format(os.path.basename(__file__))
+        cont = "Smth went wrong with {}, please check:\n{}".format(os.path.basename(__file__), str(e))
         mailer.sendText(subject="Python error",
                         source='CRM ORS <crm@openrouteservice.org>',
                         to=['nils@openrouteservice.org','timothy@openrouteservice.org'],
