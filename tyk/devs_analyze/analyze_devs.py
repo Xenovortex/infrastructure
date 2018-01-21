@@ -43,13 +43,11 @@ def parseDB():
                     FROM 
                     wp_users 
                     WHERE ID NOT IN (
-                    SELECT DISTINCT user_id 
-                    FROM wp_usermeta 
+                    SELECT DISTINCT user_id
+                    FROM wp_usermeta
                     WHERE 
-                     meta_key = 'priority'
-                    OR
-                    (meta_key = 'priority' AND
-                     meta_value IS NULL)
+                     meta_key = 'priority' AND
+                     meta_value IS NOT NULL
                     )
                     """
     cur.execute(sql_parse)
