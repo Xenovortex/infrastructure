@@ -52,6 +52,8 @@ def parseDB():
     indexs = []
     new_domains = []
     
+    print cur.fetchall()
+    
     for index, mail in cur.fetchall():
         try:
             new_domains.append(mail.split("@")[1].lower())
@@ -64,8 +66,6 @@ def parseDB():
                     SELECT DISTINCT users.ID, 'priority'
                     FROM wp_users users
                     WHERE users.ID IN %s"""
-                    
-    print indexs
                     
     cur.execute(sql_inject, (tuple(indexs), ))
     
