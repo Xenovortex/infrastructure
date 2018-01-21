@@ -42,7 +42,7 @@ def deleteFromTyk(delete_devs):
     
 
 def deleteFromWP(delete_devs):
-    wp = db.WP(inst='local')
+    wp = db.WP(inst='live')
     """delete leftover records from WP"""
     ids = wp.getWPidsByEmail(delete_devs['email'].tolist())
     try:
@@ -76,7 +76,7 @@ if __name__== '__main__':
         
         delete_devs = validate(cached_users)
         
-#        deleteFromTyk(delete_devs)
+        deleteFromTyk(delete_devs)
         
         deleteFromWP(delete_devs)
         
