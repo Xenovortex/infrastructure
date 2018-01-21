@@ -20,7 +20,7 @@ KNOW WHAT YOU'RE DOING!
 
 def parseJSON():    
     """Parse JSON"""
-    return json.load(open('data/users_without_api_keys.json', 'r'))
+    return json.load(open(r'./data/users_without_api_keys.json', 'r'))
     
 
 def validate(cached_users):
