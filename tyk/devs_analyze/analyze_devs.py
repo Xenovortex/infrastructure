@@ -33,7 +33,7 @@ def userInput(user_domain):
 
 
 def parseDB():
-    conn = mysql.connect(host='172.18.0.2',
+    conn = mysql.connect(host='127.0.0.1',
                      user='root',
                      passwd='admin',
                      db='wordpress')
@@ -46,8 +46,7 @@ def parseDB():
                     SELECT DISTINCT user_id
                     FROM wp_usermeta
                     WHERE 
-                     meta_key = 'priority' AND
-                     meta_value IS NOT NULL
+                     meta_key = 'priority'
                     )
                     """
     cur.execute(sql_parse)
