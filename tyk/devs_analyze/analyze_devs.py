@@ -68,25 +68,32 @@ def parseDB():
     cur.execute(sql_inject, (tuple(indexs), ))
     
     for user_id, domain in zip(indexs, new_domains):
-        sql_update = "UPDATE wp_usermeta SET meta_key = %s WHERE user_id = %s AND meta_value = 'priority'"
-        if domain in old_domains['commercial']:
-            domain_type = "commercial"
-        elif domain in old_domains['private']:
-            domain_type = "private"
-        elif domain in old_domains['edu']:
-            domain_type = "edu"
-        elif domain in old_domains['junk']:
-            domain_type = "junk"
-        else:
-            domain_type = None
-            while domain_type == None:                
-                try:
-                    domain_type = userInput(domain)
-                except ValueError, e:
-                    print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
-                    domain_type = userInput(domain)
-            if domain not in old_domains[domain_type]:
-                old_domains[domain_type].append(domain)
+        try:
+            sql_update = "UPDATE wp_usermeta SET meta_key = %s WHERE user_id = %s AND meta_value = 'priority'"
+            if domain in old_domains['commercial']:
+                domain_type = "commercial"
+            elif domain in old_domains['private']:
+                domain_type = "private"
+            elif domain in old_domains['edu']:
+                domain_type = "edu"
+            elif domain in old_domains['junk']:
+                domain_type = "junk"
+            else:
+                domain_type = None
+                while domain_type == None:                
+                    try:
+                        domain_type = userInput(domain)
+                    except ValueError, e:
+                        print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
+                        domain_type = userInput(domain)
+                if domain not in old_domains[domain_type]:
+                    old_domains[domain_type].append(domain)
+        except:
+            cur.close()
+            conn.commit()
+            conn.close()
+            raise
+            
         cur.execute(sql_update, (domain_type, user_id,))
         
     cur.close()
