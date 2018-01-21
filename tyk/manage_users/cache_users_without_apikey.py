@@ -49,7 +49,7 @@ def updateDB(users_data):
     
     cached_dict = {key: email for key, email in zip(cached_tyk_ids, cached_emails)}
     
-    with open('users_without_api_keys.json', 'wb') as f:
+    with open('data/users_without_api_keys.json', 'wb') as f:
         json.dump(cached_dict, f)
     
     print "{} devs have no api_keys since > 28 days.".format(len(cached_dict))
@@ -87,9 +87,9 @@ def sendMailUsers(cached_dict):
 def sendMailors(users_amount):
     """Email notification to status@ors.org"""
     
-    content = """Dear Team,
-                this month, {} users have been notified to create API keys before their accounts
-                will be deleted in 2 weeks.""".format(users_amount)
+    content = ("Dear Team,\n"
+               "this month, {} users have been notified to create API keys before their accounts "
+                "will be deleted in 2 weeks.").format(users_amount)
 
     smtp.sendText(subject="User overview for past month",
                   to=['status@openrouteservice.org'],
