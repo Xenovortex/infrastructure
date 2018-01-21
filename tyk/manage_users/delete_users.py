@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import pandas as pd
-from datetime import datetime
-import time
-
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 import infrastructure_py.databases as db
 #import MySQLdb as mysql
@@ -35,8 +29,14 @@ def validate(cached_users):
 
 def deleteFromTyk(delete_devs):
     """delete leftover records from Tyk"""
-    for tyk_key, _ in delete_devs.iterrows():
-        print tyk_key#tyk.deleteDevs(dev)
+    for tyk_key, email in delete_devs.iterrows():
+        tyk.deleteDev(tyk_key)
+        
+
+def deleteFromWP(delete_devs):
+    """delete leftover records from WP"""
+    pass
+#    for _, email in delete_devs.iterrows():
     
     
 if __name__== '__main__':   
@@ -48,6 +48,6 @@ if __name__== '__main__':
     
     delete_devs = validate(cached_users)
     
-    deleteFromTyk(delete_devs)
+#    deleteFromTyk(delete_devs)
 #    
 #    sendMail(cached_dict)
