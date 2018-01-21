@@ -45,14 +45,18 @@ def parseDB():
                     WHERE ID NOT IN (
                     SELECT DISTINCT user_id 
                     FROM wp_usermeta 
-                    WHERE meta_key = 'priority'
+                    WHERE 
+                     meta_key = 'priority'
+                    OR
+                    (meta_key = 'priority' AND
+                     meta_value IS NULL)
                     )
                     """
     cur.execute(sql_parse)
     indexs = []
     new_domains = []
     
-    print cur.fetchall()
+    print "{} users have no priority set\n".format(len(cur.fetchall()))
     
     for index, mail in cur.fetchall():
         try:
@@ -66,8 +70,10 @@ def parseDB():
                     SELECT DISTINCT users.ID, 'priority'
                     FROM wp_users users
                     WHERE users.ID IN %s"""
-                    
-    cur.execute(sql_inject, (tuple(indexs), ))
+    try:
+        cur.execute(sql_inject, (tuple(indexs), ))
+    except: 
+        print "No priority rows had to be added this time\n"
     
     for user_id, domain in zip(indexs, new_domains):
         try:
