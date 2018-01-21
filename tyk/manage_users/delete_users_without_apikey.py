@@ -20,7 +20,8 @@ KNOW WHAT YOU'RE DOING!
 
 def parseJSON():    
     """Parse JSON"""
-    return json.load(open(r'./data/users_without_api_keys.json', 'r'))
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    return json.load(open(os.path.join(cwd, 'data', 'users_without_api_keys.json'), 'r'))
     
 
 def validate(cached_users):
