@@ -4,11 +4,11 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import numpy as np
-import pyperclip
+#import pyperclip
 import MySQLdb as mysql
 
 """Parse all WP DB data, determine if domain is already registered in 
-domains.json and if necessary, user registers new domains manually with raw_input
+domains.json and if necessary, registers new domains manually with raw_input
 and adds 'priority' to WP DB.
 """
     
@@ -19,13 +19,13 @@ def userInput(user_domain):
     if choice == 0:
         return 'commercial'
     elif choice == 1:
-        return 'private'
+        return 'private' 
     elif choice == 2:
         return 'edu'
     elif choice == 3:
         return 'junk'
     elif choice == -1:
-        pyperclip.copy('http://www.' + user_domain)
+#        pyperclip.copy('http://www.' + user_domain)
         return None
     else:
         print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
@@ -98,94 +98,52 @@ def parseDB():
         
     print "All up-to-date!"
         
-    
-    
-# Legacy: Get info from Tyk Dashboard API
-#def parsing():
-#    base_url = r"https://admin.cloud.tyk.io/api/portal/developers?p=-1"
-#    auth = r"fb537f41eef94b4c615a1b6414ae0920"
-#    
-#    response = requests.get(base_url, headers={"authorization": auth})
-#    data = json.loads(response.text)['Data']   
-#    
-#    print "JSON downloaded."
-#    print "Start parsing..."
-#    
-#    users = {} # key is the 'id' field
-#    
-#    """Parse users and add new domains if necessary, then write JSON´s to disk.""" 
-#    for entry in data:
-#        user_id = entry['_id']
-#        user_name = entry['fields'].get('Name', 'NA')
-#        user_keys = entry['api_keys'].keys()
-#        user_email = entry['email']
-#        user_date = entry['date_created']
-#        
-#        users[user_id] = dict()
-#        users[user_id]['name'] = user_name
-#        users[user_id]['keys'] = user_keys
-#        users[user_id]['email'] = user_email
-#        users[user_id]['subscription_date'] = user_date
-#        
-#        try:
-#            user_domain = user_email.split("@")[1].lower()
-#        except:
-#            user_domain = 'NA'
-#        
-#        if user_domain in old_domains['commercial']:
-#            users[user_id]['type'] = "commercial"
-#        elif user_domain in old_domains['private']:
-#            users[user_id]['type'] = "private"
-#        elif user_domain in old_domains['edu']:
-#            users[user_id]['type'] = "edu"
-#        elif user_domain in old_domains['junk']:
-#            users[user_id]['type'] = "junk"
-#        else:
-#            domain_type = None
-#            while domain_type == None:                
-#                try:
-#                    domain_type = userInput(user_domain)
-#                except ValueError, e:
-#                    print "\nWrong input! Choose from (-1, 0, 1, 2, 3)."
-#                    domain_type = userInput(user_domain)
-#            users[user_id]['type'] = domain_type
-#            if user_domain not in domains[domain_type]:
-#                domains[domain_type].append(user_domain)
-#                print "Domain {} was added to {}.".format(user_domain, domain_type)
-#            else:
-#                print "Domain {} already existed in {}".format(user_domain, domain_type)
-#        users[user_id]['domain'] = user_domain
-#            
-#    with open(json_domain_path, 'wb') as jd:
-#        json.dump(old_domains, jd)
-#    with open(json_users_path, 'wb') as ju:
-#        json.dump(users, ju)
-#    
-#    print "Little DB´s are updated @ {}.".format(os.path.join(cwd, 'data'))
 
-def plotStats(users):
-    df_users = pd.DataFrame.from_dict(users, orient='index')
-    df_users['key_count'] = df_users['keys'].str.len()
-    gb = df_users.groupby(['type'])["type"].count().reset_index(name="count")
-    gb_type = df_users.groupby(['type', 'key_count'])["type"].count().reset_index(name="count")
+def plotStats():
+    conn = mysql.connect(host='127.0.0.1',
+                     user='root',
+                     passwd='admin',
+                     db='wordpress')
     
+    cur = conn.cursor()
+    
+    sql_class = """ 
+                SELECT meta_value, count(meta_value) as all_users
+                 FROM wp_usermeta 
+                 WHERE meta_key='priority'
+                 GROUP BY meta_value
+                """
+    
+    classific = pd.read_sql_query(sql=sql_class, con=conn)
+    
+    sql_keys = """ 
+                SELECT meta_value, count(meta_value) as no_key
+                 FROM wp_usermeta                 
+                 WHERE meta_key='priority' 
+                 AND user_id NOT IN (SELECT DISTINCT user_id FROM wp_usermeta WHERE meta_key = 'tyk_access_token')
+                 GROUP BY meta_value
+                """
+    
+    keys_users = pd.read_sql_query(sql=sql_keys, con=conn)
+    
+    keys_users['perc'] = keys_users['no_key']/classific['all_users']
     
     plt.figure(figsize=(20,16))
     
     ax1 = plt.subplot(221, aspect='equal')
     ax1.set_title('Customer segmentation', fontsize=16, fontweight='bold')
-    sbplt1 = gb.plot.pie(y = 'count', ax=ax1, autopct='%1.1f%%', 
-     startangle=90, shadow=False, labels=gb['type'], legend=False, fontsize=14)
+    sbplt1 = classific.plot.pie(y = 'all_users', ax=ax1, autopct='%1.1f%%', 
+     startangle=90, shadow=False, labels=classific['meta_value'], legend=False, fontsize=14)
     sbplt1.set_ylabel('')
     
-    ax2 = plt.subplot(222)
-    ax2.set_title('Count how many API keys are active per account [commercial]', fontsize=16, fontweight='bold')
-    gb_sub = gb_type.loc[gb_type['type'] == 'commercial']
-    sbplt2 = gb_sub.set_index('key_count')['count'].plot.bar(ax=ax2, rot=0, fontsize=14)
-    sbplt2.set_xlabel('Amount of API keys', fontsize=14, fontweight='bold')
-    sbplt2.set_ylabel('Amount of account binned on API key amount', fontsize=14, fontweight='bold')
-    sbplt2.annotate('Total commercial accounts: {}'.format(gb['count'].loc[gb['type'] == 'commercial'].sum()),
-                    xy=(2,1), xytext=(1,700), textcoords='data', fontsize=14)
+#    ax2 = plt.subplot(222)
+#    ax2.set_title('Count how many API keys are active per account [commercial]', fontsize=16, fontweight='bold')
+#    gb_sub = gb_type.loc[gb_type['type'] == 'commercial']
+#    sbplt2 = gb_sub.set_index('key_count')['count'].plot.bar(ax=ax2, rot=0, fontsize=14)
+#    sbplt2.set_xlabel('Amount of API keys', fontsize=14, fontweight='bold')
+#    sbplt2.set_ylabel('Amount of account binned on API key amount', fontsize=14, fontweight='bold')
+#    sbplt2.annotate('Total commercial accounts: {}'.format(gb['count'].loc[gb['type'] == 'commercial'].sum()),
+#                    xy=(2,1), xytext=(1,700), textcoords='data', fontsize=14)
     
 
 if __name__ == "__main__": 
@@ -195,7 +153,3 @@ if __name__ == "__main__":
     with open(json_domain_path, 'r') as json_out:
         old_domains = json.load(json_out)
     parseDB()
-#    json_users_path = os.path.join(cwd, 'data', 'users.json')
-    
-#    with open(json_users_path) as json_users:
-#        plotStats(json.load(json_users))
