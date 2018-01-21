@@ -21,6 +21,15 @@ class Tyk():
         return json.loads(response.text)['Data']
     
         
+    def deleteDevs(self):
+        """CAUTION: Delete developers from Tyk."""
+        
+        url = self.base_url + "/developers"
+        
+        response = requests.delete(url,
+                                   headers=self._headerGet())
+    
+    
     def _headerGet(self):
         return {
                 "authorization": self.auth_token,
