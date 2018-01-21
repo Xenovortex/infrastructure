@@ -59,7 +59,7 @@ def updateDB(users_data):
     
 def sendMailUsers(cached_dict):
     
-    emails_users = ['support@openrouteservice.org'] + cached_dict.values() + ['support@openrouteservice.org']
+    emails_users = cached_dict.values() + ['support@openrouteservice.org']
 
     with open(r'user_notification_apology.html', 'r') as f:
         html_doc = f.read()

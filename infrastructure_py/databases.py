@@ -21,13 +21,13 @@ class Tyk():
         return json.loads(response.text)['Data']
     
         
-    def deleteDevs(self):
+    def deleteDev(self, tyk_id):
         """CAUTION: Delete developers from Tyk."""
         
-        url = self.base_url + "/developers"
+        url = self.base_url + "/developers/" + tyk_id
         
-        response = requests.delete(url,
-                                   headers=self._headerGet())
+        requests.delete(url,
+                        headers=self._headerGet())
     
     
     def _headerGet(self):
