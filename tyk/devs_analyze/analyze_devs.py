@@ -54,7 +54,7 @@ def parseDB():
     indexs = []
     new_domains = []
     
-    print "{} users have no priority set\n".format(len(cur.fetchall()))
+#    print "{} users have no priority set\n".format(len(cur.fetchall()))
     
     for index, mail in cur.fetchall():
         try:
@@ -72,6 +72,9 @@ def parseDB():
         cur.execute(sql_inject, (tuple(indexs), ))
     except: 
         print "No priority rows had to be added this time\n"
+        pass
+    
+    print len(indexs), len(new_domains)
     
     for user_id, domain in zip(indexs, new_domains):
         try:
@@ -98,6 +101,9 @@ def parseDB():
             cur.close()
             conn.commit()
             conn.close()
+            
+            with open(json_domain_path, 'wb') as jd:
+                json.dump(old_domains, jd)
             raise
             
         cur.execute(sql_update, (domain_type, user_id,))
@@ -132,7 +138,8 @@ def plotStats():
     sql_keys = """ 
                 SELECT meta_value, count(meta_value) as no_key
                  FROM wp_usermeta                 
-                 WHERE meta_key='priority' 
+                 WHERE meta_ke with open(json_domain_path, 'wb') as jd:
+        json.y='priority' 
                  AND user_id NOT IN (SELECT DISTINCT user_id FROM wp_usermeta WHERE meta_key = 'tyk_access_token')
                  GROUP BY meta_value
                 """
