@@ -4,11 +4,11 @@ import pandas as pd
 import os.path
 
 import sys
-sys.path.insert(0,"../../infrastructure_py")
+sys.path.insert(0,"../../../infrastructure/")
+print sys.path
 
 import infrastructure_py.databases as db
 import infrastructure_py.mail as mail
-#import MySQLdb as mysql
 
 """CAUTION: Will delete users from WordPress and Tyk.
 
@@ -89,6 +89,3 @@ if __name__== '__main__':
                         to=['nils@openrouteservice.org','timothy@openrouteservice.org'],
                         content=cont)
                         
-    
-#    
-#    sendMail(cached_dict)
