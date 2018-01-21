@@ -39,10 +39,15 @@ class Tyk():
         
 
 class WP():
+    """Instantiates a MySQL class for a WordPress database.
+    
+    :param inst: 'local' for local MySQL instance, 'live' for deployed ORS instance, 'test' for test ORS instance
+    :type inst: str
+    """
     def __init__(self,
                  inst = 'local'):
         
-        import MySQLdb as mysql
+        mysql = __import__('MySQLdb')
         
         if inst == 'local':
             self.host = '127.0.0.1'
@@ -51,8 +56,47 @@ class WP():
         elif inst == 'test':
             self.host = '172.19.0.3'
         
-        self.conn = self.mysql.connect(host=self.host,
+        self.conn = mysql.connect(host=self.host,
                              user='root',
                              passwd='admin',
                              db='wordpress')
         
+        
+    def deleteUserByWPids(self, ids):
+        """Deletes all specified users on wp_users and wp_usermeta.
+        
+        :param ids: List of WP user_ids.
+        :type ids: 1D list or tuple"""
+        
+        sql1 = """DELETE FROM wp_users 
+                 WHERE ID in %s
+              """
+        sql2 = """DELETE FROM wp_usermeta
+                  WHERE user_id in %s
+               """
+        cur = self.conn.cursor()
+        cur.execute(sql1, (ids, ))
+        cur.execute(sql2, (ids, ))
+        cur.close()
+        
+        
+    def getWPidsByEmail(self,emails):
+        sql = """SELECT ID 
+                 FROM wp_users
+                 WHERE user_email in %s
+              """
+              
+        cur = self.conn.cursor()
+        cur.execute(sql, (emails,))
+        data = cur.fetchall()
+        cur.close()
+        
+        return data
+        
+        
+    def commit(self):
+        self.conn.commit()
+        
+    
+    def close(self):
+        self.conn.close()
