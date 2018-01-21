@@ -39,7 +39,7 @@ def deleteFromTyk(delete_devs):
     
 
 def deleteFromWP(delete_devs):
-    wp = db.WP()
+    wp = db.WP(inst='live')
     """delete leftover records from WP"""
     ids = wp.getWPidsByEmail(delete_devs['email'].tolist())
     try:
@@ -59,9 +59,9 @@ def sendMailToORS(deleted_number):
     cont = ("Hi Team,\n"
            "{} developers were deleted from Tyk and WP.").format(deleted_number)
            
-    mailer.sendText(subject="{} users deleted".format(deleted_number),
+    mailer.sendText(subject='{} "developers" sent to hell!'.format(deleted_number),
                     source='CRM ORS <crm@openrouteservice.org>',
-                    to=['nilsnolde@gmail.com'],
+                    to=['status@openrouteservice.org'],
                     content=cont)
     
     return
@@ -72,6 +72,8 @@ if __name__== '__main__':
         cached_users = parseJSON()
         
         delete_devs = validate(cached_users)
+        
+        deleteFromTyk(delete_devs)
         
         deleteFromWP(delete_devs)
         
@@ -85,6 +87,5 @@ if __name__== '__main__':
                         content=cont)
                         
     
-#    deleteFromTyk(delete_devs)
 #    
 #    sendMail(cached_dict)
