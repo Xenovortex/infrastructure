@@ -65,6 +65,8 @@ def parseDB():
                     FROM wp_users users
                     WHERE users.ID IN %s"""
                     
+    print indexs
+                    
     cur.execute(sql_inject, (tuple(indexs), ))
     
     for user_id, domain in zip(indexs, new_domains):
