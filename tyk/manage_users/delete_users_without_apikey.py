@@ -4,7 +4,7 @@ import pandas as pd
 import os.path
 
 import sys
-sys.path.insert(0,"../../../infrastructure/")
+sys.path.insert(0, os.path.abspath(__file__ + "/../../../"))
 print sys.path
 
 import infrastructure_py.databases as db
@@ -88,4 +88,3 @@ if __name__== '__main__':
                         source='CRM ORS <crm@openrouteservice.org>',
                         to=['nils@openrouteservice.org','timothy@openrouteservice.org'],
                         content=cont)
-                        
