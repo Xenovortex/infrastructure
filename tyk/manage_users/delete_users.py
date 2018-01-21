@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import requests
 import pandas as pd
 from datetime import datetime
 import time
@@ -8,7 +7,9 @@ import time
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import MySQLdb as mysql
+
+import infrastructure_py.databases as db
+#import MySQLdb as mysql
 
 """CAUTION: Will delete users from WordPress and Tyk.
 
@@ -21,36 +22,21 @@ one, otherwise their accounts will be deleted, too.
 KNOW WHAT YOU'RE DOING!
 """
 
-def parseData():    
-    """Parse Tyk DB"""
-    tyk_parse_url= tyk_base_url + "?p=-1"
+def parseJSON():    
+    """Parse JSON"""
+    return json.load(open('users_without_api_keys.json', 'r'))
     
-    response = requests.get(tyk_parse_url,
-                            headers=tyk_admin_headers)
-    
-    tyk_data = json.loads(response.text)['Data']   
-    
-    print "Tyk data downloaded."
-    print "Start parsing..."
-    
-    data_df = pd.DataFrame(tyk_data)
-    data_dups = data_df
-#    data_dups = pd.concat(g for _, g in data_df.groupby('email') if len(g) > 1)
-#    data_dups = data_dups[data_dups['email'].isin([
-#                                                    'nils.nolde@zalando.de',
-#                                                    #'nilsnolde@geophox.com'
-#                                                      ])]
-    print "Parsing finished."
-    
-    return data_dups
 
+def validate(cached_users):
+    """validate with Tyk if anything changed"""
+    actual_devs = pd.DataFrame(tyk.getDevs()).set_index('_id')
+    actual_devs = actual_devs[actual_devs['api_keys'] == {}]
+    cached_devs = pd.DataFrame.from_dict(cached_users, orient='index')
+    
+    print pd.concat([actual_devs, cached_devs], axis=1, join='inner')['email']
+    
 
-def updateDB(data_dups):
-    """Set up WP DB access"""
-    conn = mysql.connect(host='172.18.0.2',
-                         user='root',
-                         passwd='admin',
-                         db='wordpress')
+def deleteFromDB(data_dups):
     
     """Cache user details which should be deleted"""
     cached_emails = []
@@ -64,8 +50,11 @@ def updateDB(data_dups):
         """Find out if user_id exists in WP"""
         
         tyk_key, tyk_raw_date, tyk_api_keys, tyk_email = row
-        sql = """SELECT user_id FROM wp_usermeta WHERE 
-                meta_key = 'tyk_user_id' AND
+        sql = """SELECT user_id
+                FROM wp_usermeta
+                WHERE 
+                meta_key = 'tyk_user_id'
+                AND
                 meta_value = %s
               """
         user_exists = cur.execute(sql, (tyk_key, ))
@@ -146,21 +135,15 @@ def sendMail(cached_dict):
     
 if __name__== '__main__':   
     """Set up Tyk access"""
-    tyk_auth_token = r"fb537f41eef94b4c615a1b6414ae0920"
-    tyk_admin_headers = {
-        "authorization": tyk_auth_token,
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache"
-    }
-    tyk_base_url = r"http://admin.cloud.tyk.io/api/portal/developers"
+    tyk = db.Tyk()
+    wp = db.WP()
     
-    now = datetime.now()
-    today = '_'.join([str(x) for x in [now.year, now.month, now.day]])
+    cached_users = parseJSON()
     
-    data_dups = parseData()
+    validate(cached_users)
     
-    print "Deletion in progress..." 
-    
-    cached_dict = updateDB(data_dups)
-    
-    sendMail(cached_dict)
+#    print "Deletion in progress..." 
+#    
+#    cached_dict = updateDB(data_dups)
+#    
+#    sendMail(cached_dict)
