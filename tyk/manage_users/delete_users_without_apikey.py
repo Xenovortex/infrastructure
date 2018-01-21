@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import pandas as pd
+import os.path
 
 import infrastructure_py.databases as db
 import infrastructure_py.mail as mail
@@ -67,15 +68,22 @@ def sendMailToORS(deleted_number):
     
     
 if __name__== '__main__':       
-    cached_users = parseJSON()
-    
-    test_mail = ['nils.nolde@zalando.de']
-    
-    delete_devs = validate(cached_users)
-    
-    deleteFromWP(delete_devs)
-    
-    sendMailToORS(len(delete_devs))
+    try:
+        cached_users = parseJSON()
+        
+        delete_devs = validate(cached_users)
+        
+        deleteFromWP(delete_devs)
+        
+        sendMailToORS(len(delete_devs))
+    except:
+        mailer = mail.Mailer()
+        cont = "Smth went wrong with {}, please check.".format(os.path.basename(__file__))
+        mailer.sendText(subject="Python error",
+                        source='CRM ORS <crm@openrouteservice.org>',
+                        to=['nils@openrouteservice.org','timothy@openrouteservice.org'],
+                        content=cont)
+                        
     
 #    deleteFromTyk(delete_devs)
 #    
