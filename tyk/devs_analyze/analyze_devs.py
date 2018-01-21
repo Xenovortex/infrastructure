@@ -63,20 +63,14 @@ def parseDB():
             new_domains.append('NA')
             indexs.append(index)
     
-    sql_inject = """INSERT INTO wp_usermeta (user_id, meta_key) 
-                    SELECT DISTINCT users.ID, 'priority'
-                    FROM wp_users users
-                    WHERE users.ID IN %s"""
-    try:
-        cur.execute(sql_inject, (tuple(indexs), ))
-    except: 
-        print "No priority rows had to be added this time\n"
-        pass
-    
     print len(indexs), len(new_domains)
     
     for user_id, domain in zip(indexs, new_domains):
         try:
+            sql_inject = """INSERT INTO wp_usermeta (user_id, meta_key) 
+                            SELECT DISTINCT users.ID, 'priority'
+                            FROM wp_users users
+                            WHERE users.ID = %s"""
             sql_update = "UPDATE wp_usermeta SET meta_key = %s WHERE user_id = %s AND meta_value = 'priority'"
             if domain in old_domains['commercial']:
                 domain_type = "commercial"
@@ -106,6 +100,7 @@ def parseDB():
             raise
             
         cur.execute(sql_update, (domain_type, user_id,))
+        cur.execute(sql_inject, (user_id, ))
         
     cur.close()
     conn.commit()
