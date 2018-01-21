@@ -11,11 +11,10 @@ import infrastructure_py.databases as db
 """Will parse Tyk DB and notify users without api_keys since > 2 weeks to create
 one. It will store a JSON with {tyk_id: tyk_email} to check 2 weeks later which
 accounts created API keys and delete the ones which didn't.
+
+NOTE, delete_inactive_users.py depends on the output of the JSON created here.
 """
 
-#TODO: Re-Write to only cache 28 day old accounts without API Keys to JSON and 
-# also use Kibana/Lucene to find accounts which are inactive > 3-6 months,
-# have separate script to delete those accounts.
 
 def parseData():
     """Parse Tyk DB"""
@@ -28,7 +27,6 @@ def updateDB(users_data):
     """Cache user details which should be deleted"""
     cached_emails = []
     cached_tyk_ids = []
-    deleted_tyk_ids = []
     
     for _, row in users_data[['_id', 'date_created', 'api_keys', 'email']].iterrows():
         """Find out if user_id exists in WP"""
@@ -54,7 +52,6 @@ def updateDB(users_data):
     with open('users_without_api_keys.json', 'wb') as f:
         json.dump(cached_dict, f)
     
-    print "DB updated, {} devs deleted from Tyk.".format(len(deleted_tyk_ids))
     print "{} devs have no api_keys since > 28 days.".format(len(cached_dict))
     
     return cached_dict
