@@ -14,7 +14,7 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 
 wp = db.WP(inst='live')
 failed_emails = []
-recipients = wp.getEmailsByClass('commercial') + ['support@openrouteservice.org']
+recipients = list(wp.getEmailsByClass('commercial')) + ['support@openrouteservice.org']
 
 #recipients = ['nils@openrouteservice.org',
 #              'timothy@openrouteservice.org',
