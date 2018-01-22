@@ -38,8 +38,10 @@ for email in recipients:
                       content=html_doc,
                       reply_to=msg_reply
                       )
+        print "{}: success.".format(email)
     except:
         failed_emails.append(email)
+        print "{}: failed.".format(email)
         pass
     
     finally:
