@@ -3,9 +3,12 @@ import json
 import pandas as pd
 import os.path
 
+import sys
+sys.path.insert(0, os.path.abspath(__file__ + "/../../../"))
+print sys.path
+
 import infrastructure_py.databases as db
 import infrastructure_py.mail as mail
-#import MySQLdb as mysql
 
 """CAUTION: Will delete users from WordPress and Tyk.
 
@@ -17,7 +20,8 @@ KNOW WHAT YOU'RE DOING!
 
 def parseJSON():    
     """Parse JSON"""
-    return json.load(open('data/users_without_api_keys.json', 'r'))
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    return json.load(open(os.path.join(cwd, 'data', 'users_without_api_keys.json'), 'r'))
     
 
 def validate(cached_users):
@@ -39,7 +43,7 @@ def deleteFromTyk(delete_devs):
     
 
 def deleteFromWP(delete_devs):
-    wp = db.WP()
+    wp = db.WP(inst='live')
     """delete leftover records from WP"""
     ids = wp.getWPidsByEmail(delete_devs['email'].tolist())
     try:
@@ -59,9 +63,9 @@ def sendMailToORS(deleted_number):
     cont = ("Hi Team,\n"
            "{} developers were deleted from Tyk and WP.").format(deleted_number)
            
-    mailer.sendText(subject="{} users deleted".format(deleted_number),
+    mailer.sendText(subject='{} "developers" sent to hell!'.format(deleted_number),
                     source='CRM ORS <crm@openrouteservice.org>',
-                    to=['nilsnolde@gmail.com'],
+                    to=['status@openrouteservice.org'],
                     content=cont)
     
     return
@@ -73,18 +77,15 @@ if __name__== '__main__':
         
         delete_devs = validate(cached_users)
         
+        deleteFromTyk(delete_devs)
+        
         deleteFromWP(delete_devs)
         
         sendMailToORS(len(delete_devs))
-    except:
+    except Exception, e:
         mailer = mail.Mailer()
-        cont = "Smth went wrong with {}, please check.".format(os.path.basename(__file__))
+        cont = "Smth went wrong with {}, please check:\n{}".format(os.path.basename(__file__), str(e))
         mailer.sendText(subject="Python error",
                         source='CRM ORS <crm@openrouteservice.org>',
                         to=['nils@openrouteservice.org','timothy@openrouteservice.org'],
                         content=cont)
-                        
-    
-#    deleteFromTyk(delete_devs)
-#    
-#    sendMail(cached_dict)
