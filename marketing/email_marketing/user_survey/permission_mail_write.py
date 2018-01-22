@@ -12,15 +12,16 @@ import infrastructure_py.mail as mail
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 
-wp = db.WP(inst='live')
+wp = db.WP()
 failed_emails = []
-recipients = list(wp.getEmailsByClass('commercial')) + ['support@openrouteservice.org']
+recipients = [tup[0] for tup in wp.getEmailsByClass('commercial')] + ['support@openrouteservice.org']
 
+#
 #recipients = ['nils@openrouteservice.org',
-#              'timothy@openrouteservice.org',
-#              'zipf@uni-heidelberg.de',
-#              'hendrik@openrouteservice.org',
-#              'adam@openrouteservice.org'
+##              'timothy@openrouteservice.org',
+##              'zipf@uni-heidelberg.de',
+##              'hendrik@openrouteservice.org',
+##              'adam@openrouteservice.org'
 #              ]
 
 with open(os.path.join(cwd, 'permission_mail_v01.html')) as f:
