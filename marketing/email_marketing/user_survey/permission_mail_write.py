@@ -12,7 +12,7 @@ import infrastructure_py.mail as mail
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 
-wp = db.WP()
+wp = db.WP(inst='live')
 failed_emails = []
 recipients = [tup[0] for tup in wp.getEmailsByClass('commercial')] + ['support@openrouteservice.org']
 
