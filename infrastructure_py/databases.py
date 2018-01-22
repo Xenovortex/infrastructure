@@ -81,6 +81,11 @@ class WP():
         
         
     def getWPidsByEmail(self,emails):
+        """Get WP ID's from wp_users by emails.
+        
+        :param emails: List of WP emails.
+        :type emails: 1D list or tuple"""
+        
         sql = """SELECT ID 
                  FROM wp_users
                  WHERE user_email in %s
@@ -88,6 +93,30 @@ class WP():
               
         cur = self.conn.cursor()
         cur.execute(sql, (emails,))
+        data = cur.fetchall()
+        cur.close()
+        
+        return data
+    
+    def getEmailsByClass(self, classification):
+        """Get emails from WP users by classification (priority).
+        
+        :param classification: commercial, private, edu, junk.
+        :type classification: str"""
+        
+        sql = """SELECT user_email 
+                 FROM wp_users
+                 WHERE 
+                  ID IN (
+                    SELECT user_id 
+                    FROM wp_usermeta
+                    WHERE 
+                      meta_key = 'priority'
+                      AND
+                      meta_value = %s)
+              """
+        cur = self.conn.cursor()
+        cur.execute(sql, (classification,))
         data = cur.fetchall()
         cur.close()
         
