@@ -345,9 +345,8 @@ class Client(object):
 from openrouteservice.directions import directions
 from openrouteservice.distance_matrix import distance_matrix
 from openrouteservice.isochrones import isochrones
-#from googlemaps.elevation import elevation_along_path
-#from googlemaps.geocoding import geocode
-#from googlemaps.geocoding import reverse_geocode
+from openrouteservice.geocoding import geocode
+from openrouteservice.geocoding import reverse_geocode
 #from googlemaps.geolocation import geolocate
 #from googlemaps.timezone import timezone
 #from googlemaps.roads import snap_to_roads
@@ -388,9 +387,8 @@ def make_api_method(func):
 Client.directions = make_api_method(directions)
 Client.distance_matrix = make_api_method(distance_matrix)
 Client.isochrones = make_api_method(isochrones)
-#Client.elevation_along_path = make_api_method(elevation_along_path)
-#Client.geocode = make_api_method(geocode)
-#Client.reverse_geocode = make_api_method(reverse_geocode)
+Client.geocode = make_api_method(geocode)
+Client.reverse_geocode = make_api_method(reverse_geocode)
 #Client.geolocate = make_api_method(geolocate)
 #Client.timezone = make_api_method(timezone)
 #Client.snap_to_roads = make_api_method(snap_to_roads)

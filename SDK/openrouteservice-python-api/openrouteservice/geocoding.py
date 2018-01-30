@@ -16,94 +16,145 @@
 #
 
 """Performs requests to the Google Maps Geocoding API."""
-from googlemaps import convert
+from openrouteservice import convert
 
 
-def geocode(client, address=None, components=None, bounds=None, region=None,
-            language=None):
+def geocode(client, query,
+            lang=None,
+            boundary_type=None,
+            rect=None,
+            circle=None,
+            limit=None):
     """
     Geocoding is the process of converting addresses
     (like ``"1600 Amphitheatre Parkway, Mountain View, CA"``) into geographic
     coordinates (like latitude 37.423021 and longitude -122.083739), which you
     can use to place markers or position the map.
 
-    :param address: The address to geocode.
-    :type address: string
+    :param query: Name of location, street address or postal code. For a 
+        structured geocoding request, a dict object can be passed. Please refer
+        to https://github.com/GIScience/openrouteservice-docs#geocoding-structured-query
+        for details. 
+    :type query: string or dict of structured geocoding request
 
-    :param components: A component filter for which you wish to obtain a
-        geocode, for example: ``{'administrative_area': 'TX','country': 'US'}``
-    :type components: dict
+    :param lang: Specifies the language of the response. One of ['de', 'en',
+        'fr', 'it']. Default 'en'.
+    :type lang: string
 
-    :param bounds: The bounding box of the viewport within which to bias geocode
-        results more prominently.
-    :type bounds: string or dict with northeast and southwest keys.
+    :param boundary_type: Specifies the type of spatial search restriction. 
+        One of ['rect','circle'].
+    :type boundary_type: string
 
-    :param region: The region code, specified as a ccTLD ("top-level domain")
-        two-character value.
-    :type region: string
+    :param rect: For boundary_type=rect only! Sets the restriction rectangle's
+        minimum/maximum longitude/latitude, i.e. [MinLong,MinLat,MaxLong,Maxlat].
+    :type rect: list of integers
 
-    :param language: The language in which to return results.
-    :type langauge: string
+    :param circle: For boundary_type=circle only! Sets the restriction circle 
+        with a center point and a radius in meters, i.e. [Long,Lat,Radius]. 
+    :type circle: list of integers
 
-    :rtype: list of geocoding results.
+    :param limit: Specifies the maximum number of responses. Default 5.
+    :type limit: integer
+
+    :rtype: GeoJSON FeatureCollection as dict
     """
 
-    params = {}
+    params = dict()
 
-    if address:
-        params["address"] = address
+    if query:
+        # Is not checked on backend
+        if isinstance(query, dict):
+            allowed_keys = ['address',
+                            'neighbourhood',
+                            'borough',
+                            'locality',
+                            'county',
+                            'region',
+                            'postalcode',
+                            'country']
+            if not all((key in allowed_keys) for key in query.keys()):
+                raise ValueError("Geocoding query contains invalid admin parameter.")
+        params["query"] = str(query)
 
-    if components:
-        params["components"] = convert.components(components)
+    if lang:
+        # Is not checked on backend
+        if lang not in ['en', 'fr', 'de', 'it']:
+            raise ValueError("Invalid language {} specified)".format(lang))
+        params["lang"] = lang
 
-    if bounds:
-        params["bounds"] = convert.bounds(bounds)
+    if boundary_type:
+        params["boundary_type"] = boundary_type
 
-    if region:
-        params["region"] = region
+    if rect:
+        params["rect"] = convert.comma_list(rect)
 
-    if language:
-        params["language"] = language
+    if circle:
+        params["circle"] = convert.comma_list(circle)
 
-    return client._request("/maps/api/geocode/json", params).get("results", [])
+    if limit:
+        params["limit"] = str(limit)
+
+    return client._request("/geocoding", params)
 
 
-def reverse_geocode(client, latlng, result_type=None, location_type=None,
-                    language=None):
+def reverse_geocode(client, location,
+                    lang=None,
+                    boundary_type=None,
+                    rect=None,
+                    circle=None,
+                    limit=None):
     """
     Reverse geocoding is the process of converting geographic coordinates into a
     human-readable address.
 
-    :param latlng: The latitude/longitude value or place_id for which you wish
-        to obtain the closest, human-readable address.
-    :type latlng: string, dict, list, or tuple
+    :param location: Coordinate to be inquired.
+    :type location: lng/lat pair as list or tuple
 
-    :param result_type: One or more address types to restrict results to.
-    :type result_type: string or list of strings
+    :param lang: Specifies the language of the response. One of ['de', 'en',
+        'fr', 'it']. Default 'en'.
+    :type lang: string
 
-    :param location_type: One or more location types to restrict results to.
-    :type location_type: list of strings
+    :param boundary_type: Specifies the type of spatial search restriction. 
+        One of ['rect','circle'].
+    :type boundary_type: string
 
-    :param language: The language in which to return results.
-    :type langauge: string
+    :param rect: For boundary_type=rect only! Sets the restriction rectangle's
+        minimum/maximum longitude/latitude, i.e. [MinLong,MinLat,MaxLong,Maxlat].
+    :type rect: list of integers
 
-    :rtype: list of reverse geocoding results.
+    :param circle: For boundary_type=circle only! Sets the restriction circle 
+        with a center point and a radius in meters, i.e. [Long,Lat,Radius]. 
+    :type circle: list of integers
+
+    :param limit: Specifies the maximum number of responses. Default 5.
+    :type limit: integer
+
+    :rtype: GeoJSON FeatureCollection as dict
     """
+    
+    params = dict()
 
     # Check if latlng param is a place_id string.
     #  place_id strings do not contain commas; latlng strings do.
-    if convert.is_string(latlng) and ',' not in latlng:
-        params = {"place_id": latlng}
-    else:
-        params = {"latlng": convert.latlng(latlng)}
+    if location:
+        params["location"] = convert.comma_list(location)
 
-    if result_type:
-        params["result_type"] = convert.join_list("|", result_type)
+    if lang:
+        # Is not checked on backend
+        if lang not in ['en', 'fr', 'de', 'it']:
+            raise ValueError("Invalid language {} specified)".format(lang))
+        params["lang"] = lang
 
-    if location_type:
-        params["location_type"] = convert.join_list("|", location_type)
+    if boundary_type:
+        params["boundary_type"] = boundary_type
 
-    if language:
-        params["language"] = language
+    if rect:
+        params["rect"] = convert.comma_list(rect)
 
-    return client._request("/maps/api/geocode/json", params).get("results", [])
+    if circle:
+        params["circle"] = convert.comma_list(circle)
+
+    if limit:
+        params["limit"] = str(limit)
+
+    return client._request("/geocoding", params)
