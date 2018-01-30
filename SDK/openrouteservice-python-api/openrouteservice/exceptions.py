@@ -1,5 +1,5 @@
 #
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2018 HeiGIT, University of Heidelberg. All rights reserved.
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -16,7 +16,7 @@
 #
 
 """
-Defines exceptions that are thrown by the Google Maps client.
+Defines exceptions that are thrown by the ORS client.
 """
 
 class ApiError(Exception):
@@ -53,16 +53,4 @@ class HTTPError(Exception):
 
 class Timeout(Exception):
     """The request timed out."""
-    pass
-
-class _RetriableRequest(Exception):
-    """Signifies that the request can be retried."""
-    pass
-
-class _OverQueryLimit(ApiError, _RetriableRequest):
-    """Signifies that the request failed because the client exceeded its query rate limit.
-
-    Normally we treat this as a retriable condition, but we allow the calling code to specify that these requests should
-    not be retried.
-    """
     pass

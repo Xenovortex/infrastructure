@@ -1,5 +1,5 @@
 #
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2018 HeiGIT, University of Heidelberg. All rights reserved.
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,17 +15,7 @@
 # the License.
 #
 
-"""Converts Python types to string representations suitable for Maps API server.
-
-    For example:
-
-    sydney = {
-        "lat" : -33.8674869,
-        "lng" : 151.2069902
-    }
-
-    convert.latlng(sydney)
-    # '-33.8674869,151.2069902'
+"""Converts Python types to string representations suitable for ORS API server.
 """
 
 import time as _time
@@ -115,69 +105,6 @@ def _concat_coords(arg):
         return [comma_list(map(format_float, tup)) for tup in arg]
     else:
         return [comma_list(format_float(coord) for coord in arg)]
-        
-        
-#def _normalize_lat_lng(arg):
-#    """Take the various lat/lng representations and return a tuple.
-#
-#    :param arg: The lat/lng pair.
-#    :type arg: list or tuple
-#
-#    :rtype: tuple (lat, lng)
-#    """
-#    # List or tuple.
-#    if _is_list(arg):
-#        return arg
-#
-#    raise TypeError(
-#        "Expected a list or tuple of lng/lat tuples or lists, "
-#        "but got {}".format(type(arg).__name__))
-
-#
-#def location_list(arg):
-#    """Joins a list of locations into a pipe separated string, handling
-#    the various formats supported for lat/lng values.
-#
-#    For example:
-#    p = [{"lat" : -33.867486, "lng" : 151.206990}, "Sydney"]
-#    convert.waypoint(p)
-#    # '-33.867486,151.206990|Sydney'
-#
-#    :param arg: The lat/lng list.
-#    :type arg: list
-#
-#    :rtype: string
-#    """
-#    if isinstance(arg, tuple):
-#        # Handle the single-tuple lat/lng case.
-#        return latlng(arg)
-#    else:
-#        return "|".join([latlng(location) for location in as_list(arg)])
-#
-#
-#def join_list(sep, arg):
-#    """If arg is list-like, then joins it with sep.
-#
-#    :param sep: Separator string.
-#    :type sep: string
-#
-#    :param arg: Value to coerce into a list.
-#    :type arg: string or list of strings
-#
-#    :rtype: string
-#    """
-#    return sep.join(as_list(arg))
-#
-#
-#def as_list(arg):
-#    """Coerces arg into a list. If arg is already list-like, returns arg.
-#    Otherwise, returns a one-element list containing arg.
-#
-#    :rtype: list
-#    """
-#    if _is_list(arg):
-#        return arg
-#    return [arg]
 
 
 def _is_list(arg):
@@ -191,35 +118,6 @@ def _is_list(arg):
             or _has_method(arg, "__iter__"))
 
 
-def is_string(val):
-    """Determines whether the passed value is a string, safe for 2/3."""
-    try:
-        basestring
-    except NameError:
-        return isinstance(val, str)
-    return isinstance(val, basestring)
-
-
-def time(arg):
-    """Converts the value into a unix time (seconds since unix epoch).
-
-    For example:
-        convert.time(datetime.now())
-        # '1409810596'
-
-    :param arg: The time.
-    :type arg: datetime.datetime or int
-    """
-    # handle datetime instances.
-    if _has_method(arg, "timetuple"):
-        arg = _time.mktime(arg.timetuple())
-
-    if isinstance(arg, float):
-        arg = int(arg)
-
-    return str(arg)
-
-
 def _has_method(arg, method):
     """Returns true if the given object has a method with the given name.
 
@@ -231,75 +129,6 @@ def _has_method(arg, method):
     :rtype: bool
     """
     return hasattr(arg, method) and callable(getattr(arg, method))
-
-
-def components(arg):
-    """Converts a dict of components to the format expected by the Google Maps
-    server.
-
-    For example:
-    c = {"country": "US", "postal_code": "94043"}
-    convert.components(c)
-    # 'country:US|postal_code:94043'
-
-    :param arg: The component filter.
-    :type arg: dict
-
-    :rtype: basestring
-    """
-
-    # Components may have multiple values per type, here we
-    # expand them into individual key/value items, eg:
-    # {"country": ["US", "AU"], "foo": 1} -> "country:AU", "country:US", "foo:1"
-    def expand(arg):
-        for k, v in arg.items():
-            for item in as_list(v):
-                yield "%s:%s" % (k, item)
-
-    if isinstance(arg, dict):
-        return "|".join(sorted(expand(arg)))
-
-    raise TypeError(
-        "Expected a dict for components, "
-        "but got %s" % type(arg).__name__)
-
-
-def bounds(arg):
-    """Converts a lat/lon bounds to a comma- and pipe-separated string.
-
-    Accepts two representations:
-    1) string: pipe-separated pair of comma-separated lat/lon pairs.
-    2) dict with two entries - "southwest" and "northeast". See convert.latlng
-    for information on how these can be represented.
-
-    For example:
-
-    sydney_bounds = {
-        "northeast" : {
-            "lat" : -33.4245981,
-            "lng" : 151.3426361
-        },
-        "southwest" : {
-            "lat" : -34.1692489,
-            "lng" : 150.502229
-        }
-    }
-
-    convert.bounds(sydney_bounds)
-    # '-34.169249,150.502229|-33.424598,151.342636'
-
-    :param arg: The bounds.
-    :type arg: dict
-    """
-
-    if isinstance(arg, dict):
-        if "southwest" in arg and "northeast" in arg:
-            return "%s|%s" % (latlng(arg["southwest"]),
-                              latlng(arg["northeast"]))
-
-    raise TypeError(
-        "Expected a bounds (southwest/northeast) dict, "
-        "but got %s" % type(arg).__name__)
 
 
 def decode_polyline(polyline):
@@ -343,60 +172,3 @@ def decode_polyline(polyline):
         geojson = {u'type': u'LineString', u'coordinates': points}
 
     return geojson
-
-
-def encode_polyline(points):
-    """Encodes a list of points into a polyline string.
-
-    See the developer docs for a detailed description of this encoding:
-    https://developers.google.com/maps/documentation/utilities/polylinealgorithm
-
-    :param points: a list of lat/lng pairs
-    :type points: list of dicts or tuples
-
-    :rtype: string
-    """
-    last_lat = last_lng = 0
-    result = ""
-
-    for point in points:
-        ll = normalize_lat_lng(point)
-        lat = int(round(ll[0] * 1e5))
-        lng = int(round(ll[1] * 1e5))
-        d_lat = lat - last_lat
-        d_lng = lng - last_lng
-
-        for v in [d_lat, d_lng]:
-            v = ~(v << 1) if v < 0 else v << 1
-            while v >= 0x20:
-                result += (chr((0x20 | (v & 0x1f)) + 63))
-                v >>= 5
-            result += (chr(v + 63))
-
-        last_lat = lat
-        last_lng = lng
-
-    return result
-
-
-def shortest_path(locations):
-    """Returns the shortest representation of the given locations.
-
-    The Elevations API limits requests to 2000 characters, and accepts
-    multiple locations either as pipe-delimited lat/lng values, or
-    an encoded polyline, so we determine which is shortest and use it.
-
-    :param locations: The lat/lng list.
-    :type locations: list
-
-    :rtype: string
-    """
-    if isinstance(locations, tuple):
-        # Handle the single-tuple lat/lng case.
-        locations = [locations]
-    encoded = "enc:%s" % encode_polyline(locations)
-    unencoded = location_list(locations)
-    if len(encoded) < len(unencoded):
-        return encoded
-    else:
-        return unencoded

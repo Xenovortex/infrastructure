@@ -18,20 +18,20 @@ client = openrouteservice.Client(key)
 #geometry = routes2['routes'][0]['geometry']
 #
 #
-#
-#"""Matrix"""
-#coords_valid = [[9.970093,48.477473],
-#                [9.207916,49.153868],
-#                [37.573242,55.801281],
-#                [115.663757,38.106467]]
-#
-#routes = client.distance_matrix(coords_valid)
-#
-#print routes
+
+"""Matrix"""
+coords_valid = [[9.970093,48.477473],
+                [9.207916,49.153868],
+                [37.573242,55.801281],
+                [115.663757,38.106467]]
+
+routes = client.distance_matrix(locations=coords_valid)
+
+print routes
 
 
 """Isochrones"""
 
-isochrones = client.isochrones(coords_valid)
-
-print isochrones
+#isochrones = client.isochrones(coords_valid)
+#
+#print isochrones 
