@@ -16,7 +16,7 @@
 # the License.
 #
 
-__version__ = "2.5.1-dev"
+__version__ = "0.1-dev"
 
 from openrouteservice.client import Client
 import openrouteservice.exceptions
