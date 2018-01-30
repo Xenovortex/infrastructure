@@ -1,5 +1,5 @@
 #
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2018 HeiGIT, University of Heidelberg. All rights reserved.
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -15,7 +15,7 @@
 # the License.
 #
 
-"""Performs requests to the Google Maps Distance Matrix API."""
+"""Performs requests to the ORS Matrix API."""
 
 from openrouteservice import convert
 
@@ -73,7 +73,7 @@ def distance_matrix(client, locations,
     """
 
     params = {
-        "locations": convert.build_coords(locations),
+        "locations": locations,
         "sources": sources,
         "destinations": destinations
     }
@@ -122,4 +122,4 @@ def distance_matrix(client, locations,
         params["optimized"] = optimized
 
 
-    return client._request("/matrix", {}, json_post=params) # No get() params
+    return client._request("/matrix", {}, post_json=params) # No get() params
