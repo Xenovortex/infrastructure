@@ -42,7 +42,7 @@ class DistanceMatrixTest(_test.TestCase):
             
     @responses.activate
     def test_basic_params(self):
-        responses.add(responses.GET,
+        responses.add(responses.POST,
                       'https://api.openrouteservice.org/matrix',
                       body='{"status":"OK","routes":[]}',
                       status=200,
@@ -51,21 +51,17 @@ class DistanceMatrixTest(_test.TestCase):
         origins = 'all'
         destinations = 'all'
         
-        matrix = self.client.distance_matrix(self.coords_valid,
-                                             sources=origins,
-                                             destinations=destinations)
+        self.client.distance_matrix(self.coords_valid,
+                                     sources=origins,
+                                     destinations=destinations)
 
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual('https://api.openrouteservice.org/matrix?api_key={}&'
-                            'profile=driving-car&locations=9.970093%2C48.477473'
-                            '%7C9.207916%2C49.153868%7C37.573242%2C55.801281'
-                            '%7C115.663757%2C38.106467&sources=all&'
-                            'destinations=all&optimized=true'.format(self.key),
+        self.assertURLEqual('https://api.openrouteservice.org/matrix?api_key={}'.format(self.key),
                             responses.calls[0].request.url)
 
     @responses.activate
     def test_all_params(self):
-        responses.add(responses.GET,
+        responses.add(responses.POST,
                       'https://api.openrouteservice.org/matrix',
                       body='{"status":"OK","routes":[]}',
                       status=200,
@@ -74,23 +70,17 @@ class DistanceMatrixTest(_test.TestCase):
         origins = [0,1,2]
         destinations = [1,2,3]
         
-        matrix = self.client.distance_matrix(self.coords_valid,
-                                             sources=origins,
-                                             destinations=destinations,
-                                             profile='cycling-regular',
-                                             metrics=['duration', 'distance'],
-                                             resolve_locations='true',
-                                             units='mi',
-                                             optimized='false')
+        self.client.distance_matrix(self.coords_valid,
+                                     sources=origins,
+                                     destinations=destinations,
+                                     profile='cycling-regular',
+                                     metrics=['duration', 'distance'],
+                                     resolve_locations='true',
+                                     units='mi',
+                                     optimized='false')
 
         self.assertEqual(1, len(responses.calls))
-        self.assertURLEqual('https://api.openrouteservice.org/matrix?api_key={}&'
-                            'profile=cycling-regular&locations=9.970093%2C48.477473'
-                            '%7C9.207916%2C49.153868%7C37.573242%2C55.801281'
-                            '%7C115.663757%2C38.106467&sources=0%2C1%2C2&'
-                            'destinations=1%2C2%2C3&metrics=duration%7Cdistance&'
-                            'resolve_locations=true&units=mi'
-                            '&optimized=false'.format(self.key),
+        self.assertURLEqual('https://api.openrouteservice.org/matrix?api_key={}'.format(self.key),
                             responses.calls[0].request.url)
 
 if __name__ == '__main__':
