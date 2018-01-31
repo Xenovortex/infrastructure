@@ -43,61 +43,31 @@ _RETRIABLE_STATUSES = set([503])
 class Client(object):
     """Performs requests to the Google Maps API web services."""
 
-    def __init__(self, key=None, 
+    def __init__(self, key=None,
+                 base_url=_DEFAULT_BASE_URL, 
                  timeout=None, 
                  retry_timeout=60, 
                  requests_kwargs=None,
-                 queries_per_minute=40):
+                 queries_per_minute=40,
+                 retry_over_query_limit=False):
         """
-        :param key: Maps API key. Required, unless "client_id" and
-            "client_secret" are set.
+        :param key: ORS API key. Required.
         :type key: string
-
-        :param client_id: (for Maps API for Work customers) Your client ID.
-        :type client_id: string
-
-        :param client_secret: (for Maps API for Work customers) Your client
-            secret (base64 encoded).
-        :type client_secret: string
-
-        :param channel: (for Maps API for Work customers) When set, a channel
-            parameter with this value will be added to the requests.
-            This can be used for tracking purpose.
-            Can only be used with a Maps API client ID.
-        :type channel: str
 
         :param timeout: Combined connect and read timeout for HTTP requests, in
             seconds. Specify "None" for no timeout.
         :type timeout: int
 
-        :param connect_timeout: Connection timeout for HTTP requests, in
-            seconds. You should specify read_timeout in addition to this option.
-            Note that this requires requests >= 2.4.0.
-        :type connect_timeout: int
-
-        :param read_timeout: Read timeout for HTTP requests, in
-            seconds. You should specify connect_timeout in addition to this
-            option. Note that this requires requests >= 2.4.0.
-        :type read_timeout: int
-
         :param retry_timeout: Timeout across multiple retriable requests, in
             seconds.
         :type retry_timeout: int
 
-        :param queries_per_second: Number of queries per second permitted.
+        :param queries_per_minute: Number of queries per second permitted.
             If the rate limit is reached, the client will sleep for the
             appropriate amount of time before it runs the current query.
+            Note, it won't help to initiate another client. This saves you the 
+            trouble of raised exceptions.
         :type queries_per_second: int
-
-        :param retry_over_query_limit: If True, requests that result in a
-            response indicating the query rate limit was exceeded will be
-            retried. Defaults to True.
-        :type retry_over_query_limit: bool
-
-        :raises ValueError: when either credentials are missing, incomplete
-            or invalid.
-        :raises NotImplementedError: if connect_timeout and read_timeout are
-            used with a version of requests prior to 2.4.0.
 
         :param requests_kwargs: Extra keyword arguments for the requests
             library, which among other things allow for proxy auth to be
@@ -109,8 +79,10 @@ class Client(object):
 
         self.session = requests.Session()
         self.key = key
+        self.base_url = base_url
         
         self.timeout = timeout
+        self.retry_over_query_limit = retry_over_query_limit
         self.retry_timeout = timedelta(seconds=retry_timeout)
         self.requests_kwargs = requests_kwargs or {}
         self.requests_kwargs.update({
@@ -126,7 +98,6 @@ class Client(object):
                  url, params, 
                  first_request_time=None, 
                  retry_counter=0,
-                 base_url=_DEFAULT_BASE_URL,
                  requests_kwargs=None, 
                  post_json=None):
         """Performs HTTP GET/POST with credentials, returning the body as
@@ -145,28 +116,22 @@ class Client(object):
         :param retry_counter: The number of this retry, or zero for first attempt.
         :type retry_counter: int
 
-        :param base_url: The base URL for the request. Defaults to the Maps API
+        :param base_url: The base URL for the request. Defaults to the ORS API
             server. Should not have a trailing slash.
         :type base_url: string
-
-        :param accepts_clientid: Whether this call supports the client/signature
-            params. Some APIs require API keys (e.g. Roads).
-        :type accepts_clientid: bool
-
-        :param extract_body: A function that extracts the body from the request.
-            If the request was not successful, the function should raise a
-            googlemaps.HTTPError or googlemaps.ApiError as appropriate.
-        :type extract_body: function
 
         :param requests_kwargs: Same extra keywords arg for requests as per
             __init__, but provided here to allow overriding internally on a
             per-request basis.
         :type requests_kwargs: dict
 
+        :param post_json: HTTP POST parameters. Only specified by calling method.
+        :type post_json: dict
+
         :raises ApiError: when the API returns an error.
         :raises Timeout: if the request timed out.
         :raises TransportError: when something went wrong while trying to
-            exceute a request.
+            execute a request.
         """
 
         if not first_request_time:
@@ -200,7 +165,8 @@ class Client(object):
         if self.sent_times and len(self.sent_times) == self.queries_per_minute:
             elapsed_since_earliest = time.time() - self.sent_times[0]
             if elapsed_since_earliest < 60:
-                print("Request limit exceeded. Wait for {} seconds".format(60 - elapsed_since_earliest))
+                print("Request limit of {} per minute exceeded. Wait for {} seconds".format(self.queries_per_minute, 
+                                                                                              60 - elapsed_since_earliest))
                 time.sleep(60 - elapsed_since_earliest)
         
         # Determine GET/POST.
@@ -211,7 +177,7 @@ class Client(object):
             requests_method = self.session.post
             final_requests_kwargs["json"] = post_json
         try:
-            response = requests_method(base_url + authed_url,
+            response = requests_method(self.base_url + authed_url,
                                        **final_requests_kwargs)
         except requests.exceptions.Timeout:
             raise openrouteservice.exceptions.Timeout()
@@ -220,13 +186,24 @@ class Client(object):
 
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
+            print 'Server down.\nRetrying for the {}th time.'.format(retry_counter + 1)
+            
             return self._request(url, params, first_request_time,
-                                 retry_counter + 1, base_url, requests_kwargs, post_json)
+                                 retry_counter + 1, requests_kwargs, post_json)
 
         try:
             result = self._get_body(response)
             self.sent_times.append(time.time())
             return result
+        except openrouteservice.exceptions._RetriableRequest as e:
+            if isinstance(e, openrouteservice.exceptions._OverQueryLimit) and not self.retry_over_query_limit:
+                raise
+            
+            print 'Rate limit exceeded.\nRetrying for the {}th time.'.format(retry_counter + 1)
+            # Retry request.
+            return self._request(url, params, first_request_time,
+                                 retry_counter + 1, requests_kwargs,
+                                 post_json)
         except:
             raise
 
@@ -236,7 +213,10 @@ class Client(object):
         error = body.get('error')
         status_code = response.status_code
         
-        if status_code != 200 and status_code not in _RETRIABLE_STATUSES:
+        if status_code == 429:
+            raise openrouteservice.exceptions._OverQueryLimit(
+                str(status_code), error)
+        if status_code != 200:
             raise openrouteservice.exceptions.ApiError(status_code,
                                                        error['message'])
 
@@ -259,9 +239,13 @@ class Client(object):
         
         if type(params) is dict:
             params = sorted(dict(**params).items())
-
+        
+        # Only auto-add API key when using ORS. If own instance, API key must
+        # be explicitly added to params
         if self.key:
             params.append(("api_key", self.key))
+            return path + "?" + urlencode_params(params)
+        elif self.base_url != _DEFAULT_BASE_URL:
             return path + "?" + urlencode_params(params)
 
         raise ValueError("No API key specified. "
