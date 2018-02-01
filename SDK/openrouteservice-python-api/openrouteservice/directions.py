@@ -244,7 +244,7 @@ def directions(client,
         convert.checkBool(optimized)
         if optimized == 'true' and (bearings or continue_straight == 'true'):
             params["optimized"] = 'false'
-            print "Set optimized='false' due to incompatible parameter settings."
+            print("Set optimized='false' due to incompatible parameter settings.")
         else:
             params["optimized"] = optimized
         
