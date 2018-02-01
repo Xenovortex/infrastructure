@@ -1,6 +1,6 @@
-# This Python file uses the following encoding: utf-8
-#
 # Copyright 2014 Google Inc. All rights reserved.
+#
+# Modifications Copyright (C) 2018 HeiGIT, University of Heidelberg.
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not

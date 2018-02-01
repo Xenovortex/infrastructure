@@ -1,5 +1,4 @@
-#
-# Copyright 2018 HeiGIT, University of Heidelberg. All rights reserved.
+# Copyright (C) 2018 HeiGIT, University of Heidelberg.
 #
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
