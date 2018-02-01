@@ -160,6 +160,3 @@ class DirectionsTest(_test.TestCase):
                             'extra_info=steepness%7Csuitability&optimized=false'.format(self.key),
                             responses.calls[0].request.url)
         
-
-if __name__ == '__main__':
-    unittest.main()

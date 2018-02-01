@@ -84,6 +84,3 @@ class DistanceMatrixTest(_test.TestCase):
                             'units=m&location_type=destination&'
                             'attributes=area|reachfactor&interval=30'.format(self.key),
                             responses.calls[0].request.url)
-
-if __name__ == '__main__':
-    unittest.main()

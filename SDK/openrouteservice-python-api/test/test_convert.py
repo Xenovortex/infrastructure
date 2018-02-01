@@ -83,6 +83,3 @@ class ConvertTest(unittest.TestCase):
         self.assertAlmostEqual(48.233826, points[0][1], places=5)
         self.assertAlmostEqual(8.343433, points[-1][0], places=5)
         self.assertAlmostEqual(48.263552, points[-1][1], places=5)
-
-if __name__ == '__main__':
-    unittest.main()

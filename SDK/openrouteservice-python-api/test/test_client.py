@@ -128,6 +128,3 @@ class ClientTest(_test.TestCase):
         self.assertURLEqual("https://foo.com/bar?bunny=pretty&fox=prettier",
                             responses.calls[0].request.url)
         self.assertEqual(1, len(responses.calls))
-
-if __name__ == '__main__':
-    unittest.main()

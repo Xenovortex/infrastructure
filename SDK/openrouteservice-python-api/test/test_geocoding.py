@@ -71,7 +71,3 @@ class GeocodingTest(_test.TestCase):
         with self.assertRaises(ValueError):
             self.structured['Apartment'] = 'Below Bridge No 5'
             self.client.geocode(self.structured)
-        
-
-if __name__ == '__main__':
-    unittest.main()

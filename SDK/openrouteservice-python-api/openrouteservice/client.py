@@ -186,7 +186,7 @@ class Client(object):
 
         if response.status_code in _RETRIABLE_STATUSES:
             # Retry request.
-            print 'Server down.\nRetrying for the {}th time.'.format(retry_counter + 1)
+            print('Server down.\nRetrying for the {}th time.'.format(retry_counter + 1))
             
             return self._request(url, params, first_request_time,
                                  retry_counter + 1, requests_kwargs, post_json)
@@ -199,7 +199,7 @@ class Client(object):
             if isinstance(e, openrouteservice.exceptions._OverQueryLimit) and not self.retry_over_query_limit:
                 raise
             
-            print 'Rate limit exceeded.\nRetrying for the {}th time.'.format(retry_counter + 1)
+            print('Rate limit exceeded.\nRetrying for the {}th time.'.format(retry_counter + 1))
             # Retry request.
             return self._request(url, params, first_request_time,
                                  retry_counter + 1, requests_kwargs,
