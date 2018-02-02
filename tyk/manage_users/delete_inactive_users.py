@@ -31,3 +31,16 @@ for vis in vis_list:
 vis = vis_list[0]
 vis.title = 'New Title'
 visualizations.update(vis)
+
+
+dashboards = DashboardsManager(es_connection)
+
+# list all dashboards
+dash_list = dashboards.get_all()
+for d in dash_list:
+    print(d.title)
+
+# Add a visualization to the first dashboard
+dash = dash_list[0]
+dash.add_visualization(vis, 6, 3)
+dashboards.update(dash)
