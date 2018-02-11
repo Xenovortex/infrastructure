@@ -89,8 +89,9 @@ raster2pgsql -s 954009 -t 128x128 -b 1 -P -I -C -F ./GHS_POP_2015_ESRI54009_mask
 
 #### Simple query
 ```sql
-SELECT ROUND(SUM((ST_SummaryStats(ST_Clip(rast,poly))).sum))
+SELECT ROUND(ST_Area(poly)/1000000) as area, ROUND(SUM((ST_SummaryStats(ST_Clip(rast,poly))).sum)) as total_pop
 FROM ghs_pop_2015_esri54009,
-   	 ST_Transform(ST_GeomFromText('Polygon ((4.3606 52.1178, 4.3567 52.0227, 4.2906 52.0584, 4.3606 52.1178))', 4326), 954009)  as poly
-WHERE ST_Intersects(poly,rast);
+     ST_Transform(ST_GeomFromText('Polygon ((4.22838 53.03823, 5.66540 52.61399, 5.60761 51.11571, 4.00639 51.25299, 4.22838 53.03823))', 4326), 954009)  as poly
+WHERE ST_Intersects(poly,rast)
+GROUP BY poly;
 ```
