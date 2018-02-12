@@ -1,0 +1,94 @@
+
+.ot-metabox-wrapper .wp-editor-container {border:1px #dedede solid !important}
+
+#setting_themo_template_select_help {display:none}
+
+.checkbox-inline-wrap label {}
+
+.checkbox-inline-wrap .type-checkbox .format-setting-inner p {
+	padding-right:10px !important;
+	width:auto !important;
+}
+
+
+/* Styling for OT Labels */
+
+/*.format-settings {
+	padding:10px 0;
+	border-bottom:1px solid #e5e5e5;
+}
+.format-settings:last-child {border-bottom:0;} */
+
+.format-setting-label,
+.option-tree-setting-body .format-settings .label {
+	border-bottom:0 !important;
+	margin:5px 0 5px !important;
+	padding:0 !important;
+	width:100%;
+}
+.option-tree-setting-body .format-settings .label {margin:25px 0 5px !important}
+
+/*.option-tree-setting-body .format-settings {padding:25px 0}*/
+
+
+/* Click To Edit Links */
+
+p.edit_meta_box {cursor:pointer}
+
+
+/* Hide the Order field by default */
+
+.meta-box-order-wrap {display:none !important}
+
+
+/* Meta Box Order Drag n Drop Styling */
+
+#themo_sortable li {
+	padding:8px 10px 10px;
+	background-color:#fafafa;
+	border:1px solid #ccc;
+	overflow:hidden; 
+	position:relative; 
+	-webkit-border-radius:2px;
+	-moz-border-radius:2px;
+	border-radius:2px;	
+}
+
+#themo_sortable li:hover {
+	border-color:#999;
+	-webkit-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.0980392);
+	-moz-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.0980392);
+	box-shadow:0px 1px 2px rgba(0, 0, 0, 0.0980392);	
+}
+
+#themo_sortable li:hover:before {
+	color: #999;
+	content: "\f142";
+	left: 4px;
+	font-family: "option-tree-font";
+	speak: none;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	position: absolute;
+	top: 14px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+#themo_sortable li, #themo_sortable li a, #themo_sortable li label {cursor:move}
+
+
+.themo_meta_qtip{
+	padding:20px;
+	
+	}
+
+
+#themo_blog_category_meta_box {
+    display: none;
+}
+
