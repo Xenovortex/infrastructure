@@ -32,7 +32,7 @@ def extract_indices(es_data):
     """
     Extract indices from Elastic Database
 
-    :param es_data: Elastic Database returned by get_elastic_database function
+    :param es_data: Elastic Database
     :return: list with all extracted indices
     """
     index_lst = []
@@ -61,8 +61,8 @@ def extact_date(index_lst):
     """
     Extract dates from the indices
 
-    :param index_lst:
-    :return: list with the corresponding dates of the indices
+    :param index_lst: list of indices
+    :return: list with the dates corresponding to the indices
     """
     date_lst = []
     for index in index_lst:
@@ -78,13 +78,20 @@ def extact_date(index_lst):
 
 
 
+def filter_index(index_lst, date_lst, last_days):
+    """
+    Filter all the indices and dates, which happened in the last x days. (x = last_days)
 
-"""
-def search_index_last_3month(es_data):
+    :param index_lst: list of indices
+    :param date_lst: list of dates corresponding to the indices
+    :param last_days: number of days to filter from
+    :return: list of filtered indices, list of filtered dates
+    """
+    pass
     
 
-
-def parse_database(es_data):
+"""
+def extract_apikey(es_data, ):
     data = es.search() # put index in here
     api_key_lst = []
     for i in range(0, len(data['hits']['hits'])):
