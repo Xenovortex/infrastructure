@@ -90,16 +90,25 @@ def filter_index(index_lst, date_lst, last_days):
     pass
     
 
-"""
-def extract_apikey(es_data, ):
+
+def extract_apikey(es_data, index_lst):
+    """
+    Extract api-key of all indices provided in the index list from the Elastic Database
+
+    :param es_data: Elastic Database
+    :param index_lst: list of indices
+    :return: list of api-keys
+    """
     data = es.search() # put index in here
     api_key_lst = []
     for i in range(0, len(data['hits']['hits'])):
+        # issue: index logstash-gateway-nginx has api-key under arg_api_key
+        # whereas index logstash-gateway-tyk has api-key under key
         api_key = data['hits']['hits'][i]['_source']['arg_api_key']
         if (not (api_key in api_key_lst) ):
             api_key_lst.append(api_key)
     return api_key_lst
-"""
+
 
 
 
