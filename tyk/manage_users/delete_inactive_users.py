@@ -65,8 +65,13 @@ def extact_date(index_lst):
     :return: list with the corresponding dates of the indices
     """
     date_lst = []
-    for i in range(0, len(index_lst)):
-        date_lst.append(index_lst[i].split("-")[3])
+    for index in index_lst:
+        date = index.split("-")[-1]
+        if (is_date(date)):
+            date_lst.append(date)
+        else:
+            date_lst.append("no date")
+    return date_lst
 
 
 
