@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import pandas as pd
-#from datetime import datetime
+from datetime import datetime
 #import time
 
 #import infrastructure_py.mail as mailer
@@ -21,8 +21,8 @@ def get_elastic_database(url):
     """
     Access Elastic Database from input url
 
-    :param url:
-    :return: elastic database
+    :param url: url of the Elastic Database
+    :return: Elastic Database
     """
     es_data = Elasticsearch(hosts=[url])
     return es_data
@@ -32,7 +32,7 @@ def extract_indices(es_data):
     """
     Extract indices from Elastic Database
 
-    :param es_data:
+    :param es_data: Elastic Database returned by get_elastic_database function
     :return: list with all extracted indices
     """
     index_lst = []
@@ -40,6 +40,38 @@ def extract_indices(es_data):
     for index in indices:
         index_lst.append(index)
     return index_lst
+
+
+def is_date(date_text):
+    """
+    Check if a string represents a date
+
+    :param date_text: string to check
+    :return: boolean (true or false)
+    """
+    try:
+        datetime.strptime(date_text, '%Y.%m.%d')
+        return True
+    except ValueError:
+        return False
+
+
+
+def extact_date(index_lst):
+    """
+    Extract dates from the indices
+
+    :param index_lst:
+    :return: list with the corresponding dates of the indices
+    """
+    date_lst = []
+    for i in range(0, len(index_lst)):
+        date_lst.append(index_lst[i].split("-")[3])
+
+
+
+
+
 
 
 """
