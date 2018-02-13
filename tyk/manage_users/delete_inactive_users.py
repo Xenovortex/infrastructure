@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
 import pandas as pd
-from datetime import datetime
-import time
+#from datetime import datetime
+#import time
 
-import infrastructure_py.mail as mailer
+#import infrastructure_py.mail as mailer
 import infrastructure_py.databases as db
 #import MySQLdb as mysql
 
-from kibana_dashboard_api import VisualizationsManager, DashboardsManager
+#from kibana_dashboard_api import VisualizationsManager, DashboardsManager
 from elasticsearch import Elasticsearch
 
 """Will parse Kibana/Elasticsearch DB for users who are inactive for more than 3 months 
@@ -17,30 +17,35 @@ and store the result in a JSON with {tyk_id: tyk_email} and sent it to status@or
 NOTE, delete_inactive_users.py depends on the output of the JSON created here.
 """
 
-es_connection = Elasticsearch(hosts=['http://login:pass@localhost:9200/']) # what to put here?
-
-visualizations = VisualizationsManager(es_connection)
-
-# list all visualizations
-vis_list = visualizations.get_all()
-for vis in vis_list:
-    print(vis.title)
-
-
-#change the title of the first visualization and save it
-vis = vis_list[0]
-vis.title = 'New Title'
-visualizations.update(vis)
+def get_elastic_database(url):
+    """
+    Access Elastic Database from input url
+    Input: Url
+    Return: database
+    """
+    es_data = Elasticsearch(hosts=[url])
+    return es_data
 
 
-dashboards = DashboardsManager(es_connection)
+"""
+def search_index_last_3month(es_data):
+    index_lst = []
+    indices = es_data.indices.get_alias().keys()
+    for index in indices:
+        index_lst.append(index)
 
-# list all dashboards
-dash_list = dashboards.get_all()
-for d in dash_list:
-    print(d.title)
 
-# Add a visualization to the first dashboard
-dash = dash_list[0]
-dash.add_visualization(vis, 6, 3)
-dashboards.update(dash)
+def parse_database(es_data):
+    data = es.search() # put index in here
+    api_key_lst = []
+    for i in range(0, len(data['hits']['hits'])):
+        api_key = data['hits']['hits'][i]['_source']['arg_api_key']
+        if (not (api_key in api_key_lst) ):
+            api_key_lst.append(api_key)
+    return api_key_lst
+"""
+
+
+
+
+
