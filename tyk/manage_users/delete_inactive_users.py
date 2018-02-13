@@ -20,19 +20,31 @@ NOTE, delete_inactive_users.py depends on the output of the JSON created here.
 def get_elastic_database(url):
     """
     Access Elastic Database from input url
-    Input: Url
-    Return: database
+
+    :param url:
+    :return: elastic database
     """
     es_data = Elasticsearch(hosts=[url])
     return es_data
 
 
-"""
-def search_index_last_3month(es_data):
+def extract_indices(es_data):
+    """
+    Extract indices from Elastic Database
+
+    :param es_data:
+    :return: list with all extracted indices
+    """
     index_lst = []
     indices = es_data.indices.get_alias().keys()
     for index in indices:
         index_lst.append(index)
+    return index_lst
+
+
+"""
+def search_index_last_3month(es_data):
+    
 
 
 def parse_database(es_data):
