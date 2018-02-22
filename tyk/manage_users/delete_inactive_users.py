@@ -142,6 +142,17 @@ def has_field(es_data, index, field, i=0):
         return False
 
 
+def check_valid_key(key):
+    """
+    Check if a extracted key is valid. Current validation conditions include:
+        1) key must have 56 characters (including numbers)
+
+    :param key: key to check as string
+    :return: boolean
+    """
+    return True if len(key) == 56 else False
+
+
 def extract_apikey(es_data, index_lst):
     """
     Extract api-key of all indices provided in the index list from the Elastic Database. Create a list of dates
@@ -192,6 +203,8 @@ for i in range(0, len(api_key_lst)):
 print(len(not_identified_indices))
 for i in range(0, len(not_identified_indices)):
     print(not_identified_indices[i])
+
+print(len(api_key_lst[0]))
 
 
 
