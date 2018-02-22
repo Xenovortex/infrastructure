@@ -5,7 +5,7 @@ from datetime import datetime
 #import time
 
 #import infrastructure_py.mail as mailer
-import infrastructure_py.databases as db
+#import infrastructure_py.databases as db
 #import MySQLdb as mysql
 
 #from kibana_dashboard_api import VisualizationsManager, DashboardsManager
@@ -122,18 +122,19 @@ def filter_indices_last_days(index_lst, date_lst, last_days):
     return index_lst, date_lst
 
 
-def has_field(index, field, i=0):
+def has_field(es_data, index, field, i=0):
     """
     Check if a field exists within '_source' of the given index. If the index has more than one '_source'
     (list of '_source'), use index i to select the _source you want to check. By default the first _source in the list
     will be picked.
 
+    :param es: Elastic Database
     :param index: index from the Elastic Database
     :param field: field to search for
     :param i: index (used to select one '_source', if there are more than one. By default the first one is picked)
     :return: bool value
     """
-    data = es.search(index=index, filter_path='hits.hits._source')
+    data = es_data.search(index=index, filter_path='hits.hits._source')
     try:
         data['hits']['hits'][i]['_source'][field]
         return True
@@ -143,24 +144,54 @@ def has_field(index, field, i=0):
 
 def extract_apikey(es_data, index_lst):
     """
-    Extract api-key of all indices provided in the index list from the Elastic Database
+    Extract api-key of all indices provided in the index list from the Elastic Database. Create a list of dates
+    corresponding to the api-keys.
 
     :param es_data: Elastic Database
     :param index_lst: list of indices
-    :return: list of api-keys
+    :return: list of api-keys, list of corresponding dates
     """
-    for index in index_lst:
-        data = es.search(index)
-    data = es.search() # put index in here
     api_key_lst = []
-    for i in range(0, len(data['hits']['hits'])):
-        # issue: index logstash-gateway-nginx has api-key under arg_api_key
-        # whereas index logstash-gateway-tyk has api-key under key
-        api_key = data['hits']['hits'][i]['_source']['arg_api_key']
-        if (not (api_key in api_key_lst) ):
-            api_key_lst.append(api_key)
-    return api_key_lst
+    api_date_lst = []
+    api_index_lst = [] #Debug: to delete later
+    not_identified_indices = []
+    for index in index_lst:
+        data = es_data.search(index=index, filter_path='hits.hits._source')
+        name_without_date = index.split("-")[:-1]
+        date = index.split("-")[-1]
+        if name_without_date[-1] == "tyk":
+            for i in range(0, len(data['hits']['hits'])):
+                if has_field(es_data, index, 'key', i):
+                    api_key_lst.append(data['hits']['hits'][i]['_source']['key'])
+                    api_date_lst.append(date)
+                    api_index_lst.append(index) #Debug: to delete later
+        elif (name_without_date[-1] == "nginx"):  #name_without_date[-1] == "hybrid"
+            for i in range(0, len(data['hits']['hits'])):
+                if has_field(es_data, index, 'arg_api_key', i):
+                    api_key_lst.append(data['hits']['hits'][i]['_source']['arg_api_key'])
+                    api_date_lst.append(date)
+                    api_index_lst.append(index) #Debug: to delete later
+        else:
+            not_identified_indices.append(index)
 
+    return api_key_lst, api_date_lst, not_identified_indices, api_index_lst  #Debug: api_index_lst to delete later
+
+
+es_data = get_elastic_database('http://129.206.7.153:9200')
+index_lst = extract_indices(es_data)
+date_lst = extact_date(index_lst)
+index_lst, date_lst = delete_no_date_indices(index_lst, date_lst)
+#index_lst, date_lst = filter_indices_last_days(index_lst, date_lst, 90)
+api_key_lst, api_date_lst, not_identified_indices, api_index_lst = extract_apikey(es_data, index_lst)
+
+
+
+for i in range(0, len(api_key_lst)):
+    print("key:", api_key_lst[i], " date:", api_date_lst[i], " index:", api_index_lst[i])
+
+print(len(not_identified_indices))
+for i in range(0, len(not_identified_indices)):
+    print(not_identified_indices[i])
 
 
 
