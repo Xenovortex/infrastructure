@@ -137,7 +137,7 @@ def has_field(index, field, i=0):
     try:
         data['hits']['hits'][i]['_source'][field]
         return True
-    else KeyError:
+    except KeyError:
         return False
 
 
