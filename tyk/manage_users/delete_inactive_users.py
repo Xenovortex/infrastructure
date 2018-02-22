@@ -153,6 +153,7 @@ def check_valid_key(key):
     return True if len(key) == 56 else False
 
 
+
 def extract_apikey(es_data, index_lst):
     """
     Extract api-key of all indices provided in the index list from the Elastic Database. Create a list of dates
@@ -160,12 +161,13 @@ def extract_apikey(es_data, index_lst):
 
     :param es_data: Elastic Database
     :param index_lst: list of indices
-    :return: list of api-keys, list of corresponding dates
+    :return: list of api-keys, list of corresponding dates, list of identified indices, list of not valid api-keys
     """
     api_key_lst = []
     api_date_lst = []
     api_index_lst = [] #Debug: to delete later
     not_identified_indices = []
+    not_valid_keys = []
     for index in index_lst:
         data = es_data.search(index=index, filter_path='hits.hits._source')
         name_without_date = index.split("-")[:-1]
@@ -173,18 +175,26 @@ def extract_apikey(es_data, index_lst):
         if name_without_date[-1] == "tyk":
             for i in range(0, len(data['hits']['hits'])):
                 if has_field(es_data, index, 'key', i):
-                    api_key_lst.append(data['hits']['hits'][i]['_source']['key'])
-                    api_date_lst.append(date)
-                    api_index_lst.append(index) #Debug: to delete later
+                    api_key = data['hits']['hits'][i]['_source']['key']
+                    if check_valid_key(api_key):
+                        api_key_lst.append(api_key)
+                        api_date_lst.append(date)
+                        api_index_lst.append(index)  # Debug: to delete later
+                    else:
+                        not_valid_keys.append(api_key)
         elif (name_without_date[-1] == "nginx"):  #name_without_date[-1] == "hybrid"
             for i in range(0, len(data['hits']['hits'])):
                 if has_field(es_data, index, 'arg_api_key', i):
-                    api_key_lst.append(data['hits']['hits'][i]['_source']['arg_api_key'])
-                    api_date_lst.append(date)
-                    api_index_lst.append(index) #Debug: to delete later
+                    api_key = data['hits']['hits'][i]['_source']['arg_api_key']
+                    if check_valid_key(api_key):
+                        api_key_lst.append(api_key)
+                        api_date_lst.append(date)
+                        api_index_lst.append(index) #Debug: to delete later
+                    else:
+                        not_valid_keys.append(api_key)
         else:
             not_identified_indices.append(index)
-    return api_key_lst, api_date_lst, not_identified_indices, api_index_lst  #Debug: api_index_lst to delete later
+    return api_key_lst, api_date_lst, not_identified_indices, not_valid_keys, api_index_lst  #Debug: api_index_lst to delete later
 
 
 
@@ -193,18 +203,31 @@ index_lst = extract_indices(es_data)
 date_lst = extact_date(index_lst)
 index_lst, date_lst = delete_no_date_indices(index_lst, date_lst)
 #index_lst, date_lst = filter_indices_last_days(index_lst, date_lst, 90)
-api_key_lst, api_date_lst, not_identified_indices, api_index_lst = extract_apikey(es_data, index_lst)
+api_key_lst, api_date_lst, not_identified_indices, not_valid_keys, api_index_lst = extract_apikey(es_data, index_lst)
 
 
 
+
+
+##################################################################################################
+
+# test executions:
+
+
+# show all valid keys with date and index
 for i in range(0, len(api_key_lst)):
     print("key:", api_key_lst[i], " date:", api_date_lst[i], " index:", api_index_lst[i])
 
+# show not identified indices
 print(len(not_identified_indices))
 for i in range(0, len(not_identified_indices)):
     print(not_identified_indices[i])
 
-print(len(api_key_lst[0]))
+# show not valid keys
+print(len(not_valid_keys))
+for i in range(0, len(not_valid_keys)):
+    print(not_valid_keys[i])
+
 
 
 
