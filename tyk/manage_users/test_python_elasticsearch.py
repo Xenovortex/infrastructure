@@ -46,23 +46,44 @@ pp = pprint.PrettyPrinter(indent=4)
 pp.pprint(data)
 """
 
-to_delete_indices = []
-for i in range(0, len(date_lst)):
-    if (date_lst[i] == "no date"):
-        to_delete_indices.append(i)
-for i in reversed(to_delete_indices):
-    del date_lst[i]
-    del index_lst[i]
+def concurrent_delete(lst_1, lst_2, to_delete_indices):
+    """
+    Take 2 lists of same length and a list of indices to delete. Delete elements in both lists at the indices.
 
+    :param lst_1: list 1
+    :param lst_2: list 2
+    :param to_delete_indices: indices to delete
+    :return: lst_1, lst_2 (elements deleted at all indices in to_delete_indices)
+    """
+    to_delete_indices.sort()
+    for i in reversed(to_delete_indices):
+        del lst_1[i]
+        del lst_2[i]
+    return lst_1, lst_2
+
+
+def filter_no_date_indices(index_lst, date_lst):
+    """
+    Delete all entries in date_lst that has "no date" and the corresponding entries in index_lst
+
+    :param index_lst: list of indices
+    :param date_lst: list of dates corresponding to the indices
+    :return: index_lst, date_lst
+    """
+    to_delete_indices = []
+    for i in range(0, len(date_lst)):
+        if (date_lst[i] == "no date"):
+            to_delete_indices.append(i)
+    index_lst, date_lst = concurrent_delete(index_lst, date_lst, to_delete_indices)
+    return  index_lst, date_lst
+
+index_lst, date_lst = filter_no_date_indices(index_lst, date_lst)
+for index in index_lst:
+    print(index)
 for date in date_lst:
     print(date)
 
-
-for index in index_lst:
-    print(index)
-
 print("no date" in date_lst)
-
 
 """
 Datatypes: 

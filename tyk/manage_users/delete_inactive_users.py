@@ -72,6 +72,21 @@ def extact_date(index_lst):
             date_lst.append("no date")
     return date_lst
 
+def concurrent_delete(lst_1, lst_2, to_delete_indices):
+    """
+    Take 2 lists of same length and a list of indices to delete. Delete elements in both lists at the indices.
+
+    :param lst_1: list 1
+    :param lst_2: list 2
+    :param to_delete_indices: indices to delete
+    :return: lst_1, lst_2 (elements deleted at all indices in to_delete_indices)
+    """
+    to_delete_indices.sort()
+    for i in reversed(to_delete_indices):
+        del lst_1[i]
+        del lst_2[i]
+    return lst_1, lst_2
+
 
 def filter_no_date_indices(index_lst, date_lst):
     """
@@ -85,9 +100,7 @@ def filter_no_date_indices(index_lst, date_lst):
     for i in range(0, len(date_lst)):
         if (date_lst[i] == "no date"):
             to_delete_indices.append(i)
-    for i in reversed(to_delete_indices):
-        del date_lst[i]
-        del index_lst[i]
+    index_lst, date_lst = concurrent_delete(index_lst, date_lst, to_delete_indices)
     return  index_lst, date_lst
 
 
@@ -100,6 +113,8 @@ def filter_indices_last3month(index_lst, date_lst, last_days):
     :param last_days: number of days to filter from
     :return: list of filtered indices, list of filtered dates
     """
+    date_today = datetime.now().strftime("%Y.%m.%d")
+    to
 
     pass
     
