@@ -6,6 +6,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from elasticsearch import Elasticsearch
+import pprint
 import infrastructure_py.databases as db
 
 es = Elasticsearch(hosts=['http://129.206.7.153:9200']) # http://localhost:9200/
@@ -39,11 +40,44 @@ for index in index_lst:
     else:
         date_lst.append("no date")
 
-data = es.search("logstash-gateway-tyk-2017.11.09")
-print(data['hits']['hits'][1]['_source'])
+"""
+data = es.search("my_index")
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(data)
+"""
+
+to_delete_indices = []
+for i in range(0, len(date_lst)):
+    if (date_lst[i] == "no date"):
+        to_delete_indices.append(i)
+for i in reversed(to_delete_indices):
+    del date_lst[i]
+    del index_lst[i]
+
+for date in date_lst:
+    print(date)
+
 
 for index in index_lst:
     print(index)
+
+print("no date" in date_lst)
+
+
+"""
+Datatypes: 
+- logstash-gateway-tyk-date
+- logstash-gateway-nginx-date
+- tyk-hybrid-date
+
+Not considered indexes:
+- filebeat-date
+- .reporting-date
+- tutorial
+- .kibana
+- myindex
+"""
+
 
 """
 for i in range(0, len(index_lst)):

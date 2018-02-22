@@ -56,7 +56,6 @@ def is_date(date_text):
         return False
 
 
-
 def extact_date(index_lst):
     """
     Extract dates from the indices
@@ -74,11 +73,25 @@ def extact_date(index_lst):
     return date_lst
 
 
+def filter_no_date_indices(index_lst, date_lst):
+    """
+    Delete all entries in date_lst that has "no date" and the corresponding entries in index_lst
+
+    :param index_lst: list of indices
+    :param date_lst: list of dates corresponding to the indices
+    :return: index_lst, date_lst
+    """
+    to_delete_indices = []
+    for i in range(0, len(date_lst)):
+        if (date_lst[i] == "no date"):
+            to_delete_indices.append(i)
+    for i in reversed(to_delete_indices):
+        del date_lst[i]
+        del index_lst[i]
+    return  index_lst, date_lst
 
 
-
-
-def filter_index(index_lst, date_lst, last_days):
+def filter_indices_last3month(index_lst, date_lst, last_days):
     """
     Filter all the indices and dates, which happened in the last x days. (x = last_days)
 
@@ -87,6 +100,7 @@ def filter_index(index_lst, date_lst, last_days):
     :param last_days: number of days to filter from
     :return: list of filtered indices, list of filtered dates
     """
+
     pass
     
 
