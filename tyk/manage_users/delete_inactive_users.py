@@ -50,7 +50,7 @@ def is_date(date_text):
     :return: boolean (true or false)
     """
     try:
-        datetime.strptime(date_text, '%Y.%m.%d')
+        datetime.strptime(date_text, "%Y.%m.%d")
         return True
     except ValueError:
         return False
@@ -104,7 +104,7 @@ def filter_no_date_indices(index_lst, date_lst):
     return  index_lst, date_lst
 
 
-def filter_indices_last3month(index_lst, date_lst, last_days):
+def filter_indices_last_days(index_lst, date_lst, last_days):
     """
     Filter all the indices and dates, which happened in the last x days. (x = last_days)
 
@@ -113,10 +113,14 @@ def filter_indices_last3month(index_lst, date_lst, last_days):
     :param last_days: number of days to filter from
     :return: list of filtered indices, list of filtered dates
     """
-    date_today = datetime.now().strftime("%Y.%m.%d")
-    to
+    date_today = datetime.strptime(datetime.now().strftime("%Y.%m.%d"), "%Y.%m.%d")
+    to_delete_indices = []
+    for i in range(0, len(date_lst)):
+        if abs((date_today - datetime.strptime(date_lst[i], "%Y.%m.%d")).days) > last_days:
+            to_delete_indices.append(i)
+    index_lst, date_lst = concurrent_delete(index_lst, date_lst, to_delete_indices)
+    return index_lst, date_lst
 
-    pass
     
 
 
