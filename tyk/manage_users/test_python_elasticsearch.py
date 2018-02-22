@@ -40,17 +40,28 @@ for index in index_lst:
     else:
         date_lst.append("no date")
 
-"""
-data = es.search("my_index")
+for index in index_lst:
+    print(index)
+
+
 pp = pprint.PrettyPrinter(indent=4)
+
+pp.pprint(es.search("logstash-gateway-tyk-2018.02.06"))
+print("-" * 10)
+
+data = es.search(index="logstash-gateway-tyk-2018.02.06", filter_path=['hits.hits._id', 'hits.hits._source'])
 pp.pprint(data)
-"""
+print('-' * 10)
+
+for i in range(0, len(data['hits']['hits'])):
+    pp.pprint(data['hits']['hits'][i])
+    print("-" * 20)
 
 
 
 """
 Datatypes: 
-- logstash-gateway-tyk-date
+- logstash-gateway-tyk-date: data['hits']['hits']['_source']['arg_api_
 - logstash-gateway-nginx-date
 - tyk-hybrid-date
 
@@ -69,6 +80,7 @@ for i in range(0, len(index_lst)):
     data = es.search(index_lst[i])
     print(data['hits']['hits'][i]['_source']['arg_api_key'])
 """
+
 """
 api_key_lst = []
 for index in index_lst:

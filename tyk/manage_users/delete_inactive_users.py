@@ -11,7 +11,7 @@ import infrastructure_py.databases as db
 #from kibana_dashboard_api import VisualizationsManager, DashboardsManager
 from elasticsearch import Elasticsearch
 
-"""Will parse Kibana/Elasticsearch DB for users who are inactive for more than 3 months 
+"""Will parse Elasticsearch DB for users who are inactive for more than 3 months 
 and store the result in a JSON with {tyk_id: tyk_email} and sent it to status@ors.org.
 
 NOTE, delete_inactive_users.py depends on the output of the JSON created here.
@@ -88,7 +88,7 @@ def concurrent_delete(lst_1, lst_2, to_delete_indices):
     return lst_1, lst_2
 
 
-def filter_no_date_indices(index_lst, date_lst):
+def delete_no_date_indices(index_lst, date_lst):
     """
     Delete all entries in date_lst that has "no date" and the corresponding entries in index_lst
 
@@ -121,8 +121,6 @@ def filter_indices_last_days(index_lst, date_lst, last_days):
     index_lst, date_lst = concurrent_delete(index_lst, date_lst, to_delete_indices)
     return index_lst, date_lst
 
-    
-
 
 def extract_apikey(es_data, index_lst):
     """
@@ -132,6 +130,8 @@ def extract_apikey(es_data, index_lst):
     :param index_lst: list of indices
     :return: list of api-keys
     """
+    for index in index_lst:
+        data = es.search(index)
     data = es.search() # put index in here
     api_key_lst = []
     for i in range(0, len(data['hits']['hits'])):
