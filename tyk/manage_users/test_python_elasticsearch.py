@@ -26,6 +26,13 @@ def is_date(date_text):
     except ValueError:
         return False
 
+def has_field(data, field, i):
+    try:
+        data['hits']['hits'][i]['_source'][field]
+        return True
+    except KeyError:
+        return False
+
 index_lst = []
 indices = es.indices.get_alias().keys()
 for index in indices:
@@ -39,29 +46,32 @@ for index in index_lst:
         date_lst.append(date)
     else:
         date_lst.append("no date")
-
+"""
 for index in index_lst:
     print(index)
-
+"""
 
 pp = pprint.PrettyPrinter(indent=4)
 
 pp.pprint(es.search("logstash-gateway-tyk-2018.02.06"))
 print("-" * 10)
 
-data = es.search(index="logstash-gateway-tyk-2018.02.06", filter_path=['hits.hits._id', 'hits.hits._source'])
+data = es.search(index="logstash-gateway-tyk-2018.02.06", filter_path='hits.hits._source')
 pp.pprint(data)
 print('-' * 10)
 
 for i in range(0, len(data['hits']['hits'])):
     pp.pprint(data['hits']['hits'][i])
+    print(has_field(data, 'key', i))
     print("-" * 20)
+
+
 
 
 
 """
 Datatypes: 
-- logstash-gateway-tyk-date: data['hits']['hits']['_source']['arg_api_
+- logstash-gateway-tyk-date: data['hits']['hits']['_source']['key']
 - logstash-gateway-nginx-date
 - tyk-hybrid-date
 

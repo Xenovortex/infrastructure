@@ -122,6 +122,25 @@ def filter_indices_last_days(index_lst, date_lst, last_days):
     return index_lst, date_lst
 
 
+def has_field(index, field, i=0):
+    """
+    Check if a field exists within '_source' of the given index. If the index has more than one '_source'
+    (list of '_source'), use index i to select the _source you want to check. By default the first _source in the list
+    will be picked.
+
+    :param index: index from the Elastic Database
+    :param field: field to search for
+    :param i: index (used to select one '_source', if there are more than one. By default the first one is picked)
+    :return: bool value
+    """
+    data = es.search(index=index, filter_path='hits.hits._source')
+    try:
+        data['hits']['hits'][i]['_source'][field]
+        return True
+    else KeyError:
+        return False
+
+
 def extract_apikey(es_data, index_lst):
     """
     Extract api-key of all indices provided in the index list from the Elastic Database
