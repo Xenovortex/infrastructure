@@ -19,7 +19,7 @@ NOTE, delete_inactive_users.py depends on the output of the JSON created here.
 
 def get_elastic_database(url):
     """
-    Access Elastic Database from input url
+    Access Elastic Database with input url
 
     :param url: url of the Elastic Database
     :return: Elastic Database
@@ -74,11 +74,11 @@ def extact_date(index_lst):
 
 def concurrent_delete(lst_1, lst_2, to_delete_indices):
     """
-    Take 2 lists of same length and a list of indices to delete. Delete elements in both lists at the indices.
+    Take 2 lists of same length and a list of indices to delete. Delete elements in both lists at those indices.
 
     :param lst_1: list 1
     :param lst_2: list 2
-    :param to_delete_indices: indices to delete
+    :param to_delete_indices: list of indices to delete
     :return: lst_1, lst_2 (elements deleted at all indices in to_delete_indices)
     """
     to_delete_indices.sort()
@@ -94,7 +94,7 @@ def delete_no_date_indices(index_lst, date_lst):
 
     :param index_lst: list of indices
     :param date_lst: list of dates corresponding to the indices
-    :return: index_lst, date_lst
+    :return: index_lst, date_lst (all "no date" entries in date_lst and the corresponding entries in index_lst deleted)
     """
     to_delete_indices = []
     for i in range(0, len(date_lst)):
@@ -128,11 +128,11 @@ def has_field(es_data, index, field, i=0):
     (list of '_source'), use index i to select the _source you want to check. By default the first _source in the list
     will be picked.
 
-    :param es: Elastic Database
+    :param es_data: Elastic Database
     :param index: index from the Elastic Database
     :param field: field to search for
     :param i: index (used to select one '_source', if there are more than one. By default the first one is picked)
-    :return: bool value
+    :return: boolean
     """
     data = es_data.search(index=index, filter_path='hits.hits._source')
     try:
@@ -173,8 +173,8 @@ def extract_apikey(es_data, index_lst):
                     api_index_lst.append(index) #Debug: to delete later
         else:
             not_identified_indices.append(index)
-
     return api_key_lst, api_date_lst, not_identified_indices, api_index_lst  #Debug: api_index_lst to delete later
+
 
 
 es_data = get_elastic_database('http://129.206.7.153:9200')
